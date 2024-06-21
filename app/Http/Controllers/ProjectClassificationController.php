@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use Inertia\Inertia;
 class ProjectClassificationController extends Controller
 {
     /**
@@ -12,7 +12,7 @@ class ProjectClassificationController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('ProjectClassification');
     }
 
     /**
@@ -20,7 +20,7 @@ class ProjectClassificationController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('NewProjectClassification');
     }
 
     /**
