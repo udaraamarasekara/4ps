@@ -5,6 +5,10 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PeopleController;
+use App\Http\Controllers\ProjectClassificationController;
+use App\Http\Controllers\PropertyClassificationController;
+use App\Http\Controllers\ProductClassificationController;
+use App\Http\Controllers\PeopleClassificationController;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -29,7 +33,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('product',ProductController::class);
     Route::resource('property',PropertyController::class);
     Route::resource('people',PeopleController::class);
-
+    Route::resource('projectClassification', ProjectClassificationController::class);
+    Route::resource('productClassification', ProductClassificationController::class);
+    Route::resource('propertyClassification',PropertyClassificationController::class);
+    Route::resource('peopleClassification',PeopleClassificationController::class);
     Route::get('dashboard',function () { return Inertia::render('Dashboard');})->name('dashboard');
 
 });
