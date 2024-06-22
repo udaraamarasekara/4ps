@@ -1,7 +1,18 @@
+import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head,Link } from '@inertiajs/react';
+import { Head,Link,useForm } from '@inertiajs/react';
+import { useRef } from 'react';
 
 export default function NewProjectClassification({ auth }) {
+
+    const projectName = useRef();
+    const currentPasswordInput = useRef();
+
+    const { data, setData, errors, put, reset, processing, recentlySuccessful } = useForm({
+        current_password: '',
+        password: '',
+        password_confirmation: '',
+    });
 
 const addNewProjectClassification = () =>{
 
@@ -22,7 +33,7 @@ const addNewProjectClassification = () =>{
 
                     <TextInput
                         id="project_name"
-                        ref={currentPasswordInput}
+                        ref={projectName}
                         value={data.project_name}
                         onChange={(e) => setData('project_name', e.target.value)}
                         type="text"
@@ -34,34 +45,33 @@ const addNewProjectClassification = () =>{
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="password" value="New Password" />
+                    <InputLabel htmlFor="parent_project" value="parent_project" />
 
-                    <TextInput
-                        id="password"
-                        ref={passwordInput}
-                        value={data.password}
-                        onChange={(e) => setData('password', e.target.value)}
-                        type="password"
+                    <AutoCompleteTextInput
+                        id="parent_project"
+                        ref={parentProject}
+                        value={data.parent_project}
+                        onChange={(e) => setData('parent_project', e.target.value)}
+                        type="parent_project"
                         className="mt-1 block w-full"
-                        autoComplete="new-password"
                     />
 
-                    <InputError message={errors.password} className="mt-2" />
+                    <InputError message={errors.parent_project} className="mt-2" />
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="password_confirmation" value="Confirm Password" />
+                    <InputLabel htmlFor="rough_duration" value="Rough duration(Days)" />
 
                     <TextInput
-                        id="password_confirmation"
-                        value={data.password_confirmation}
-                        onChange={(e) => setData('password_confirmation', e.target.value)}
-                        type="password"
+                        id="rough_duration"
+                        value={data.rough_duration}
+                        onChange={(e) => setData('rough_duration', e.target.value)}
+                        type="number"
+                        step ="any"
                         className="mt-1 block w-full"
-                        autoComplete="new-password"
                     />
 
-                    <InputError message={errors.password_confirmation} className="mt-2" />
+                    <InputError message={errors.rough_duration} className="mt-2" />
                 </div>
 
                 <div className="flex items-center gap-4">
