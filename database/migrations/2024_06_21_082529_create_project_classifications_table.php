@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->unsignedInteger('parent_id')->default(0)->index();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->longText('description');
         });
     }

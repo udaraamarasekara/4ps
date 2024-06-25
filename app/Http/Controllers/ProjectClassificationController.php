@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use  App\Http\Requests\StoreProjectClassificationRequest;
+use App\Models\ProjectClassification;
 use Inertia\Inertia;
 class ProjectClassificationController extends Controller
 {
@@ -26,9 +27,9 @@ class ProjectClassificationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProjectClassificationRequest $request)
     {
-        //
+      ProjectClassification::create($request->validated());
     }
 
     /**

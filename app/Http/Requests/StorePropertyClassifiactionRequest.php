@@ -11,7 +11,7 @@ class StorePropertyClassifiactionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class StorePropertyClassifiactionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name'=>['required','string'],
+            'parent_id'=>['nullable','exists:property_classifications'],
+            'description'=>['min:1000']
         ];
     }
 }

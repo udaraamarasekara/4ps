@@ -22,7 +22,9 @@ class StoreProjectClassificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name'=>['required','string'],
+            'parent_id'=>['nullable','exists:project_classifications'],
+            'description'=>['min:1000']
         ];
     }
 }

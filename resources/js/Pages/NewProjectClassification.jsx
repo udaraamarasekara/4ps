@@ -14,13 +14,36 @@ export default function NewProjectClassification({ auth }) {
     const parentProject = useRef();
     const description = useRef();
 
-    const { data, setData, errors, setError, put, reset, processing, recentlySuccessful } = useForm({
-        project_name: '',
-        parent_project: '',
+    const { data, setData, errors, setError, post, reset, processing, recentlySuccessful } = useForm({
+        name: '',
+        parent_id: '',
         description: '',
     });
 
-const addNewProjectClassification = () =>{
+const addNewProjectClassification = (e) =>{
+    e.preventDefault()
+   if(!data.name)
+    {
+     setError('name','Project name Required')
+    }
+   else if(!data.description)
+    {
+     setError('description','Description required')   
+    }
+   else if(data.description.length<1000)
+    {
+     setError('description','Description must be at least 1000 characters')   
+    } 
+    else
+    {
+        post(route('productClassification.store'), {
+            preserveScroll: true,
+            onSuccess: () => reset(),
+            onError: (errors) => {
+               console.log(errors)
+            },
+        });
+    }
 
 }
 
@@ -43,8 +66,8 @@ const addNewProjectClassification = () =>{
                                 <TextInput
                                     id="project_name"
                                     ref={projectName}
-                                    value={data.project_name}
-                                    onChange={(e) => setData('project_name', e.target.value)}
+                                    value={data.name}
+                                    onChange={(e) => setData('name', e.target.value)}
                                     type="text"
                                     className="mt-1 block w-full"
                                     autoComplete="project_name"
@@ -54,13 +77,13 @@ const addNewProjectClassification = () =>{
                             </div>
 
                             <div className='w-full md:w-1/2' >
-                                <InputLabel htmlFor="parent_project" value="Parent project" />
+                                <InputLabel htmlFor="parent_project" value="Parent project (optional)" />
 
                                 <AutoCompleteTextInput
                                     id="parent_project"
                                     ref={parentProject}
-                                    value={data.parent_project}
-                                    onChange={(e) => setData('parent_project', e.target.value)}
+                                    value={data.parent_id}
+                                    onChange={(e) => setData('parent_id', e.target.value)}
                                     className="mt-1 block w-full"
                                 />
 
@@ -76,7 +99,6 @@ const addNewProjectClassification = () =>{
                                 ref={description}
                                 onChange={(e) => setData('description', e.target.value)}
                                 className="mt-1 block w-full"
-                                minLength = "1000"
                             />
 
                             <InputError message={errors.description} className="mt-2" />
