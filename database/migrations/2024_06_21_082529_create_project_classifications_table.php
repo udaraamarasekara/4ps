@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('project_classifications', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->unsignedInteger('parent_id')->default(0)->index();
+            $table->string('name');
+            $table->longText('description');
         });
     }
 

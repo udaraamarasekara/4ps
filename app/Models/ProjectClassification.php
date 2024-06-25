@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class ProjectClassification extends Model
 {
     use HasFactory;
+    protected $guarded = [];
+
+    public function children():HasManny
+    {
+      return $this->hasMany(Ca)
+    }
 }

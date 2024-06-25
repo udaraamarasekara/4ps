@@ -55,7 +55,7 @@ export default forwardRef(function AutocompleteTextInput({
         value={value}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
-        autocomplete="off"
+        autoComplete="off"
       />
       {showSuggestions && (
         <ul className="absolute bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-md w-full">
