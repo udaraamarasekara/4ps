@@ -22,7 +22,7 @@ export default forwardRef(function AutocompleteTextInput({
   const handleInputChange = (e) => {
     const newValue = e.target.value;
     setValue(newValue);
-    onChange(newValue);
+    onChange(e);
     setShowSuggestions(true);
   };
 

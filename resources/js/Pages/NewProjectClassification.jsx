@@ -13,12 +13,16 @@ export default function NewProjectClassification({ auth }) {
     const projectName = useRef();
     const parentProject = useRef();
     const description = useRef();
-
+    const {get} = useForm({});
     const { data, setData, errors, setError, post, reset, processing, recentlySuccessful } = useForm({
         name: '',
         parent_id: '',
         description: '',
     });
+
+const updateParentProjectSuggessions = (input) =>{
+    get(route('projectClassification.fetch',input))
+}
 
 const addNewProjectClassification = (e) =>{
     e.preventDefault()
@@ -36,7 +40,7 @@ const addNewProjectClassification = (e) =>{
     } 
     else
     {
-        post(route('productClassification.store'), {
+        post(route('projectClassification.store'), {
             preserveScroll: true,
             onSuccess: () => reset(),
             onError: (errors) => {
@@ -73,7 +77,7 @@ const addNewProjectClassification = (e) =>{
                                     autoComplete="project_name"
                                 />
 
-                                <InputError message={errors.project_name} className="mt-2" />
+                                <InputError message={errors.name} className="mt-2" />
                             </div>
 
                             <div className='w-full md:w-1/2' >
@@ -83,11 +87,11 @@ const addNewProjectClassification = (e) =>{
                                     id="parent_project"
                                     ref={parentProject}
                                     value={data.parent_id}
-                                    onChange={(e) => setData('parent_id', e.target.value)}
+                                    onChange={(e) => updateParentProjectSuggessions(e.target.value)}
                                     className="mt-1 block w-full"
                                 />
 
-                                <InputError message={errors.parent_project} className="mt-2" />
+                                <InputError message={errors.parent_id} className="mt-2" />
                             </div>
                         </div>
                         <div>

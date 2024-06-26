@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use  App\Http\Requests\StoreProjectClassificationRequest;
 use App\Models\ProjectClassification;
 use Inertia\Inertia;
+use Inertia\Response;
+use Illuminate\Http\RedirectResponse;
 class ProjectClassificationController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index():Response
     {
         return Inertia::render('ProjectClassification');
     }
@@ -19,7 +21,7 @@ class ProjectClassificationController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create():Response
     {
         return Inertia::render('NewProjectClassification');
     }
@@ -29,7 +31,13 @@ class ProjectClassificationController extends Controller
      */
     public function store(StoreProjectClassificationRequest $request)
     {
-      ProjectClassification::create($request->validated());
+       ProjectClassification::create($request->validated());
+       return back();
+    }
+
+    public function fetch(string $input)
+    {
+       dd($input); 
     }
 
     /**

@@ -33,6 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('product',ProductController::class);
     Route::resource('property',PropertyController::class);
     Route::resource('people',PeopleController::class);
+    Route::get('projectClassificationFetch{input}',[ProjectClassificationController::class,'fetch'])->name('projectClassification.fetch');
     Route::resource('projectClassification', ProjectClassificationController::class);
     Route::resource('productClassification', ProductClassificationController::class);
     Route::resource('propertyClassification',PropertyClassificationController::class);

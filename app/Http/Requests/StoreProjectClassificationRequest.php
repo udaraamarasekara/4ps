@@ -11,7 +11,7 @@ class StoreProjectClassificationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,8 +22,8 @@ class StoreProjectClassificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'=>['required','string'],
-            'parent_id'=>['nullable','exists:project_classifications'],
+            'name'=>['required','unique:project_classifications,name'],
+            'parent_id'=>['nullable','exists:project_classifications,id'],
             'description'=>['min:1000']
         ];
     }
