@@ -43,7 +43,7 @@ export default forwardRef(function AutocompleteTextInput({
   };
 
   return (
-    <div className="relative">
+    <div className="relative z-0">
       <input
         {...props}
         type={type}
@@ -65,7 +65,7 @@ export default forwardRef(function AutocompleteTextInput({
               className={`px-4 py-2 cursor-pointer ${index === suggestionIndex ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
               onClick={() => handleSuggestionClick(index)}
             >
-              {suggestion}
+              {suggestion.name}
             </li>
           ))}
         </ul>

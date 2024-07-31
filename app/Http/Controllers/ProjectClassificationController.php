@@ -8,6 +8,7 @@ use App\Models\ProjectClassification;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\RedirectResponse;
+use App\Http\Resources\ProjectClassificationResource;
 class ProjectClassificationController extends Controller
 {
     /**
@@ -15,7 +16,8 @@ class ProjectClassificationController extends Controller
      */
     public function index():Response
     {
-        return Inertia::render('ProjectClassification');
+        $projectClassifications = ProjectClassificationResource::collection(ProjectClassification::paginate(10));
+        return Inertia::render('ProjectClassification',['projectClassifications'=>$projectClassifications]);
     }
 
     /**
@@ -37,7 +39,7 @@ class ProjectClassificationController extends Controller
 
     public function fetch(string $input)
     {
-       dd($input); 
+       return ProjectClassificationResource::collection(ProjectClassification::where('name','like','%'.$input.'%')->orWhere('description','like','%'.$input.'%')->get());
     }
 
     /**
