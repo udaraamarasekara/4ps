@@ -1,13 +1,12 @@
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head,Link,useForm,router } from '@inertiajs/react';
-import NewProjClasFormPartOne from './NewProjClasFormPartOne';
-import NewProjClasFormPartTwo from './NewProjClasFormPartTwo';
+
 import { Transition } from '@headlessui/react';
 
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { useState,useEffect } from 'react';
-export default function NewProjectClassification({ auth }) {
+export default function NewProductClassification({ auth }) {
 
  const [page,setPage]=useState(1);   
 
@@ -21,15 +20,15 @@ const movetoPartTwo = () => setPage(2)
 const [showPopup,setShowPopup] =useState(false)
 const [isSuccessPopup,setIsSuccessPopup]= useState(true)
 const goBack = () => {
-   page===1? router.visit(route('projectClassification.index')):page===2?setPage(1):setPage(2) 
+   page===1? router.visit(route('productClassification.index')):page===2?setPage(1):setPage(2) 
 }
 
-const addNewProjectClassification = (e) =>{
+const addNewProductClassification = (e) =>{
   
     e.preventDefault()
    if(!data.name)
     {
-     setError('name','Project name Required')
+     setError('name','Product name Required')
     }
    else if(!data.description)
     {
@@ -41,7 +40,7 @@ const addNewProjectClassification = (e) =>{
     } 
     else
     {
-        post(route('projectClassification.store'), {
+        post(route('productClassification.store'), {
             preserveScroll: true,
             onSuccess: () => {reset()
                 setShowPopup(true)
@@ -62,9 +61,9 @@ const addNewProjectClassification = (e) =>{
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Project Classification</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Product Classification</h2>}
         >
-        <Head title="Project Classification" />
+        <Head title="Product Classification" />
         <div onClick={()=>goBack()} className='w-full flex justify-end'>
           <ArrowLeftIcon className=' m-6 bold p-3 w-12 h-auto bg-white border border-gray-200 rounded-full text-3xl font-extrabold flex items-center justify-center hover:cursor-pointer' />
         </div>
@@ -86,7 +85,7 @@ const addNewProjectClassification = (e) =>{
         <NewProjClasFormPartOne data={data} setData={(type,val)=>setData(type,val)} clearErrors ={(field)=>clearErrors()} setError={(field,message)=>setError(field,message)} errors={errors} processing={processing}
         movetoPartTwo={(e)=>movetoPartTwo(e)}/>
         :<NewProjClasFormPartTwo data={data} setData={(type,val)=>setData(type,val)} clearErrors ={(field)=>clearErrors()} setError={(field,message)=>setError(field,message)} errors={errors} processing={processing}
-        addNewProjectClassification={(e)=>addNewProjectClassification(e)}/>
+        addNewProductClassification={(e)=>addNewProductClassification(e)}/>
         }
         </AuthenticatedLayout>
     );

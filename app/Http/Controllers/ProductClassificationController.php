@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ProductClassifiaction;
+use App\Models\ProductClassification;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductClassifiactionRequest;
 use App\Http\Requests\UpdateProductClassifiactionRequest;
-
+use App\Http\Resources\ProductClassificationResource;
+use Inertia\Inertia;
+use Inertia\Response;
 class ProductClassificationController extends Controller
 {
     /**
@@ -14,7 +16,8 @@ class ProductClassificationController extends Controller
      */
     public function index()
     {
-        //
+        $productClassifications = ProductClassificationResource::collection(ProductClassification::paginate(10));
+        return Inertia::render('ProductClassification',['productClassifications'=>$productClassifications]);
     }
 
     /**
@@ -22,7 +25,8 @@ class ProductClassificationController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('NewProductClassification');
+
     }
 
     /**
@@ -30,7 +34,12 @@ class ProductClassificationController extends Controller
      */
     public function store(StoreProductClassifiactionRequest $request)
     {
-        //
+        $rawInput =$request->validated();  
+        $parent_id = ProductClassification::where('name',$rawInput['parent_name'])->first()->id;
+        unset($rawInput['parent_name']);
+        $rawInput['parent_id']=$parent_id; 
+        ProductClassification::create($rawInput);
+        return back();
     }
 
     /**
@@ -64,4 +73,5 @@ class ProductClassificationController extends Controller
     {
         //
     }
+
 }

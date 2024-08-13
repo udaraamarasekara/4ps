@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreProjectClassificationRequest extends FormRequest
+class UpdateUnitRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -22,9 +22,7 @@ class StoreProjectClassificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'=>['required','unique:project_classifications,name'],
-            'parent_name'=>['nullable','exists:project_classifications,name'],
-            'description'=>['min:1000']
+            //
         ];
     }
 }

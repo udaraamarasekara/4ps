@@ -65,7 +65,7 @@ export default forwardRef(function AutocompleteTextInput({
               className={`px-4 py-2 cursor-pointer ${index === suggestionIndex ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
               onClick={() => handleSuggestionClick(index)}
             >
-              {suggestion.name}
+              {suggestion}
             </li>
           ))}
         </ul>

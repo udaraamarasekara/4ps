@@ -11,7 +11,6 @@ class ProjectClassification extends Model
 {
     use HasFactory;
     protected $guarded = [];
-
     public function children():HasManny
     {
       return $this->hasMany(ProjectClassification::class,'parent_id')->paginate(10);

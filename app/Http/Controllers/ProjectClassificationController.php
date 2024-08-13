@@ -33,13 +33,17 @@ class ProjectClassificationController extends Controller
      */
     public function store(StoreProjectClassificationRequest $request)
     {
-       ProjectClassification::create($request->validated());
+       $rawInput =$request->validated();  
+       $parent_id = ProjectClassification::where('name',$rawInput['parent_name'])->first()->id;
+       unset($rawInput['parent_name']);
+       $rawInput['parent_id']=$parent_id; 
+       ProjectClassification::create($rawInput);
        return back();
     }
 
     public function fetch(string $input)
     {
-       return ProjectClassificationResource::collection(ProjectClassification::where('name','like','%'.$input.'%')->orWhere('description','like','%'.$input.'%')->get());
+       return ProjectClassification::where('name','like','%'.$input.'%')->orWhere('description','like','%'.$input.'%')->get()->pluck('name');
     }
 
     /**
