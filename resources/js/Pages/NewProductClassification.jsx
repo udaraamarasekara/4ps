@@ -87,9 +87,9 @@ const addNewProductClassification = (e) =>{
         </Transition>
         {
          page===1?   
-        <NewProdClasFormPartOne data={data} setData={(type,val)=>setData(type,val)} clearErrors ={(field)=>clearErrors()} setError={(field,message)=>setError(field,message)} errors={errors} processing={processing}
+        <NewProdClasFormPartOne data={data} setData={(type,val)=>setData(type,val)} clearErrors ={(field)=>clearErrors(field)} setError={(field,message)=>setError(field,message)} errors={errors} processing={processing}
         movetoPartTwo={(e)=>movetoPartTwo(e)}/>
-        :<NewProdClasFormPartTwo data={data} setData={(type,val)=>setData(type,val)} clearErrors ={(field)=>clearErrors()} setError={(field,message)=>setError(field,message)} errors={errors} processing={processing}
+        :<NewProdClasFormPartTwo data={data} setData={(type,val)=>setData(type,val)} clearErrors ={(field)=>clearErrors(field)} setError={(field,message)=>setError(field,message)} errors={errors} processing={processing}
         addNewProductClassification={(e)=>addNewProductClassification(e)}/>
         }
         </AuthenticatedLayout>

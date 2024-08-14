@@ -37,7 +37,13 @@ class UnitController extends Controller
 
     public function fetch(string $input)
     {
-       return Unit::where('name','like','%'.$input.'%')->get()->pluck('name');
+        $addNewUnit = false; 
+        $request = new StoreUnitRequest();
+        if($request->authorize()) 
+        {
+         $addNewUnit= true;
+        } 
+       return [$addNewUnit,Unit::where('name','like','%'.$input.'%')->get()->pluck('name')];
     }
 
     /**

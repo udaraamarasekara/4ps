@@ -5,7 +5,8 @@ import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
-export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing,movetoPartTwo=()=>{},clearErrors=()=>{},setError=()=>{},data}){
+import { Link } from '@inertiajs/react';
+export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing,addNewProductClassification=()=>{},clearErrors=()=>{},setError=()=>{},data}){
 
     const brand = useRef();
     const unit = useRef();
@@ -14,12 +15,15 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
 
     const [unitSuggessioins,setUnitSuggessions] = useState();
     const [brandSuggessioins,setBrandSuggessions] = useState();
-
+    const [addNewBrand,setAddNewBrand] = useState(false);
+    const [addNewUnit,setAddNewUnit] = useState(false);
     const updateUnitSuggessions =async (input) =>{
         const response = await axios.get(route('unit.fetch',input ? input: '-0'))
-        setUnitSuggessions(response.data)
+        setUnitSuggessions(response.data[1])
+        setAddNewUnit(response.data[0])
+
         if(!unitSuggessioins?.length){
-             setError('unit_name','No such a Unit')
+             addNewUnit ? setError('unit_name','No such a Unit. Click to add new unit'): setError('unit_name','No such a Unit') 
         }else{
            clearErrors('unit_name') 
         }
@@ -27,9 +31,10 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
     }  
     const updateBrandSuggessions =async (input) =>{
         const response = await axios.get(route('brand.fetch',input ? input: '-0'))
-        setBrandSuggessions(response.data)
+        setBrandSuggessions(response.data[1])
+        setAddNewBrand(response.data[0])
         if(!brandSuggessioins?.length){
-             setError('brand_name','No such a Brand')
+            addNewBrand ? setError('brand_name','No such a Brand. Click to add new brand'): setError('brand_name','No such a Brand') 
         }else{
            clearErrors('brand_name') 
         }
@@ -38,7 +43,7 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
  return (
     <div className='w-full pb-6 flex justify-center'>
     <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-        <form onSubmit={(e)=>movetoPartTwo(e)} className="mt-6 space-y-6">
+        <form onSubmit={(e)=>addNewProductClassification(e)} className="mt-6 space-y-6">
                 <div className='flex flex-col md:flex-row md:space-x-4'>
                     <div className='w-full md:w-1/2' >
                         <InputLabel htmlFor="brand_name " value="Brand (optional)" />
@@ -51,9 +56,13 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
                             onChange={(e) => updateBrandSuggessions(e.target.value)}
                             className="mt-1 block w-full"
                         />
-
-                        <InputError message={errors.brand_name} className="mt-2" />
-                    </div>
+                        {addNewBrand ?
+                          <div>
+                            <InputError message={errors.brand_name} className="mt-2 hover:underline hover:cursor-pointer" /> 
+                          </div>  
+                         :<InputError message={errors.brand_name} className="mt-2" />
+                        }
+                        </div>
 
                     <div className='w-full md:w-1/2' >
                         <InputLabel htmlFor="unit_name" value="Unit (optional)" />
@@ -66,8 +75,14 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
                             onChange={(e) => updateUnitSuggessions(e.target.value)}
                             className="mt-1 block w-full"
                         />
+                        {addNewUnit ?
+                         <div >
+                            <InputError message={errors.unit_name} className="mt-2 hover:underline hover:cursor-pointer" />
+                         </div>
+                          :
+                         <InputError message={errors.unit_name} className="mt-2" />
 
-                        <InputError message={errors.unit_name} className="mt-2" />
+                        }
                     </div>
                 </div>
                 <div className='flex flex-col md:flex-row md:space-x-4'>
@@ -101,7 +116,7 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
                     </div>    
                 </div>
                 <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Next</PrimaryButton>
+                    <PrimaryButton disabled={processing}>Add</PrimaryButton>
                 
                 </div>
         </form>

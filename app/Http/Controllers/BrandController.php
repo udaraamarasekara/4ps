@@ -37,7 +37,13 @@ class BrandController extends Controller
 
     public function fetch(string $input)
     {
-       return Brand::where('name','like','%'.$input.'%')->get()->pluck('name');
+       $addNewBrand = false; 
+       $request = new StoreBrandRequest();
+       if($request->authorize()) 
+       {
+        $addNewBrand= true;
+       }
+       return [$addNewBrand,Brand::where('name','like','%'.$input.'%')->get()->pluck('name')];
     }
 
     /**
