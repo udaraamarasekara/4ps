@@ -6,7 +6,9 @@ use App\Models\Brand;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBrandRequest;
 use App\Http\Requests\UpdateBrandRequest;
-
+use App\Http\Resources\BrandResource;
+use Inertia\Inertia;
+use Inertia\Response;
 class BrandController extends Controller
 {
     /**
@@ -31,6 +33,11 @@ class BrandController extends Controller
     public function store(StoreBrandRequest $request)
     {
         //
+    }
+
+    public function fetch(string $input)
+    {
+       return Brand::where('name','like','%'.$input.'%')->get()->pluck('name');
     }
 
     /**

@@ -42,6 +42,11 @@ class ProductClassificationController extends Controller
         return back();
     }
 
+    public function fetch(string $input)
+    {
+       return ProductClassification::where('name','like','%'.$input.'%')->orWhere('description','like','%'.$input.'%')->get()->pluck('name');
+    }
+
     /**
      * Display the specified resource.
      */

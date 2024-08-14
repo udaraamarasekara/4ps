@@ -14,6 +14,13 @@ return new class extends Migration
         Schema::create('product_classifications', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->unsignedInteger('parent_id')->default(0)->nullable();
+            $table->string('name')->unique();
+            $table->longText('description');
+            $table->foreignId('brand_id')->constrained()->nullable();
+            $table->foreignId('unit_id')->constrained()->nullable();
+            $table->decimal('cost',places:2);
+            $table->decimal('price',places:2);
         });
     }
 

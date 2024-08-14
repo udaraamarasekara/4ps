@@ -9,7 +9,8 @@ use App\Http\Controllers\ProjectClassificationController;
 use App\Http\Controllers\PropertyClassificationController;
 use App\Http\Controllers\ProductClassificationController;
 use App\Http\Controllers\PeopleClassificationController;
-
+use App\Http\Controllers\UnitController;
+use App\Http\Controllers\BrandController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -30,10 +31,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('project', ProjectController::class);
+    Route::resource('brand', BrandController::class);
+    Route::resource('unit', UnitController::class);
     Route::resource('product',ProductController::class);
     Route::resource('property',PropertyController::class);
     Route::resource('people',PeopleController::class);
-    Route::get('projectClassificationFetch{input}',[ProjectClassificationController::class,'fetch'])->name('projectClassification.fetch');
+    Route::get('brandFetch{input}',[BrandController::class,'fetch'])->name('brand.fetch');
+    Route::get('unitFetch{input}',[ProjectClassificationController::class,'fetch'])->name('unit.fetch');
+    Route::get('projectClassificationFetch{input}',[UnitController::class,'fetch'])->name('projectClassification.fetch');
     Route::resource('projectClassification', ProjectClassificationController::class);
     Route::resource('productClassification', ProductClassificationController::class);
     Route::resource('propertyClassification',PropertyClassificationController::class);

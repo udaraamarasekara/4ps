@@ -6,7 +6,9 @@ use App\Models\Unit;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUnitRequest;
 use App\Http\Requests\UpdateUnitRequest;
-
+use App\Http\Resources\UnitResource;
+use Inertia\Inertia;
+use Inertia\Response;
 class UnitController extends Controller
 {
     /**
@@ -31,6 +33,11 @@ class UnitController extends Controller
     public function store(StoreUnitRequest $request)
     {
         //
+    }
+
+    public function fetch(string $input)
+    {
+       return Unit::where('name','like','%'.$input.'%')->get()->pluck('name');
     }
 
     /**

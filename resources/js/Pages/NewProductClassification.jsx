@@ -1,7 +1,8 @@
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head,Link,useForm,router } from '@inertiajs/react';
-
+import NewProdClasFormPartOne from './NewPordClasFormPartOne';
+import NewProdClasFormPartTwo from './NewProdClasFormPartTwo';
 import { Transition } from '@headlessui/react';
 
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
@@ -14,6 +15,10 @@ export default function NewProductClassification({ auth }) {
         name: '',
         parent_name: '',
         description: '',
+        brand_name:'',
+        unit_name:'',
+        price:'',
+        cost:''
     });
 const movetoPartOne = () => setPage(1)
 const movetoPartTwo = () => setPage(2)
@@ -82,9 +87,9 @@ const addNewProductClassification = (e) =>{
         </Transition>
         {
          page===1?   
-        <NewProjClasFormPartOne data={data} setData={(type,val)=>setData(type,val)} clearErrors ={(field)=>clearErrors()} setError={(field,message)=>setError(field,message)} errors={errors} processing={processing}
+        <NewProdClasFormPartOne data={data} setData={(type,val)=>setData(type,val)} clearErrors ={(field)=>clearErrors()} setError={(field,message)=>setError(field,message)} errors={errors} processing={processing}
         movetoPartTwo={(e)=>movetoPartTwo(e)}/>
-        :<NewProjClasFormPartTwo data={data} setData={(type,val)=>setData(type,val)} clearErrors ={(field)=>clearErrors()} setError={(field,message)=>setError(field,message)} errors={errors} processing={processing}
+        :<NewProdClasFormPartTwo data={data} setData={(type,val)=>setData(type,val)} clearErrors ={(field)=>clearErrors()} setError={(field,message)=>setError(field,message)} errors={errors} processing={processing}
         addNewProductClassification={(e)=>addNewProductClassification(e)}/>
         }
         </AuthenticatedLayout>

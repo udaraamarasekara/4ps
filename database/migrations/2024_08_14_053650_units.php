@@ -11,15 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('project_classifications', function (Blueprint $table) {
+        Schema::create('units', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
             $table->timestamps();
-            $table->unsignedInteger('parent_id')->default(0)->nullable();
-            $table->string('name')->unique();
-            $table->longText('description');
-            $table->decimal('cost',places:2);
-            $table->decimal('price',places:2);
-
         });
     }
 
@@ -28,6 +23,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('project_classifications');
+        Schema::dropIfExists('units');
+
     }
 };
