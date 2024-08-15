@@ -15,7 +15,7 @@ export default function NewProdClasFormPartOne({setData=()=>{},errors,processing
     const updateParentProductSuggessions =async (input) =>{
         const response = await axios.get(route('productClassification.fetch',input ? input: '-0'))
         setSuggessions(response.data)
-        if(!suggessioins?.length){
+        if(!suggessioins?.length && parentProduct.current.value!=='' ){
              setError('parent_name','No such a product classification')
         }else{
            clearErrors('parent_name') 

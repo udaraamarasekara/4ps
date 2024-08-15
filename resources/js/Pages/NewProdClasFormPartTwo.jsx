@@ -1,47 +1,62 @@
 import axios from 'axios';
-import { useRef,useState } from 'react';
+import { useEffect, useRef,useState } from 'react';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
-import { Link } from '@inertiajs/react';
+import NewBrandModal from './NewBrandModal';
 export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing,addNewProductClassification=()=>{},clearErrors=()=>{},setError=()=>{},data}){
 
     const brand = useRef();
     const unit = useRef();
     const cost = useRef();
     const price = useRef();
+    const isNotInitialMount = useRef(false);
 
     const [unitSuggessioins,setUnitSuggessions] = useState();
     const [brandSuggessioins,setBrandSuggessions] = useState();
     const [addNewBrand,setAddNewBrand] = useState(false);
     const [addNewUnit,setAddNewUnit] = useState(false);
-    const updateUnitSuggessions =async (input) =>{
+    const updateUnitSuggessions =async (input) =>{ 
         const response = await axios.get(route('unit.fetch',input ? input: '-0'))
         setUnitSuggessions(response.data[1])
         setAddNewUnit(response.data[0])
 
-        if(!unitSuggessioins?.length){
-             addNewUnit ? setError('unit_name','No such a Unit. Click to add new unit'): setError('unit_name','No such a Unit') 
-        }else{
-           clearErrors('unit_name') 
-        }
+       
         console.log(unitSuggessioins)
     }  
     const updateBrandSuggessions =async (input) =>{
         const response = await axios.get(route('brand.fetch',input ? input: '-0'))
         setBrandSuggessions(response.data[1])
         setAddNewBrand(response.data[0])
-        if(!brandSuggessioins?.length){
-            addNewBrand ? setError('brand_name','No such a Brand. Click to add new brand'): setError('brand_name','No such a Brand') 
-        }else{
-           clearErrors('brand_name') 
-        }
+      
+      
         console.log(brandSuggessioins)
     }
+
+    useEffect(()=>{
+        if(isNotInitialMount.current) 
+        {   
+            if(!brandSuggessioins?.length && brand.current.value!=='' ){
+                addNewBrand ? setError('brand_name','No such a Brand. Click to add new brand'): setError('brand_name','No such a Brand') 
+            }else{
+            clearErrors('brand_name') 
+            }
+            if(!unitSuggessioins?.length && unit.current.value!==''){
+                addNewUnit ? setError('unit_name','No such a Unit. Click to add new unit'): setError('unit_name','No such a Unit') 
+            }else{
+                clearErrors('unit_name') 
+            }
+        }
+        else
+        {
+          isNotInitialMount.current =true;  
+        }     
+     },[addNewBrand,addNewUnit,unit.current?.value,brand.current?.value])
  return (
-    <div className='w-full pb-6 flex justify-center'>
+    <div className='w-full pb-6 flex justify-center'> 
+    <NewBrandModal/> 
     <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
         <form onSubmit={(e)=>addNewProductClassification(e)} className="mt-6 space-y-6">
                 <div className='flex flex-col md:flex-row md:space-x-4'>

@@ -37,8 +37,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('property',PropertyController::class);
     Route::resource('people',PeopleController::class);
     Route::get('brandFetch{input}',[BrandController::class,'fetch'])->name('brand.fetch');
-    Route::get('unitFetch{input}',[ProjectClassificationController::class,'fetch'])->name('unit.fetch');
-    Route::get('projectClassificationFetch{input}',[UnitController::class,'fetch'])->name('projectClassification.fetch');
+    Route::get('unitFetch{input}',[UnitController::class,'fetch'])->name('unit.fetch');
+    Route::get('projectClassificationFetch{input}',[ProjectClassificationController::class,'fetch'])->name('projectClassification.fetch');
+    Route::get('productClassificationFetch{input}',[ProductClassificationController::class,'fetch'])->name('productClassification.fetch');
     Route::resource('projectClassification', ProjectClassificationController::class);
     Route::resource('productClassification', ProductClassificationController::class);
     Route::resource('propertyClassification',PropertyClassificationController::class);

@@ -4,7 +4,6 @@ import { Head,Link,useForm,router } from '@inertiajs/react';
 import NewProdClasFormPartOne from './NewPordClasFormPartOne';
 import NewProdClasFormPartTwo from './NewProdClasFormPartTwo';
 import { Transition } from '@headlessui/react';
-
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { useState,useEffect } from 'react';
 export default function NewProductClassification({ auth }) {
