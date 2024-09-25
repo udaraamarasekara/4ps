@@ -32,7 +32,8 @@ class BrandController extends Controller
      */
     public function store(StoreBrandRequest $request)
     {
-        //
+      $rawInput =$request->validated();  
+      Brand::create($rawInput); 
     }
 
     public function fetch(string $input)
@@ -44,6 +45,11 @@ class BrandController extends Controller
         $addNewBrand= true;
        }
        return [$addNewBrand,Brand::where('name','like','%'.$input.'%')->get()->pluck('name')];
+    }
+
+    public function check(string $input)
+    {
+      return Brand::where('name',$input)->count();
     }
 
     /**

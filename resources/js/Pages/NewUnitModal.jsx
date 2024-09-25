@@ -7,31 +7,31 @@ import { useState } from 'react';
 import axios from 'axios';
 import TextInput from '@/Components/TextInput';
 import { useEffect } from 'react';
-export default function NewBrandModal({show,setShow}){
+export default function NewUnitModal({show,setShow}){
     const [name,setName] = useState('')
     const [error,setError] = useState()
     const [processing,setProcessing] = useState()
     const [suggessioins,setSuggessions] = useState();
-    const brandNameChanged =async (val) =>{
+    const unitNameChanged =async (val) =>{
         setName(val)
-        const response = await axios.get(route('brand.check',val ? val: '-0'))
+        const response = await axios.get(route('unit.check',val ? val: '-0'))
         setSuggessions(response.data)
       
       }  
-    const newBrand = (e) =>{
+    const newunit = (e) =>{
       e.preventDefault()
-      axios.post('/brand',{name:name}).then((res)=>{
+      axios.post('/unit',{name:name}).then((res)=>{
         setShow(false)
       }).catch()
     }
 
     useEffect(()=>{
-      suggessioins ? setError('Brand name already exists') :setError('')    },[suggessioins])
+      suggessioins ? setError('Unit name already exists') :setError('')    },[suggessioins])
     return(
       <Modal show={show} maxWidth='xl' >
         <div className="flex items-start justify-between p-5 border-b border-solid border-blueGray-200 rounded-t">
             <h3 className="text-3xl font-semibold">
-              New Brand
+              New unit
             </h3>
             <button
                 className="p-0 ml-auto bg-transparent border-0 text-red-500 float-right leading-none  outline-none focus:outline-none"
@@ -40,12 +40,12 @@ export default function NewBrandModal({show,setShow}){
                 <XMarkIcon className=' mt-1 bold p-0 w-6 h-auto  text-3xl font-extrabold hover:cursor-pointer' />
             </button>
         </div>          
-          <form onSubmit={(e)=>newBrand(e)} className='m-6'>
+          <form onSubmit={(e)=>newunit(e)} className='m-6'>
           <InputLabel htmlFor="Name" value="Name" />
 
            <TextInput
                 id="name"
-                onChange={(e) => brandNameChanged(e.target.value)}
+                onChange={(e) => unitNameChanged(e.target.value)}
                 type="text"
                 value={name}
                 className="mt-1 block w-full"

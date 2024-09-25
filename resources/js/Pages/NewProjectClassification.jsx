@@ -1,6 +1,6 @@
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head,Link,useForm,router } from '@inertiajs/react';
+import { Head,useForm,router } from '@inertiajs/react';
 import NewProjClasFormPartOne from './NewProjClasFormPartOne';
 import NewProjClasFormPartTwo from './NewProjClasFormPartTwo';
 import { Transition } from '@headlessui/react';
@@ -15,6 +15,10 @@ export default function NewProjectClassification({ auth }) {
         name: '',
         parent_name: '',
         description: '',
+        ingredients:[{}],
+        humanResources:[{}],
+        properties:[{}]
+
     });
 const movetoPartOne = () => setPage(1)
 const movetoPartTwo = () => setPage(2)

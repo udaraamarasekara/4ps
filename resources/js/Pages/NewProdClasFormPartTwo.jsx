@@ -6,6 +6,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
 import NewBrandModal from './NewBrandModal';
+import NewUnitModal from './NewUnitModal';
 export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing,addNewProductClassification=()=>{},clearErrors=()=>{},setError=()=>{},data}){
 
     const brand = useRef();
@@ -14,6 +15,8 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
     const price = useRef();
     const isNotInitialMount = useRef(false);
 
+    const [showBrand,setShowBrand] = useState(false)
+    const [showModal,setShowModal] = useState(false)
     const [unitSuggessioins,setUnitSuggessions] = useState();
     const [brandSuggessioins,setBrandSuggessions] = useState();
     const [addNewBrand,setAddNewBrand] = useState(false);
@@ -56,7 +59,8 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
      },[addNewBrand,addNewUnit,unit.current?.value,brand.current?.value])
  return (
     <div className='w-full pb-6 flex justify-center'> 
-    <NewBrandModal/> 
+    <NewBrandModal show={showBrand} setShow={setShowBrand}/>
+    <NewUnitModal show={showModal} setShow={setShowModal}/> 
     <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
         <form onSubmit={(e)=>addNewProductClassification(e)} className="mt-6 space-y-6">
                 <div className='flex flex-col md:flex-row md:space-x-4'>
@@ -72,7 +76,7 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
                             className="mt-1 block w-full"
                         />
                         {addNewBrand ?
-                          <div>
+                          <div onClick={()=>setShowBrand(true)}>
                             <InputError message={errors.brand_name} className="mt-2 hover:underline hover:cursor-pointer" /> 
                           </div>  
                          :<InputError message={errors.brand_name} className="mt-2" />
@@ -91,7 +95,7 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
                             className="mt-1 block w-full"
                         />
                         {addNewUnit ?
-                         <div >
+                         <div onClick={()=>setShowModal(true)} >
                             <InputError message={errors.unit_name} className="mt-2 hover:underline hover:cursor-pointer" />
                          </div>
                           :
