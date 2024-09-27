@@ -6,7 +6,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
 import TextArea from '@/Components/TextArea';
-export default function NewProjClasFormPartOne({setData=()=>{},errors,processing,movetoPartTwo=()=>{},clearErrors=()=>{},setError=()=>{},data}){
+export default function NewProjClasFormPartOne({setData=()=>{},errors,processing,movetoPartTwo=(e)=>{},clearErrors=()=>{},setError=()=>{},data}){
 
     const projectName = useRef();
     const parentProject = useRef();

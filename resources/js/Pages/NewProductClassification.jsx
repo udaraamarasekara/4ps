@@ -20,7 +20,11 @@ export default function NewProductClassification({ auth }) {
         cost:''
     });
 const movetoPartOne = () => setPage(1)
-const movetoPartTwo = () => setPage(2)
+const movetoPartTwo = (e) => {
+e.preventDefault()
+    data.name ? data.description ?data.description.length>=100? setPage(2):      setError('description','Description must be at least 100 characters')  :     setError('description','Description required') : setError('name','Product name Required')
+}
+
 const [showPopup,setShowPopup] =useState(false)
 const [isSuccessPopup,setIsSuccessPopup]= useState(true)
 const goBack = () => {
@@ -30,20 +34,24 @@ const goBack = () => {
 const addNewProductClassification = (e) =>{
   
     e.preventDefault()
-   if(!data.name)
+  
+    if(!data.brand_name)
     {
-     setError('name','Product name Required')
-    }
-   else if(!data.description)
-    {
-     setError('description','Description required')   
-    }
-   else if(data.description.length<100)
-    {
-     setError('description','Description must be at least 100 characters')   
+        setError('brand_name','Brand required') 
     } 
-    else
+    else  if(!data.unit_name)
     {
+        setError('unit_name','Unit required')
+    }
+    else if(!data.price)
+    {
+        setError('price','Price required') 
+    }   
+    else if(!data.cost){
+        setError('cost','Cost required') 
+
+    }
+    else{
         post(route('productClassification.store'), {
             preserveScroll: true,
             onSuccess: () => {reset()
@@ -58,8 +66,8 @@ const addNewProductClassification = (e) =>{
                console.log(errors)
             },
         });
+    
     }
-
 }
 
     return (

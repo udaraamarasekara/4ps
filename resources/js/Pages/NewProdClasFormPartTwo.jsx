@@ -73,6 +73,7 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
                             value={data.brand_name}
                             suggestions={brandSuggessioins}
                             onChange={(e) => updateBrandSuggessions(e.target.value)}
+                            setClickedElement={(el)=>setData('brand_name',el)}
                             className="mt-1 block w-full"
                         />
                         {addNewBrand ?
@@ -92,6 +93,8 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
                             value={data.unit_name}
                             suggestions={unitSuggessioins}
                             onChange={(e) => updateUnitSuggessions(e.target.value)}
+                            setClickedElement={(el)=>setData('unit_name',el)}
+
                             className="mt-1 block w-full"
                         />
                         {addNewUnit ?

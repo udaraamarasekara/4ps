@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class PropertyClassification extends Model
 {
     use HasFactory;
+    protected $guarded = [];
+
 }

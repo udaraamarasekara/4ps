@@ -6,6 +6,7 @@ export default forwardRef(function AutocompleteTextInput({
   isFocused = false,
   suggestions = [], // new prop for autocomplete suggestions
   onChange = () => {}, // new prop for handling selection
+  setClickedElement = () => {},
   ...props
 }, ref) {
   const input = ref ? ref : useRef();
@@ -39,6 +40,7 @@ export default forwardRef(function AutocompleteTextInput({
 
   const handleSuggestionClick = (index) => {
     setValue(suggestions[index]);
+    setClickedElement(suggestions[index])
     setShowSuggestions(false);
   };
 

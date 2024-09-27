@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProductClassification;
+use App\Models\Unit;
+use App\Models\Brand;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductClassifiactionRequest;
 use App\Http\Requests\UpdateProductClassifiactionRequest;
@@ -34,10 +36,21 @@ class ProductClassificationController extends Controller
      */
     public function store(StoreProductClassifiactionRequest $request)
     {
+        $parent_id;
         $rawInput =$request->validated();  
-        $parent_id = ProductClassification::where('name',$rawInput['parent_name'])->first()->id;
+        if(isset($rawInput['parent_name']))
+        {
+            $parent_id = ProductClassification::where('name',$rawInput['parent_name'])->first()->id;
+            $rawInput['parent_id']=$parent_id; 
+        }
         unset($rawInput['parent_name']);
-        $rawInput['parent_id']=$parent_id; 
+        $brand_id=Brand::where('name',$rawInput['brand_name'])->first()->id;
+        $unit_id=Unit::where('name',$rawInput['unit_name'])->first()->id;
+        unset($rawInput['brand_name']);
+        unset($rawInput['unit_name']);
+        $rawInput['brand_id']=$brand_id;
+        $rawInput['unit_id']=$unit_id;
+      
         ProductClassification::create($rawInput);
         return back();
     }

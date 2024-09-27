@@ -32,7 +32,8 @@ class UnitController extends Controller
      */
     public function store(StoreUnitRequest $request)
     {
-        //
+        $rawInput =$request->validated();  
+        Unit::create($rawInput); 
     }
 
     public function fetch(string $input)
