@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PropertyClassification extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDelete;
     protected $guarded = [];
 
 }

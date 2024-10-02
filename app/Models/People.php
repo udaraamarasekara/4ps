@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class People extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDelete;
     protected $guarded = [];
 
 }

@@ -4,9 +4,8 @@ import { Head,useForm,router } from '@inertiajs/react';
 import NewProjClasFormPartOne from './NewProjClasFormPartOne';
 import NewProjClasFormPartTwo from './NewProjClasFormPartTwo';
 import { Transition } from '@headlessui/react';
-
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
-import { useState,useEffect } from 'react';
+import { useState } from 'react';
 export default function NewProjectClassification({ auth }) {
 
  const [page,setPage]=useState(1);   
@@ -50,12 +49,12 @@ const addNewProjectClassification = (e) =>{
             onSuccess: () => {reset()
                 setShowPopup(true)
                 setIsSuccessPopup(true)
-                setTimeout(()=>{setShowSuccessPopup(false)},1000)  
+                setTimeout(()=>{setShowPopup(false)},1000)  
             },
             onError: (errors) => {
                 setShowPopup(true)
                 setIsSuccessPopup(false)
-                setTimeout(()=>{setShowSuccessPopup(false)},1000)   
+                setTimeout(()=>{setShowPopup(false)},1000)   
                console.log(errors)
             },
         });

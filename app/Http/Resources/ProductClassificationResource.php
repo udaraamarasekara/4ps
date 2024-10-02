@@ -14,6 +14,15 @@ class ProductClassificationResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id'=>$this->id,
+            'name'=>$this->name,
+            'parent'=>$this->parent,
+            'description'=>$this->description,
+            'brand'=>$this->brand->name,
+            'unit'=>$this->unit->name,
+            'cost'=>$this->cost,
+            'price'=>$this->price
+        ];
     }
 }

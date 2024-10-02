@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Brand extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDelete;
     protected $guarded = [];
 }

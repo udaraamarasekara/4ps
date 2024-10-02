@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProjectClassification extends Model
 {
-    use HasFactory;
-    protected $guarded = [];
+  use HasFactory, SoftDelete;
+  protected $guarded = [];
     public function children():HasManny
     {
       return $this->hasMany(ProjectClassification::class,'parent_id')->paginate(10);

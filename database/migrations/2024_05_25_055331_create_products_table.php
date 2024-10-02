@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->softDeletes();  // Adds a `deleted_at` column
+
         });
     }
 

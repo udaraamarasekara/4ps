@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignId('unit_id')->constrained()->nullable();
             $table->decimal('cost',places:2);
             $table->decimal('price',places:2);
+            $table->softDeletes();  // Adds a `deleted_at` column
         });
     }
 

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->longText('description');
             $table->decimal('cost',places:2);
             $table->decimal('price',places:2);
+            $table->softDeletes();  // Adds a `deleted_at` column
 
         });
     }

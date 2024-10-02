@@ -63,7 +63,7 @@ class ProductClassificationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ProductClassifiaction $productClassifiaction)
+    public function show(ProductClassification $productClassifications)
     {
         //
     }
@@ -71,17 +71,33 @@ class ProductClassificationController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ProductClassifiaction $productClassifiaction)
+    public function edit(ProductClassification $productClassification)
     {
-        //
+        return Inertia::render('EditProductClassification',['productClassification'=> new ProductClassificationResource($productClassification)]);
+
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProductClassifiactionRequest $request, ProductClassifiaction $productClassifiaction)
+    public function update(UpdateProductClassifiactionRequest $request,ProductClassification $productClassification)
     {
-        //
+        $parent_id;
+        $rawInput =$request->validated();  
+        if(isset($rawInput['parent_name']))
+        {
+            $parent_id = ProductClassification::where('name',$rawInput['parent_name'])->first()->id;
+            $rawInput['parent_id']=$parent_id; 
+        }
+        unset($rawInput['parent_name']);
+        $brand_id=Brand::where('name',$rawInput['brand_name'])->first()->id;
+        $unit_id=Unit::where('name',$rawInput['unit_name'])->first()->id;
+        unset($rawInput['brand_name']);
+        unset($rawInput['unit_name']);
+        $rawInput['brand_id']=$brand_id;
+        $rawInput['unit_id']=$unit_id;
+        $productClassification->update($rawInput);
+        return redirect()->back();
     }
 
     /**
