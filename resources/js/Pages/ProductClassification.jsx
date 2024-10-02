@@ -4,14 +4,28 @@ import { PencilSquareIcon,TrashIcon,EyeIcon } from '@heroicons/react/24/solid'
 import Modal from '@/Components/Modal';
 import { useState } from 'react';
 import { router } from '@inertiajs/react'
+import axios from 'axios';
+import { Transition } from '@headlessui/react';
+
 export default function ProductClassification({ auth,productClassifications }) {
    const [show,setShow]=useState(false)
    const [item,setItem]=useState({})
+   const [showPopup,setShowPopup] =useState(false)
+   const [isSuccessPopup,setIsSuccessPopup]= useState(true)
 
-
-    const deleteItem = (id) =>{
-
-     }
+   const deleteItem = (id) => {
+    axios.delete(route('productClassification.destroy', id))
+        .then(() => {
+            setShowPopup(true)
+            setIsSuccessPopup(true)
+            setTimeout(()=>{setShowPopup(false)},1000)  
+        })
+        .catch((e) => {
+            setShowPopup(true)
+            setIsSuccessPopup(false)
+            setTimeout(()=>{setShowPopup(false)},1000)   
+          });
+     };
     return (
         <AuthenticatedLayout 
         user={auth.user}
@@ -21,7 +35,19 @@ export default function ProductClassification({ auth,productClassifications }) {
         <Link href={route('productClassification.create')} className='w-full flex justify-end'>
               <div className=' m-6 p-6 w-10 h-10 bg-white border border-gray-200 rounded-full text-3xl font-extrabold flex items-center justify-center hover:cursor-pointer' >+</div>
         </Link>
-    
+        <Transition
+            show={showPopup}
+            enter="transition ease-in-out"
+            enterFrom="opacity-0"
+            leave="transition ease-in-out"
+            leaveTo="opacity-0"
+        >
+          {isSuccessPopup ? 
+            <p className="text-sm z-10 bg-green-200 text-green-800 p-4 w-1/3 m-4 fixed top-40  rounded-lg dark:text-gray-400">Done.</p>
+           :<p className="text-sm z-10 bg-red-200 text-red-800 p-4 w-1/3 m-4 fixed top-40  rounded-lg dark:text-gray-400">Something wrong.</p>
+
+          }       
+        </Transition>
         <div className='w-full pb-6 flex justify-center'>
             <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-x-auto sm:rounded-lg">
             <table className="w-full  ">

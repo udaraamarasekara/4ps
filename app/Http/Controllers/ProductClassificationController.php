@@ -103,9 +103,9 @@ class ProductClassificationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ProductClassifiaction $productClassifiaction)
+    public function destroy(ProductClassification $productClassification)
     {
-        //
+      $productClassification->delete();
     }
 
 }
