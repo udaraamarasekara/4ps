@@ -10,7 +10,6 @@ use App\Http\Requests\StoreProductClassifiactionRequest;
 use App\Http\Requests\UpdateProductClassifiactionRequest;
 use App\Http\Resources\ProductClassificationResource;
 use Inertia\Inertia;
-use Inertia\Response;
 class ProductClassificationController extends Controller
 {
     /**
@@ -36,7 +35,7 @@ class ProductClassificationController extends Controller
      */
     public function store(StoreProductClassifiactionRequest $request)
     {
-        $parent_id;
+        $parent_id=null;
         $rawInput =$request->validated();  
         if(isset($rawInput['parent_name']))
         {
@@ -48,10 +47,15 @@ class ProductClassificationController extends Controller
         $unit_id=Unit::where('name',$rawInput['unit_name'])->first()->id;
         unset($rawInput['brand_name']);
         unset($rawInput['unit_name']);
+        $cost = $rawInput['cost'];
+        $price = $rawInput['price'];
+        unset($rawInput['price']);
+        unset($rawInput['cost']);
         $rawInput['brand_id']=$brand_id;
         $rawInput['unit_id']=$unit_id;
       
-        ProductClassification::create($rawInput);
+         $productClassification= ProductClassification::create($rawInput);
+         $productClassification->productValueVariations()->create(['cost'=>$cost,'price'=>$price]);
         return back();
     }
 
@@ -82,7 +86,7 @@ class ProductClassificationController extends Controller
      */
     public function update(UpdateProductClassifiactionRequest $request,ProductClassification $productClassification)
     {
-        $parent_id;
+        $parent_id=null;
         $rawInput =$request->validated();  
         if(isset($rawInput['parent_name']))
         {
@@ -96,7 +100,13 @@ class ProductClassificationController extends Controller
         unset($rawInput['unit_name']);
         $rawInput['brand_id']=$brand_id;
         $rawInput['unit_id']=$unit_id;
+        $cost = $rawInput['cost'];
+        $price = $rawInput['price'];
+        unset($rawInput['price']);
+        unset($rawInput['cost']);
         $productClassification->update($rawInput);
+        $productClassification->productValueVariations()->firstOrCreate(['cost'=>$cost,'price'=>$price],['cost'=>$cost,'price'=>$price]);
+
         return redirect()->back();
     }
 

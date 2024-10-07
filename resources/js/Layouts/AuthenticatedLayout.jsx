@@ -102,7 +102,7 @@ export default function Authenticated({ user, header, children }) {
 
                                         <Dropdown.Content>
                                             <Dropdown.Link href={route('productClassification.index')}>Product classification</Dropdown.Link>
-                                            <Dropdown.Link href={route('product.index')}>Product Instance</Dropdown.Link>
+                                            <Dropdown.Link href={route('productInstanceMainPage')}>Product Instance</Dropdown.Link>
                                         </Dropdown.Content>
                                     </Dropdown>
                                     </div>

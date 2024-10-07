@@ -19,8 +19,6 @@ return new class extends Migration
             $table->longText('description');
             $table->foreignId('brand_id')->constrained()->nullable();
             $table->foreignId('unit_id')->constrained()->nullable();
-            $table->decimal('cost',places:2);
-            $table->decimal('price',places:2);
             $table->softDeletes();  // Adds a `deleted_at` column
         });
     }

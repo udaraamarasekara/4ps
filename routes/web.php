@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductInstanceController;
 use App\Http\Controllers\PeopleController;
 use App\Http\Controllers\ProjectClassificationController;
 use App\Http\Controllers\PropertyClassificationController;
@@ -39,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::get('brandFetch{input}',[BrandController::class,'fetch'])->name('brand.fetch');
     Route::get('brandCheck{input}',[BrandController::class,'check'])->name('brand.check');
     Route::get('unitCheck{input}',[UnitController::class,'check'])->name('unit.check');
+    Route::get('productInstance',[ProductInstanceController::class,'productInstanceMainPage'])->name('productInstanceMainPage');
 
     Route::get('unitFetch{input}',[UnitController::class,'fetch'])->name('unit.fetch');
     Route::get('projectClassificationFetch{input}',[ProjectClassificationController::class,'fetch'])->name('projectClassification.fetch');

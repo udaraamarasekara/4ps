@@ -21,4 +21,10 @@ class ProductClassification extends Model
       return $this->belongsTo(Unit::class);
     }
 
+    public function productValueVariations()
+    {
+      return $this->hasMany(ProductValueVariation::class);
+    }
+
+
 }
