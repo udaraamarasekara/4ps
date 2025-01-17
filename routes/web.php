@@ -36,11 +36,12 @@ Route::middleware('auth')->group(function () {
     Route::resource('unit', UnitController::class);
     Route::resource('product',ProductController::class);
     Route::resource('property',PropertyController::class);
+    Route::get('sale',[ProductController::class,'sale'])->name('sale');
+    Route::get('receive',[ProductController::class,'receive'])->name('receive');
     Route::resource('people',PeopleController::class);
     Route::get('brandFetch{input}',[BrandController::class,'fetch'])->name('brand.fetch');
     Route::get('brandCheck{input}',[BrandController::class,'check'])->name('brand.check');
     Route::get('unitCheck{input}',[UnitController::class,'check'])->name('unit.check');
-    Route::get('productInstance',[ProductInstanceController::class,'productInstanceMainPage'])->name('productInstanceMainPage');
 
     Route::get('unitFetch{input}',[UnitController::class,'fetch'])->name('unit.fetch');
     Route::get('projectClassificationFetch{input}',[ProjectClassificationController::class,'fetch'])->name('projectClassification.fetch');

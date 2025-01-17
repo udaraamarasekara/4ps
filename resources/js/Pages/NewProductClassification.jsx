@@ -34,24 +34,16 @@ const goBack = () => {
 const addNewProductClassification = (e) =>{
   
     e.preventDefault()
-  
-    if(!data.brand_name)
-    {
-        setError('brand_name','Brand required') 
-    } 
-    else  if(!data.unit_name)
-    {
-        setError('unit_name','Unit required')
-    }
-    else if(!data.price)
+
+    if(!data.price)
     {
         setError('price','Price required') 
     }   
-    else if(!data.cost){
+    else if(data.price && !data.cost){
         setError('cost','Cost required') 
 
     }
-    else{
+    else if(!((errors.unit_name && data.unit_name )||(data.brand_name && errors.brand_name))){
         post(route('productClassification.store'), {
             preserveScroll: true,
             onSuccess: () => {reset()

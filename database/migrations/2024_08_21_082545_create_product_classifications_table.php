@@ -17,8 +17,10 @@ return new class extends Migration
             $table->unsignedInteger('parent_id')->default(0)->nullable();
             $table->string('name')->unique();
             $table->longText('description');
-            $table->foreignId('brand_id')->constrained()->nullable();
-            $table->foreignId('unit_id')->constrained()->nullable();
+            $table->unsignedInteger('brand_id')->nullable();
+            $table->unsignedInteger('unit_id')->nullable();
+            $table->decimal('price', 8, 2); // 8 total digits, 2 decimal places
+            $table->decimal('cost', 8, 2); // 8 total digits, 2 decimal places
             $table->softDeletes();  // Adds a `deleted_at` column
         });
     }

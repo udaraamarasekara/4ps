@@ -43,19 +43,27 @@ class ProductClassificationController extends Controller
             $rawInput['parent_id']=$parent_id; 
         }
         unset($rawInput['parent_name']);
-        $brand_id=Brand::where('name',$rawInput['brand_name'])->first()->id;
-        $unit_id=Unit::where('name',$rawInput['unit_name'])->first()->id;
+        if(isset($brand_id))
+        {
+             $brand_id=Brand::where('name',$rawInput['brand_name'])->first()->id;
+             $rawInput['brand_id']=$brand_id;
+        }
+        else
+        {
+          unset($rawInput['brand_id']);
+        }
+        if(isset($unit_id))
+        {
+            $unit_id=Unit::where('name',$rawInput['unit_name'])->first()->id;
+            $rawInput['unit_id']=$unit_id;
+        } 
+        else
+        {
+          unset($rawInput['unit_id']);
+        }   
         unset($rawInput['brand_name']);
         unset($rawInput['unit_name']);
-        $cost = $rawInput['cost'];
-        $price = $rawInput['price'];
-        unset($rawInput['price']);
-        unset($rawInput['cost']);
-        $rawInput['brand_id']=$brand_id;
-        $rawInput['unit_id']=$unit_id;
-      
-         $productClassification= ProductClassification::create($rawInput);
-         $productClassification->productValueVariations()->create(['cost'=>$cost,'price'=>$price]);
+        ProductClassification::create($rawInput);
         return back();
     }
 
@@ -87,6 +95,8 @@ class ProductClassificationController extends Controller
     public function update(UpdateProductClassifiactionRequest $request,ProductClassification $productClassification)
     {
         $parent_id=null;
+        $brand_id=null;
+        $unit_id=null;
         $rawInput =$request->validated();  
         if(isset($rawInput['parent_name']))
         {
@@ -94,19 +104,19 @@ class ProductClassificationController extends Controller
             $rawInput['parent_id']=$parent_id; 
         }
         unset($rawInput['parent_name']);
-        $brand_id=Brand::where('name',$rawInput['brand_name'])->first()->id;
-        $unit_id=Unit::where('name',$rawInput['unit_name'])->first()->id;
+        if(isset($rawInput['brand_name']))
+        {
+          $brand_id=Brand::where('name',$rawInput['brand_name'])->first()->id;
+        }
+        if(isset($rawInput['unit_name']))
+        {
+         $unit_id=Unit::where('name',$rawInput['unit_name'])->first()->id;
+        }
         unset($rawInput['brand_name']);
         unset($rawInput['unit_name']);
-        $rawInput['brand_id']=$brand_id;
-        $rawInput['unit_id']=$unit_id;
-        $cost = $rawInput['cost'];
-        $price = $rawInput['price'];
-        unset($rawInput['price']);
-        unset($rawInput['cost']);
+        isset($brand_id) && $rawInput['brand_id']=$brand_id;
+        isset($unit_id) && $rawInput['unit_id']=$unit_id;
         $productClassification->update($rawInput);
-        $productClassification->productValueVariations()->firstOrCreate(['cost'=>$cost,'price'=>$price],['cost'=>$cost,'price'=>$price]);
-
         return redirect()->back();
     }
 

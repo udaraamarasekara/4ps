@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->softDeletes();  // Adds a `deleted_at` column
+            $table->enum('party',['third_party','first_party']);
 
         });
     }
