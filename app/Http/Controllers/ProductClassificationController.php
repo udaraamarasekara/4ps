@@ -71,15 +71,31 @@ class ProductClassificationController extends Controller
     {
        return ProductClassification::where('name','like','%'.$input.'%')->orWhere('description','like','%'.$input.'%')->get()->pluck('name');
     }
-
+    public function fetchWithUnit(string $input)
+    {
+        return ProductClassification::select(
+            'product_classifications.name',
+            'brands.name as brand',
+            'units.name as unit'
+        )
+        ->leftJoin('brands', 'product_classifications.brand_id', '=', 'brands.id')
+        ->leftJoin('units', 'product_classifications.unit_id', '=', 'units.id')
+        ->where('product_classifications.name', 'like', '%'.$input.'%')
+        ->orWhere('product_classifications.description', 'like', '%'.$input.'%')
+        ->get();   
+     }
     /**
      * Display the specified resource.
      */
+  
     public function show(ProductClassification $productClassifications)
     {
-        //
+        
     }
-
+    public function getUnit(string $input)
+    {
+     return  ProductClassification::where('name','like','%'.$input.'%')->orWhere('description','like','%'.$input.'%')->unit?->name;
+    }
     /**
      * Show the form for editing the specified resource.
      */

@@ -13,6 +13,8 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
     const unit = useRef();
     const cost = useRef();
     const price = useRef();
+    const prevUnitSugst = useRef();
+    const prevBrandSugst = useRef();
     const isNotInitialMount = useRef(false);
 
     const [showBrand,setShowBrand] = useState(false)
@@ -25,7 +27,7 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
         const response = await axios.get(route('unit.fetch',input ? input: '-0'))
         setUnitSuggessions(response.data[1])
         setAddNewUnit(response.data[0])
-
+         
        
         console.log(unitSuggessioins)
     }  
@@ -41,12 +43,12 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
     useEffect(()=>{
         if(isNotInitialMount.current) 
         {   
-            if(!brandSuggessioins?.length && brand.current.value!=='' ){
+            if(!brandSuggessioins?.length && brand.current.value!=='' && prevBrandSugst!==data.brand){
                 addNewBrand ? setError('brand_name','No such a Brand. Click to add new brand'): setError('brand_name','No such a Brand') 
             }else{
             clearErrors('brand_name') 
             }
-            if(!unitSuggessioins?.length && unit.current.value!==''){
+            if(!unitSuggessioins?.length && unit.current.value!=='' && prevUnitSugst!==data.unit){
                 addNewUnit ? setError('unit_name','No such a Unit. Click to add new unit'): setError('unit_name','No such a Unit') 
             }else{
                 clearErrors('unit_name') 
@@ -57,6 +59,7 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
           isNotInitialMount.current =true;  
         }     
      },[addNewBrand,addNewUnit,unit.current?.value,brand.current?.value])
+
  return (
     <div className='w-full pb-6 flex justify-center'> 
     <NewBrandModal show={showBrand} setShow={setShowBrand}/>
@@ -92,7 +95,7 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
                             value={data.unit_name}
                             suggestions={unitSuggessioins}
                             onChange={(e) => updateUnitSuggessions(e.target.value)}
-                            setClickedElement={(el)=>setData('unit_name',el)}
+                            setClickedElement={(el)=>{setData('unit_name',el),prevUnitSugst.current=el}}
 
                             className="mt-1 block w-full"
                         />

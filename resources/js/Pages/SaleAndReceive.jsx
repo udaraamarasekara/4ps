@@ -7,6 +7,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
 import { Head,useForm,router,Link } from '@inertiajs/react';
+import { useEffect } from 'react';
 export default function SaleAndReceive({auth,operation}){
 
    const { data, setData, errors, setError,clearErrors,post, reset, processing, recentlySuccessful } = useForm({
@@ -16,18 +17,26 @@ export default function SaleAndReceive({auth,operation}){
      
     });
 
+    useEffect(()=>{
+
+    },[]) 
+
     const productClassification = useRef();
     const thirdParty = useRef();
     const quantity = useRef();
     const [suggessioinsProdClas,setSuggessionsProdClas] = useState();
     const [suggesioinsThirdParty,setSuggessionsThirdParty] = useState();
     const updateProductClassificationSuggessions =async (input) =>{
-        const response = await axios.get(route('productClassification.fetch',input ? input: '-0'))
-        setSuggessionsProdClas(response.data)
-        if(!suggessioinsProdClas?.length){
+        const response = await axios.get(route('productClassification.fetchWithUnit',input ? input: '-0'))
+        var tmpSugests=[];
+        response.data.forEach((item)=>{
+         tmpSugests.push(item.name+' '+item.brand+' '+item.unit)    
+        })
+        setSuggessionsProdClas(tmpSugests)
+        if(!response.data?.length){
              setError('product_classification','No such a project classification')
         }else{
-           clearError('product_classification') 
+             clearErrors('product_classification') 
         }
     }  
     const updateThirdPartySuggessions =async (input) =>{
@@ -39,6 +48,10 @@ export default function SaleAndReceive({auth,operation}){
            clearError('third_party') 
         }
     }  
+    
+    const setClickedItem = async (productName)=>{
+        
+    }
 
 return (<AuthenticatedLayout
             user={auth.user}

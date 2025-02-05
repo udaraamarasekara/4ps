@@ -19,6 +19,7 @@ export default function ProductClassification({ auth,productClassifications }) {
             setShowPopup(true)
             setIsSuccessPopup(true)
             setTimeout(()=>{setShowPopup(false)},1000)  
+            productClassifications.data=productClassifications.data.filter(element => element.id !== id);
         })
         .catch((e) => {
             setShowPopup(true)
@@ -89,7 +90,7 @@ export default function ProductClassification({ auth,productClassifications }) {
         <Modal show={show} onClose={()=>setShow(false)} >
             <div className='w-full h-auto p-5 flex flex-col items-center'>
               <div className='font-bold uppercase text-2xl'>{item.name}</div>
-              <div className='text-wrap text-justify'>{item.description}</div>
+              <div className=' w-4/5 text-center w-full max-w-[600px] mx-auto break-words whitespace-normal'>{item.description}</div>
             </div>
         </Modal>
         </AuthenticatedLayout>

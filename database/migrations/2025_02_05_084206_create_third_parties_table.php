@@ -11,13 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('people_classifications', function (Blueprint $table) {
+        Schema::create('third_parties', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
             $table->timestamps();
-            $table->softDeletes();  // Adds a `deleted_at` column
-            $table->enum('party',['third_party','first_party']);
-
         });
     }
 
@@ -26,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('people_classifications');
+        Schema::dropIfExists('third_parties');
     }
 };

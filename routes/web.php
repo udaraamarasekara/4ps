@@ -42,9 +42,9 @@ Route::middleware('auth')->group(function () {
     Route::get('brandFetch{input}',[BrandController::class,'fetch'])->name('brand.fetch');
     Route::get('brandCheck{input}',[BrandController::class,'check'])->name('brand.check');
     Route::get('unitCheck{input}',[UnitController::class,'check'])->name('unit.check');
-
     Route::get('unitFetch{input}',[UnitController::class,'fetch'])->name('unit.fetch');
     Route::get('projectClassificationFetch{input}',[ProjectClassificationController::class,'fetch'])->name('projectClassification.fetch');
+    Route::get('productClassificationFetchWithUnit{input}',[ProductClassificationController::class,'fetchWithUnit'])->name('productClassification.fetchWithUnit');
     Route::get('productClassificationFetch{input}',[ProductClassificationController::class,'fetch'])->name('productClassification.fetch');
     Route::resource('projectClassification', ProjectClassificationController::class);
     Route::resource('productClassification', ProductClassificationController::class);

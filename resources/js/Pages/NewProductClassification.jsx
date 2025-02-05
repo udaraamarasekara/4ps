@@ -47,14 +47,14 @@ const addNewProductClassification = (e) =>{
         post(route('productClassification.store'), {
             preserveScroll: true,
             onSuccess: () => {reset()
-                setShowPopup(true)
                 setIsSuccessPopup(true)
-                setTimeout(()=>{setShowSuccessPopup(false)},1000)  
+                setShowPopup(true)
+                setTimeout(()=>{setShowPopup(false)},1000)  
             },
             onError: (errors) => {
                 setShowPopup(true)
                 setIsSuccessPopup(false)
-                setTimeout(()=>{setShowSuccessPopup(false)},1000)   
+                setTimeout(()=>{setIsSuccessPopup(false)},1000)   
                console.log(errors)
             },
         });
@@ -89,7 +89,7 @@ const addNewProductClassification = (e) =>{
         <NewProdClasFormPartOne data={data} setData={(type,val)=>setData(type,val)} clearErrors ={(field)=>clearErrors(field)} setError={(field,message)=>setError(field,message)} errors={errors} processing={processing}
         movetoPartTwo={(e)=>movetoPartTwo(e)}/>
         :<NewProdClasFormPartTwo data={data} setData={(type,val)=>setData(type,val)} clearErrors ={(field)=>clearErrors(field)} setError={(field,message)=>setError(field,message)} errors={errors} processing={processing}
-        addNewProductClassification={(e)=>addNewProductClassification(e)}/>
+        addNewProductClassification={(e)=>addNewProductClassification(e)} movetoPartOne={(e)=>movetoPartOne}/>
         }
         </AuthenticatedLayout>
     );

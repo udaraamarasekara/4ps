@@ -19,8 +19,8 @@ class ProductClassificationResource extends JsonResource
             'name'=>$this->name,
             'parent'=>$this->parent,
             'description'=>$this->description,
-            'brand'=>$this->brand->name,
-            'unit'=>$this->unit->name,
+            'brand'=>$this?->brand?->name ,
+            'unit'=>$this?->unit?->name ,
             'cost'=>$this->cost,
             'price'=>$this->price
         ];

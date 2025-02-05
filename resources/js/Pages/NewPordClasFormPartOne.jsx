@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useRef,useState } from 'react';
+import { useRef,useState,useEffect } from 'react';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -7,10 +7,11 @@ import TextInput from '@/Components/TextInput';
 import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
 import TextArea from '@/Components/TextArea';
 export default function NewProdClasFormPartOne({setData=()=>{},errors,processing,movetoPartTwo=()=>{},clearErrors=()=>{},setError=()=>{},data}){
-
+    const prevPrntSugst =  useRef();
     const productName = useRef();
     const parentProduct = useRef();
     const description = useRef();
+    const isNotInitialMount = useRef(false);
     const [suggessioins,setSuggessions] = useState();
     const updateParentProductSuggessions =async (input) =>{
         const response = await axios.get(route('productClassification.fetch',input ? input: '-0'))
@@ -22,6 +23,22 @@ export default function NewProdClasFormPartOne({setData=()=>{},errors,processing
         }
         console.log(suggessioins)
     }  
+    
+    useEffect(()=>{
+        if(isNotInitialMount.current) 
+        {  
+            if(!suggessioins?.length && parentProduct.current.value!=='' && prevPrntSugst.current!==data.parent_name ){
+                setError('parent_name','No such a product classification')
+           }else{
+              clearErrors('parent_name') 
+           }
+        }
+        else
+        {
+          isNotInitialMount.current =true;  
+        }     
+     },[parentProduct.current?.value])
+    
  return (
     <div className='w-full pb-6 flex justify-center'>
     <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
@@ -52,6 +69,7 @@ export default function NewProdClasFormPartOne({setData=()=>{},errors,processing
                             value={data.parent_name}
                             suggestions={suggessioins}
                             onChange={(e) => updateParentProductSuggessions(e.target.value)}
+                            setClickedElement={(el)=>{setData('parent_name',el),prevPrntSugst.current=el}}
                             className="mt-1 block w-full"
                         />
 
