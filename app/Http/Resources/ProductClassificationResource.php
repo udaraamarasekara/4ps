@@ -21,8 +21,8 @@ class ProductClassificationResource extends JsonResource
             'description'=>$this->description,
             'brand'=>$this?->brand?->name ,
             'unit'=>$this?->unit?->name ,
-            'cost'=>$this->cost,
-            'price'=>$this->price
+            'cost'=>$this?->latestProductValueVariation?->cost,
+            'price'=>$this?->latestProductValueVariation?->price
         ];
     }
 }

@@ -23,8 +23,12 @@ class ProductClassification extends Model
 
     public function productValueVariations()
     {
-      return $this->hasMany(ProductValueVariation::class);
+      return $this->hasMany(ProductValueVariation::class,'product_classifications_id');
     }
-
+    public function latestProductValueVariation()
+    {
+        return $this->hasOne(ProductValueVariation::class, 'product_classifications_id')
+                    ->latest('updated_at'); // Orders by `updated_at`
+    }
 
 }

@@ -42,14 +42,14 @@ class PeopleController extends Controller
         //
     }
 
-    public function fetch(string $input)
+    public function thirdPartyFetch(string $input)
     {
-       return PeopleClassification::join('peoples', 'peoples.id', '=', 'people_classifications.people_classifications_id')
-       ->join('users', 'users.id', '=', 'people_classifications.users_id')
-       ->where('people_classifications.party','third_party')
-       ->where('users.name','like','%'.$input.'%')
-       ->select('users.name','people_classifications.name')
-       ->get();
+        return PeopleClassification::join('people', 'people.people_classifications_id', '=', 'people_classifications.id')
+        ->join('users', 'users.id', '=', 'people.users_id')
+        ->where('people_classifications.party', 'third_party')
+        ->where('users.name', 'like', "%{$input}%")
+        ->select('users.name as user_name', 'people_classifications.name as classification_name','people.id as id')
+        ->get(); 
     }
 
     /**

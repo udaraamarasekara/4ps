@@ -68,8 +68,8 @@ const addNewProductClassification = (e) =>{
             header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Product Classification</h2>}
         >
         <Head title="Product Classification" />
-        <div onClick={()=>goBack()} className='w-full flex justify-end'>
-          <ArrowLeftIcon className=' m-6 bold p-3 w-12 h-auto bg-white border border-gray-200 rounded-full text-3xl font-extrabold flex items-center justify-center hover:cursor-pointer' />
+        <div  className='w-full flex justify-end'>
+          <ArrowLeftIcon onClick={()=>goBack()} className=' m-6 bold p-3 w-12 h-auto bg-white border border-gray-200 rounded-full text-3xl font-extrabold flex items-center justify-center hover:cursor-pointer' />
         </div>
         <Transition
             show={showPopup}

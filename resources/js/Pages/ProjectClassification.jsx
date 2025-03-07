@@ -13,9 +13,12 @@ export default function ProjectClassification({ auth,projectClassifications }) {
         header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Project Classification</h2>}
     >
         <Head title="Project Classification" />
-        <Link href={route('projectClassification.create')} className='w-full flex justify-end'>
-              <div className=' m-6 p-6 w-10 h-10 bg-white border border-gray-200 rounded-full text-3xl font-extrabold flex items-center justify-center hover:cursor-pointer' >+</div>
-        </Link>
+        <div className='w-full flex justify-end' >
+            <Link href={route('projectClassification.create')}>
+                <div className=' m-6 p-6 w-10 h-10 bg-white border border-gray-200 rounded-full text-3xl font-extrabold flex items-center justify-center hover:cursor-pointer' >+</div>
+            </Link>
+        </div>
+    
     
         <div className='w-full pb-6 flex justify-center'>
             <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-x-auto sm:rounded-lg">

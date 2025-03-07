@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductClassifiactionRequest;
 use App\Http\Requests\UpdateProductClassifiactionRequest;
 use App\Http\Resources\ProductClassificationResource;
+use App\Models\ProductValueVariation;
 use Inertia\Inertia;
 class ProductClassificationController extends Controller
 {
@@ -63,7 +64,12 @@ class ProductClassificationController extends Controller
         }   
         unset($rawInput['brand_name']);
         unset($rawInput['unit_name']);
-        ProductClassification::create($rawInput);
+        $price = $rawInput['price'];
+        $cost =  $rawInput['cost'];
+        unset($rawInput['price']);
+        unset($rawInput['cost']);
+        $productClassification = ProductClassification::create($rawInput);
+        ProductValueVariation::create(['product_classifications_id'=>$productClassification->id,'price'=>$price,'cost'=>$cost]);
         return back();
     }
 
@@ -75,6 +81,8 @@ class ProductClassificationController extends Controller
     {
         return ProductClassification::select(
             'product_classifications.name',
+            'product_classifications.id',
+            'product_classifications.price',
             'brands.name as brand',
             'units.name as unit'
         )
@@ -128,6 +136,18 @@ class ProductClassificationController extends Controller
         {
          $unit_id=Unit::where('name',$rawInput['unit_name'])->first()->id;
         }
+        if(isset($rawInput['cost']))
+        {
+            $cost =  $rawInput['cost'];
+            ProductValueVariation::where('product_classifications_id',$productClassification->id)->latest()->first()->update(['cost'=>$cost]);
+        }
+        if(isset($rawInput['price']))
+        {
+            $price =  $rawInput['price'];
+            ProductValueVariation::where('product_classifications_id',$productClassification->id)->latest()->first()->update(['price'=>$price]);
+        }
+        unset($rawInput['price']);
+        unset($rawInput['cost']);
         unset($rawInput['brand_name']);
         unset($rawInput['unit_name']);
         isset($brand_id) && $rawInput['brand_id']=$brand_id;
