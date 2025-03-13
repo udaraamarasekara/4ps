@@ -88,7 +88,7 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
                         </div>
 
                     <div className='w-full md:w-1/2' >
-                        <InputLabel htmlFor="unit_name" value="Unit (optional)" />
+                        <InputLabel htmlFor="unit_name" value="Unit" />
                         <AutoCompleteTextInput
                             id="unit_name"
                             ref={unit}

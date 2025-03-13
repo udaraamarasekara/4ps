@@ -12,7 +12,7 @@ export default function NewProductClassification({ auth }) {
 
     const { data, setData, errors, setError,clearErrors,post, reset, processing, recentlySuccessful } = useForm({
         name: '',
-        parent_name: '',
+        category_name: '',
         description: '',
         brand_name:'',
         unit_name:'',
@@ -55,6 +55,8 @@ const addNewProductClassification = (e) =>{
                 setShowPopup(true)
                 setIsSuccessPopup(false)
                 setTimeout(()=>{setIsSuccessPopup(false)},1000)   
+                reset()
+                movetoPartOne()
                console.log(errors)
             },
         });

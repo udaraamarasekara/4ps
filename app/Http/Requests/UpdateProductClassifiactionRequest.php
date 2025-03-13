@@ -22,10 +22,10 @@ class UpdateProductClassifiactionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'=>['required','string'],
-            'brand_name'=>['required','string','exists:brands,name'],
+            'name'=>['required','string','unique:product_classifications,name'],
+            'brand_name'=>['nullable','string','exists:brands,name'],
             'unit_name'=>['required','string','exists:units,name'],
-            'parent_name'=>['nullable','string','exists:product_classifications,name'],
+            'category_name'=>['required','string','exists:categories,name'],
             'description'=>['required','string','min:100'],
             'cost'=>['required','regex:/^\d+(\.\d{1,2})?$/'],
             'price'=>['required','regex:/^\d+(\.\d{1,2})?$/']

@@ -62,7 +62,7 @@ export default function ProductClassification({ auth,productClassifications }) {
                      <th>Unit</th>
                      <th>Cost</th>
                      <th>Price</th>
-                     <th>Parent</th>
+                     <th>Category</th>
                      <th>Actions</th>
 
                      </tr>
@@ -76,7 +76,7 @@ export default function ProductClassification({ auth,productClassifications }) {
                          <td className='text-center'>{object.unit}</td>
                          <td className='text-center' >{object.cost}</td>
                          <td className='text-center'>{object.price}</td>
-                         <td className='text-center'>{object.parent|| 'none'}</td>
+                         <td className='text-center'>{object.category}</td>
                          <td className='flex justify-center gap-5' >
                              <div onClick={()=>{setItem(object),setShow(true)}} className='bg-green-400 text-black hover:cursor-pointer rounded-full min-w-5 p-2 min-h-5' ><EyeIcon className='min-w-5 h-auto' /></div>
                              <div onClick={()=>router.get(route('productClassification.edit',object.id))} className='bg-yellow-500 text-black rounded-full hover:cursor-pointer min-w-5 p-2 min-h-5' ><PencilSquareIcon className='min-w-5 h-auto' /></div>

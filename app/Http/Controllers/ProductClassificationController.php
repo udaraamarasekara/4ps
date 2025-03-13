@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductClassifiactionRequest;
 use App\Http\Requests\UpdateProductClassifiactionRequest;
 use App\Http\Resources\ProductClassificationResource;
+use App\Models\Category;
 use App\Models\ProductValueVariation;
 use Inertia\Inertia;
 class ProductClassificationController extends Controller
@@ -36,14 +37,14 @@ class ProductClassificationController extends Controller
      */
     public function store(StoreProductClassifiactionRequest $request)
     {
-        $parent_id=null;
+        $category_id=null;
         $rawInput =$request->validated();  
-        if(isset($rawInput['parent_name']))
+        if(isset($rawInput['category_name']))
         {
-            $parent_id = ProductClassification::where('name',$rawInput['parent_name'])->first()->id;
-            $rawInput['parent_id']=$parent_id; 
+            $category_id = Category::where('name',$rawInput['category_name'])->first()->id;
+            $rawInput['category_id']=$category_id; 
         }
-        unset($rawInput['parent_name']);
+        unset($rawInput['category_name']);
         if(isset($brand_id))
         {
              $brand_id=Brand::where('name',$rawInput['brand_name'])->first()->id;
@@ -82,7 +83,6 @@ class ProductClassificationController extends Controller
         return ProductClassification::select(
             'product_classifications.name',
             'product_classifications.id',
-            'product_classifications.price',
             'brands.name as brand',
             'units.name as unit'
         )
@@ -90,7 +90,7 @@ class ProductClassificationController extends Controller
         ->leftJoin('units', 'product_classifications.unit_id', '=', 'units.id')
         ->where('product_classifications.name', 'like', '%'.$input.'%')
         ->orWhere('product_classifications.description', 'like', '%'.$input.'%')
-        ->get();   
+        ->with('latestProductValueVariation')->get();   
      }
     /**
      * Display the specified resource.
@@ -118,16 +118,16 @@ class ProductClassificationController extends Controller
      */
     public function update(UpdateProductClassifiactionRequest $request,ProductClassification $productClassification)
     {
-        $parent_id=null;
+        $category_id=null;
         $brand_id=null;
         $unit_id=null;
         $rawInput =$request->validated();  
-        if(isset($rawInput['parent_name']))
+        if(isset($rawInput['category_name']))
         {
-            $parent_id = ProductClassification::where('name',$rawInput['parent_name'])->first()->id;
-            $rawInput['parent_id']=$parent_id; 
+            $category_id = Category::where('name',$rawInput['category_name'])->first()->id;
+            $rawInput['category_id']=$category_id; 
         }
-        unset($rawInput['parent_name']);
+        unset($rawInput['category_name']);
         if(isset($rawInput['brand_name']))
         {
           $brand_id=Brand::where('name',$rawInput['brand_name'])->first()->id;

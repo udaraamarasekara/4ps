@@ -7,37 +7,35 @@ import TextInput from '@/Components/TextInput';
 import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
 import TextArea from '@/Components/TextArea';
 export default function NewProdClasFormPartOne({setData=()=>{},errors,processing,movetoPartTwo=()=>{},clearErrors=()=>{},setError=()=>{},data}){
-    const prevPrntSugst =  useRef();
+    const prevCatSugst =  useRef();
     const productName = useRef();
-    const parentProduct = useRef();
+    const category = useRef();
     const description = useRef();
     const isNotInitialMount = useRef(false);
-    const [suggessioins,setSuggessions] = useState();
-    const updateParentProductSuggessions =async (input) =>{
-        const response = await axios.get(route('productClassification.fetch',input ? input: '-0'))
-        setSuggessions(response.data)
-        if(!suggessioins?.length && parentProduct.current.value!=='' ){
-             setError('parent_name','No such a product classification')
-        }else{
-           clearErrors('parent_name') 
-        }
-        console.log(suggessioins)
+    const [addNewCategory,setAddNewCategory] = useState(false);
+    const [categorySugges,setCategorySugges] = useState();
+    const updateCategorySuggessions =async (input) =>{
+        const response = await axios.get(route('category.fetch',input ? input: '-0'))
+        setCategorySugges(response.data[1])
+        setAddNewCategory(response.data[0])
+       
+        console.log(categorySugges)
     }  
     
     useEffect(()=>{
         if(isNotInitialMount.current) 
         {  
-            if(!suggessioins?.length && parentProduct.current.value!=='' && prevPrntSugst.current!==data.parent_name ){
-                setError('parent_name','No such a product classification')
+            if(!categorySugges?.length && category.current.value!=='' && prevCatSugst!==data.category_name ){
+               addNewCategory ? setError('category_name','No such a Category. Click to add new category'): setError('category_name','No such a Category')
            }else{
-              clearErrors('parent_name') 
+              clearErrors('category_name') 
            }
         }
         else
         {
           isNotInitialMount.current =true;  
         }     
-     },[parentProduct.current?.value])
+     },[category.current?.value])
     
  return (
     <div className='w-full pb-6 flex justify-center'>
@@ -61,19 +59,23 @@ export default function NewProdClasFormPartOne({setData=()=>{},errors,processing
                     </div>
 
                     <div className='w-full md:w-1/2' >
-                        <InputLabel htmlFor="parent_product" value="Parent product (optional)" />
+                        <InputLabel htmlFor="category" value="Category" />
 
                         <AutoCompleteTextInput
-                            id="parent_product"
-                            ref={parentProduct}
-                            value={data.parent_name}
-                            suggestions={suggessioins}
-                            onChange={(e) => updateParentProductSuggessions(e.target.value)}
-                            setClickedElement={(el)=>{setData('parent_name',el),prevPrntSugst.current=el}}
+                            id="category"
+                            ref={category}
+                            value={data.category_name}
+                            suggestions={categorySugges}
+                            onChange={(e) => updateCategorySuggessions(e.target.value)}
+                            setClickedElement={(el)=>{setData('category_name',el),prevCatSugst.current=el}}
                             className="mt-1 block w-full"
                         />
-
-                        <InputError message={errors.parent_name} className="mt-2" />
+                        {addNewCategory ?
+                          <div onClick={()=>setShowCategory(true)}>
+                            <InputError message={errors.category_name} className="mt-2 hover:underline hover:cursor-pointer" /> 
+                          </div>  
+                         :<InputError message={errors.category_name} className="mt-2" />
+                        }
                     </div>
                 </div>
                 <div>

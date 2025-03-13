@@ -47,6 +47,7 @@ export default function SaleAndReceive({auth,operation}){
         var tmpSugests=[];
         prodClasSugestIds.current=[];
         response.data.forEach((item)=>{
+            console.log(item)
          tmpSugests.push(item.name+' '+item.brand+' '+item.unit)  
          prodClasSugestIds.current.push({id:item.id,value:item.name+' '+item.brand+' '+item.unit})  
          console.log(prodClasSugestIds)

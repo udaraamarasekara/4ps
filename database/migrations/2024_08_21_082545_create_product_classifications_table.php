@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('product_classifications', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->unsignedInteger('parent_id')->default(0)->nullable();
+            $table->unsignedInteger('category_id')->default(0)->nullable();
             $table->string('name')->unique();
             $table->longText('description');
             $table->unsignedInteger('brand_id')->nullable();
