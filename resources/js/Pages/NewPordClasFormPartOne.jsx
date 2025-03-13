@@ -6,12 +6,14 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
 import TextArea from '@/Components/TextArea';
+import NewCategoryModal from './NewCategoryModal';
 export default function NewProdClasFormPartOne({setData=()=>{},errors,processing,movetoPartTwo=()=>{},clearErrors=()=>{},setError=()=>{},data}){
     const prevCatSugst =  useRef();
     const productName = useRef();
     const category = useRef();
     const description = useRef();
     const isNotInitialMount = useRef(false);
+    const [showCategory,setShowCategory] = useState(false)
     const [addNewCategory,setAddNewCategory] = useState(false);
     const [categorySugges,setCategorySugges] = useState();
     const updateCategorySuggessions =async (input) =>{
@@ -39,6 +41,7 @@ export default function NewProdClasFormPartOne({setData=()=>{},errors,processing
     
  return (
     <div className='w-full pb-6 flex justify-center'>
+    <NewCategoryModal show={showCategory} setShow={setShowCategory}/>
     <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
         <form onSubmit={(e)=>movetoPartTwo(e)} className="mt-6 space-y-6">
                 <div className='flex flex-col md:flex-row md:space-x-4'>
