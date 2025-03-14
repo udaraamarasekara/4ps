@@ -13,7 +13,7 @@ export default function NewProductClassification({ auth }) {
     const { data, setData, errors, setError,clearErrors,post, reset, processing, recentlySuccessful } = useForm({
         name: '',
         category_name: '',
-        description: '',
+        properties: [],
         brand_name:'',
         unit_name:'',
         cost:'',

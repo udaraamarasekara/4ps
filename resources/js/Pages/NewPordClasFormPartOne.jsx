@@ -5,17 +5,17 @@ import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
-import TextArea from '@/Components/TextArea';
 import NewCategoryModal from './NewCategoryModal';
+import DynamicPropertyPane from '@/Components/DynamicPropertyPane';
 export default function NewProdClasFormPartOne({setData=()=>{},errors,processing,movetoPartTwo=()=>{},clearErrors=()=>{},setError=()=>{},data}){
     const prevCatSugst =  useRef();
     const productName = useRef();
     const category = useRef();
-    const description = useRef();
     const isNotInitialMount = useRef(false);
     const [showCategory,setShowCategory] = useState(false)
     const [addNewCategory,setAddNewCategory] = useState(false);
     const [categorySugges,setCategorySugges] = useState();
+    const [propertiesVar,setPropertiesVar] = useState([]);
     const updateCategorySuggessions =async (input) =>{
         const response = await axios.get(route('category.fetch',input ? input: '-0'))
         setCategorySugges(response.data[1])
@@ -82,17 +82,9 @@ export default function NewProdClasFormPartOne({setData=()=>{},errors,processing
                     </div>
                 </div>
                 <div>
-                    <InputLabel htmlFor="description" value="Description (100 or more characters )"/>
+                    <InputLabel htmlFor="properties" value="Add if any other propertiesb  "/>
 
-                    <TextArea
-                        id="description"
-                        value={data.description}
-                        ref={description}
-                        onChange={(e) => setData('description', e.target.value)}
-                        className="mt-1 block w-full"
-                    />
-
-                    <InputError message={errors.description} className="mt-2" />
+                    <DynamicPropertyPane deleteProperty={(name) =>setPropertiesVar((prev) => prev.filter((prop) => prop.name !== name))} addProperty={(newProp)=>setPropertiesVar([...propertiesVar,newProp])} properties={propertiesVar}/>
                 </div>
 
                 <div className="flex items-center gap-4">
