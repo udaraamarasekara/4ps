@@ -76,7 +76,7 @@ class ProductClassificationController extends Controller
 
     public function fetch(string $input)
     {
-       return ProductClassification::where('name','like','%'.$input.'%')->orWhere('description','like','%'.$input.'%')->get()->pluck('name');
+       return ProductClassification::where('name','like','%'.$input.'%')->orWhere('properties->name','like','%'.$input.'%')->get()->pluck('name');
     }
     public function fetchWithUnit(string $input)
     {
@@ -89,7 +89,7 @@ class ProductClassificationController extends Controller
         ->leftJoin('brands', 'product_classifications.brand_id', '=', 'brands.id')
         ->leftJoin('units', 'product_classifications.unit_id', '=', 'units.id')
         ->where('product_classifications.name', 'like', '%'.$input.'%')
-        ->orWhere('product_classifications.description', 'like', '%'.$input.'%')
+        ->orWhere('product_classifications.properties->name', 'like', '%'.$input.'%')
         ->with('latestProductValueVariation')->get();   
      }
     /**
@@ -102,7 +102,7 @@ class ProductClassificationController extends Controller
     }
     public function getUnit(string $input)
     {
-     return  ProductClassification::where('name','like','%'.$input.'%')->orWhere('description','like','%'.$input.'%')->unit?->name;
+     return  ProductClassification::where('name','like','%'.$input.'%')->orWhere('properties->name','like','%'.$input.'%')->unit?->name;
     }
     /**
      * Show the form for editing the specified resource.

@@ -22,7 +22,8 @@ export default function NewProductClassification({ auth }) {
 const movetoPartOne = () => setPage(1)
 const movetoPartTwo = (e) => {
 e.preventDefault()
-    data.name ? data.description ?data.description.length>=100? setPage(2):      setError('description','Description must be at least 100 characters')  :     setError('description','Description required') : setError('name','Product name Required')
+    if(data.name){
+        if( data.category_name) {setPage(2)}else{ setError('category_name','Select a Category') }}else{     setError('name','Name required')}    
 }
 
 const [showPopup,setShowPopup] =useState(false)

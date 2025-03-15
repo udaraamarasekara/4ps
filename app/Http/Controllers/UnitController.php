@@ -47,6 +47,11 @@ class UnitController extends Controller
        return [$addNewUnit,Unit::where('name','like','%'.$input.'%')->get()->pluck('name')];
     }
 
+    public function check(string $input)
+    {
+      return Unit::where('name',$input)->count();
+    }
+
     /**
      * Display the specified resource.
      */

@@ -43,7 +43,7 @@ class ProjectClassificationController extends Controller
 
     public function fetch(string $input)
     {
-       return ProjectClassification::where('name','like','%'.$input.'%')->orWhere('description','like','%'.$input.'%')->get()->pluck('name');
+       return ProjectClassification::where('name','like','%'.$input.'%')->orWhere('properties->name','like','%'.$input.'%')->get()->pluck('name');
     }
 
     /**
