@@ -1,27 +1,27 @@
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head,useForm,router } from '@inertiajs/react';
+import { Head,Link,useForm,router } from '@inertiajs/react';
 import EditProdClasFormPartOne from './EditProdClasPartOne';
 import EditProdClasFormPartTwo from './EditProdClasFormPartTwo';
 import { Transition } from '@headlessui/react';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { useState } from 'react';
 export default function EditProductClassification({ auth,productClassification }) {
-
- const [page,setPage]=useState(1);   
-    const { data, setData, errors, setError,clearErrors,patch, reset, processing, recentlySuccessful } = useForm({
-        name:productClassification.data.name,
-        parent_name:productClassification.data.parent,
-        description:productClassification.data.description,
-        brand_name:productClassification.data.brand,
-        unit_name:productClassification.data.unit,
-        price:productClassification.data.price,
-        cost:productClassification.data.cost,
-    });
+    const [page,setPage]=useState(1);   
+       const { data, setData, errors, setError,clearErrors,put, reset, processing, recentlySuccessful } = useForm({
+           name:productClassification.data.name,
+           category_name:productClassification.data.category ,
+           properties:productClassification.data.properties,
+           brand_name:productClassification.data.brand,
+           unit_name:productClassification.data.unit,
+           price:productClassification.data.price,
+           cost:productClassification.data.cost,
+       });
 const movetoPartOne = () => setPage(1)
 const movetoPartTwo = (e) => {
 e.preventDefault()
-    data.name ? data.description ?data.description.length>=100? setPage(2):      setError('description','Description must be at least 100 characters')  :     setError('description','Description required') : setError('name','Product name Required')
+    if(data.name){
+        if( data.category_name) {setPage(2)}else{ setError('category_name','Select a Category') }}else{     setError('name','Name required')}    
 }
 
 const [showPopup,setShowPopup] =useState(false)
@@ -30,38 +30,34 @@ const goBack = () => {
    page===1? router.visit(route('productClassification.index')):page===2?setPage(1):setPage(2) 
 }
 
-const addNewProductClassification = (e) =>{
-  
+const editProductClassification = (e) =>{
+ 
     e.preventDefault()
-  
-    if(!data.brand_name)
-    {
-        setError('brand_name','Brand required') 
-    } 
-    else  if(!data.unit_name)
-    {
-        setError('unit_name','Unit required')
-    }
-    else if(!data.price)
+
+    if(!data.price)
     {
         setError('price','Price required') 
     }   
-    else if(!data.cost){
+    else if(data.price && !data.cost){
         setError('cost','Cost required') 
 
     }
-    else{
-        patch(route('productClassification.update',productClassification.data.id), {
+    else if(!((errors.unit_name && data.unit_name )||(data.brand_name && errors.brand_name))){
+        put(route('productClassification.update',productClassification.data.id), {
             preserveScroll: true,
             onSuccess: () => {reset()
-                setShowPopup(true)
                 setIsSuccessPopup(true)
+                setShowPopup(true)
                 setTimeout(()=>{setShowPopup(false)},1000)  
             },
             onError: (errors) => {
                 setShowPopup(true)
                 setIsSuccessPopup(false)
-                setTimeout(()=>{setShowPopup(false)},1000)   
+                setTimeout(()=>{setIsSuccessPopup(false)
+                    setShowPopup(false)
+                },1000)   
+                reset()
+                movetoPartOne()
                console.log(errors)
             },
         });
@@ -75,8 +71,8 @@ const addNewProductClassification = (e) =>{
             header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Product Classification</h2>}
         >
         <Head title="Product Classification" />
-        <div className='w-full flex justify-end'>
-          <ArrowLeftIcon  onClick={()=>goBack()} className=' m-6 bold p-3 w-12 h-auto bg-white border border-gray-200 rounded-full text-3xl font-extrabold flex items-center justify-center hover:cursor-pointer' />
+        <div  className='w-full flex justify-end'>
+          <ArrowLeftIcon onClick={()=>goBack()} className=' m-6 bold p-3 w-12 h-auto bg-white border border-gray-200 rounded-full text-3xl font-extrabold flex items-center justify-center hover:cursor-pointer' />
         </div>
         <Transition
             show={showPopup}
@@ -96,7 +92,7 @@ const addNewProductClassification = (e) =>{
         <EditProdClasFormPartOne data={data} setData={(type,val)=>setData(type,val)} clearErrors ={(field)=>clearErrors(field)} setError={(field,message)=>setError(field,message)} errors={errors} processing={processing}
         movetoPartTwo={(e)=>movetoPartTwo(e)}/>
         :<EditProdClasFormPartTwo data={data} setData={(type,val)=>setData(type,val)} clearErrors ={(field)=>clearErrors(field)} setError={(field,message)=>setError(field,message)} errors={errors} processing={processing}
-        addNewProductClassification={(e)=>addNewProductClassification(e)}/>
+        editProductClassification={(e)=>editProductClassification(e)} movetoPartOne={()=>movetoPartOne()}/>
         }
         </AuthenticatedLayout>
     );

@@ -45,26 +45,18 @@ class ProductClassificationController extends Controller
             $rawInput['category_id']=$category_id; 
         }
         unset($rawInput['category_name']);
-        if(isset($brand_id))
-        {
-             $brand_id=Brand::where('name',$rawInput['brand_name'])->first()->id;
-             $rawInput['brand_id']=$brand_id;
-        }
-        else
-        {
-          unset($rawInput['brand_id']);
-        }
-        if(isset($unit_id))
-        {
-            $unit_id=Unit::where('name',$rawInput['unit_name'])->first()->id;
-            $rawInput['unit_id']=$unit_id;
-        } 
-        else
-        {
-          unset($rawInput['unit_id']);
-        }   
+
+        $brand_id = Brand::where('name', $rawInput['brand_name'])->first()->id;
+        $rawInput['brand_id'] = $brand_id;
+
         unset($rawInput['brand_name']);
+
+        $unit_id = Unit::where('name', $rawInput['unit_name'])->first()->id;
+        $rawInput['unit_id'] = $unit_id;
+
         unset($rawInput['unit_name']);
+
+
         $price = $rawInput['price'];
         $cost =  $rawInput['cost'];
         unset($rawInput['price']);

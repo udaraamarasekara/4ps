@@ -11,6 +11,10 @@ class ProductClassification extends Model
   use HasFactory, SoftDeletes;
   protected $guarded = [];
 
+  protected $casts = [
+    'properties' => 'array', // Ensure properties is stored as JSON
+  ];
+
     public function brand()
     {
       return $this->belongsTo(Brand::class);   
@@ -19,6 +23,11 @@ class ProductClassification extends Model
     public function unit()
     {
       return $this->belongsTo(Unit::class);
+    }
+
+    public function category()
+    {
+      return $this->belongsTo(Category::class);
     }
 
     public function productValueVariations()

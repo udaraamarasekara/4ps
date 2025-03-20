@@ -7,7 +7,7 @@ import TextInput from '@/Components/TextInput';
 import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
 import NewBrandModal from './NewBrandModal';
 import NewUnitModal from './NewUnitModal';
-export default function EditProdClasFormPartTwo({setData=()=>{},errors,processing,addNewProductClassification=()=>{},clearErrors=()=>{},setError=()=>{},data}){
+export default function EditProdClasFormPartTwo({setData=()=>{},errors,processing,editProductClassification=()=>{},clearErrors=()=>{},setError=()=>{},data}){
 
 
 
@@ -66,7 +66,7 @@ export default function EditProdClasFormPartTwo({setData=()=>{},errors,processin
     <NewBrandModal show={showBrand} setShow={setShowBrand}/>
     <NewUnitModal show={showModal} setShow={setShowModal}/> 
     <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-        <form onSubmit={(e)=>addNewProductClassification(e)} className="mt-6 space-y-6">
+        <form onSubmit={(e)=>editProductClassification(e)} className="mt-6 space-y-6">
                 <div className='flex flex-col md:flex-row md:space-x-4'>
                     <div className='w-full md:w-1/2' >
                         <InputLabel htmlFor="brand_name " value="Brand (optional)" />

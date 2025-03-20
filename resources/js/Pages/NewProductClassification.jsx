@@ -55,7 +55,9 @@ const addNewProductClassification = (e) =>{
             onError: (errors) => {
                 setShowPopup(true)
                 setIsSuccessPopup(false)
-                setTimeout(()=>{setIsSuccessPopup(false)},1000)   
+                setTimeout(()=>{setIsSuccessPopup(false)
+                    setShowPopup(false)
+                },1000)   
                 reset()
                 movetoPartOne()
                console.log(errors)

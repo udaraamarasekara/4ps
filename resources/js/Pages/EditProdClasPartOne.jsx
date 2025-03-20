@@ -1,31 +1,56 @@
 import axios from 'axios';
-import { useRef,useState } from 'react';
+import { useEffect,useCallback, useRef,useState } from 'react';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
-import TextArea from '@/Components/TextArea';
-export default function EditProjClasFormPartOne({setData=()=>{},errors,processing,movetoPartTwo=(e)=>{},clearErrors=()=>{},setError=()=>{},data}){
-
+import { debounce } from 'lodash';
+import NewCategoryModal from './NewCategoryModal';
+import DynamicPropertyPane from '@/Components/DynamicPropertyPane';
+export default function EditProdClasFormPartOne({setData=()=>{},errors,processing,movetoPartTwo=()=>{},clearErrors=()=>{},setError=()=>{},data}){
+    const prevCatSugst =  useRef();
     const productName = useRef();
-    const parentProduct = useRef();
-    const description = useRef();
-    const [suggessioins,setSuggessions] = useState();
-    const updateParentProductSuggessions =async (input) =>{
-        const response = await axios.get(route('productClassification.fetch',input ? input: '-0'))
-        setSuggessions(response.data)
-        if(!suggessioins?.length){
-             setError('parent_name','No such a product classification')
-        }else{
-           clearError('parent_name') 
+    const category = useRef();
+    const isNotInitialMount = useRef(false);
+    const [showCategory,setShowCategory] = useState(false)
+    const [addNewCategory,setAddNewCategory] = useState(false);
+    const [categorySugges,setCategorySugges] = useState();
+    const [propertiesVar,setPropertiesVar] = useState(data.properties);
+    const updateCategorySuggessions =useCallback(
+            debounce(async (input) =>{
+        const response = await axios.get(route('category.fetch',input ? input: '-0'))
+        setCategorySugges(response.data[1])
+        setAddNewCategory(response.data[0])
+       
+        console.log(categorySugges)
+      
+},300),[])
+    
+
+    useEffect(()=>{
+        if(isNotInitialMount.current) 
+        {  
+            if(!categorySugges?.length && category.current.value!=='' && prevCatSugst!==data.category_name ){
+               addNewCategory ? setError('category_name','No such a Category. Click to add new category'): setError('category_name','No such a Category')
+           }else{
+              clearErrors('category_name') 
+           }
         }
-        console.log(suggessioins)
-    }  
+        else
+        {
+         category.current.value = data.category_name
+          isNotInitialMount.current =true;  
+        }     
+     },[addNewCategory, data.category_name])
+  useEffect(()=>{
+    category.current.value = data.category_name
+  },[propertiesVar])  
  return (
     <div className='w-full pb-6 flex justify-center'>
+    <NewCategoryModal show={showCategory} setShow={setShowCategory}/>
     <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-        <form onSubmit={(e)=>movetoPartTwo(e)} className="mt-6 space-y-6">
+        <form onSubmit={(e)=>{ setData('properties',propertiesVar);movetoPartTwo(e)}} className="mt-6 space-y-6">
                 <div className='flex flex-col md:flex-row md:space-x-4'>
                     <div className='w-full md:w-1/2' >
                         <InputLabel htmlFor="Product name" value="Product name" />
@@ -44,32 +69,29 @@ export default function EditProjClasFormPartOne({setData=()=>{},errors,processin
                     </div>
 
                     <div className='w-full md:w-1/2' >
-                        <InputLabel htmlFor="parent_product" value="Parent product (optional)" />
+                        <InputLabel htmlFor="category" value="Category" />
 
                         <AutoCompleteTextInput
-                            id="parent_product"
-                            ref={parentProduct}
-                            value={data.parent_name}
-                            suggestions={suggessioins}
-                            onChange={(e) => updateParentProductSuggessions(e.target.value)}
+                            id="category"
+                            ref={category}
+                            value={data.category_name}
+                            suggestions={categorySugges}
+                            onChange={(e) => updateCategorySuggessions(e.target.value)}
+                            setClickedElement={(el)=>{setData('category_name',el),prevCatSugst.current=el}}
                             className="mt-1 block w-full"
                         />
-
-                        <InputError message={errors.parent_name} className="mt-2" />
+                        {addNewCategory ?
+                          <div onClick={()=>setShowCategory(true)}>
+                            <InputError message={errors.category_name} className="mt-2 hover:underline hover:cursor-pointer" /> 
+                          </div>  
+                         :<InputError message={errors.category_name} className="mt-2" />
+                        }
                     </div>
                 </div>
                 <div>
-                    <InputLabel htmlFor="description" value="Description (100 or more characters )"/>
+                    <InputLabel htmlFor="properties" value="Add if any other properties"/>
 
-                    <TextArea
-                        id="description"
-                        value={data.description}
-                        ref={description}
-                        onChange={(e) => setData('description', e.target.value)}
-                        className="mt-1 block w-full"
-                    />
-
-                    <InputError message={errors.description} className="mt-2" />
+                    <DynamicPropertyPane deleteProperty={(name) =>setPropertiesVar((prev) => prev.filter((prop) => prop.name !== name))} addProperty={(newProp)=>setPropertiesVar([...propertiesVar,newProp])} properties={propertiesVar}/>
                 </div>
 
                 <div className="flex items-center gap-4">

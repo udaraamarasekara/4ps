@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useRef,useState } from 'react';
+import { useEffect, useRef,useState,useCallback} from 'react';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -7,6 +7,8 @@ import TextInput from '@/Components/TextInput';
 import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
 import NewBrandModal from './NewBrandModal';
 import NewUnitModal from './NewUnitModal';
+import { debounce } from 'lodash';
+
 export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing,addNewProductClassification=()=>{},clearErrors=()=>{},setError=()=>{},data}){
 
     const brand = useRef();
@@ -23,22 +25,25 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
     const [brandSuggessioins,setBrandSuggessions] = useState();
     const [addNewBrand,setAddNewBrand] = useState(false);
     const [addNewUnit,setAddNewUnit] = useState(false);
-    const updateUnitSuggessions =async (input) =>{ 
+    const updateUnitSuggessions =useCallback(
+                debounce(async (input) =>{ 
         const response = await axios.get(route('unit.fetch',input ? input: '-0'))
         setUnitSuggessions(response.data[1])
         setAddNewUnit(response.data[0])
-         
-       
         console.log(unitSuggessioins)
-    }  
-    const updateBrandSuggessions =async (input) =>{
+
+                },300),[]) 
+       
+  
+    const updateBrandSuggessions= useCallback(
+        debounce(async (input) =>{ 
         const response = await axios.get(route('brand.fetch',input ? input: '-0'))
         setBrandSuggessions(response.data[1])
         setAddNewBrand(response.data[0])
       
       
         console.log(brandSuggessioins)
-    }
+    },300),[])
 
     useEffect(()=>{
         if(isNotInitialMount.current) 

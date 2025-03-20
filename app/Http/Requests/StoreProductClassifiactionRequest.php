@@ -27,8 +27,8 @@ class StoreProductClassifiactionRequest extends FormRequest
             'unit_name'=>['required','string','exists:units,name'],
             'category_name'=>['required','string','exists:categories,name'],
             'properties' => 'nullable|array',
-            'properties.name' => ['required_if:properties,!=,null|string'],
-            'properties.type' => ['required_if:properties,!=,null|string|in:text,number,boolean'],
+            'properties.*.name' => ['required_if:properties,!=,null|string'],
+            'properties.*.type' => ['required_if:properties,!=,null|string|in:text,number,boolean'],
             'cost'=>['required','regex:/^\d+(\.\d{1,2})?$/'],
             'price'=>['required','regex:/^\d+(\.\d{1,2})?$/']
 
