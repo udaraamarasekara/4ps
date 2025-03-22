@@ -31,6 +31,12 @@ class CategoryController extends Controller
     public function store(StoreCategoryRequest $request)
     {
       $rawInput =$request->validated();  
+      if($rawInput['parent_name'])
+      {
+        $parent_id= Category::where('name',$rawInput['parent_name'])->first()->id;
+        $rawInput['parent_id']=$parent_id;
+      }
+      unset($rawInput['parent_name']);
       Category::create($rawInput); 
     }
 

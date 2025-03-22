@@ -23,6 +23,8 @@ class StoreCategoryRequest extends FormRequest
     {
         return [
             'name'=>['required','string'],
+            'parent_name'=>['nullable','string'],
+
         ];
     }
 }

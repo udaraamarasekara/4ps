@@ -25,9 +25,9 @@ class ProductClassification extends Model
       return $this->belongsTo(Unit::class);
     }
 
-    public function category()
+    public function parent()
     {
-      return $this->belongsTo(Category::class);
+      return $this->belongsTo(ProductClassification::class,'parent_id');
     }
 
     public function productValueVariations()
