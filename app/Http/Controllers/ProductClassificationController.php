@@ -72,17 +72,20 @@ class ProductClassificationController extends Controller
     }
     public function fetchWithUnit(string $input)
     {
-        return ProductClassification::select(
-            'product_classifications.name',
-            'product_classifications.id',
-            'brands.name as brand',
-            'units.name as unit'
-        )
-        ->leftJoin('brands', 'product_classifications.brand_id', '=', 'brands.id')
-        ->leftJoin('units', 'product_classifications.unit_id', '=', 'units.id')
-        ->where('product_classifications.name', 'like', '%'.$input.'%')
-        ->orWhere('product_classifications.properties->name', 'like', '%'.$input.'%')
-        ->with('latestProductValueVariation')->get();   
+        return ProductClassificationResource::collection(ProductClassification::
+        //     select(
+        //     'product_classifications.name',
+        //     'product_classifications.id',
+        //     'brands.name as brand',
+        //     'units.name as unit'
+        // )
+        // ->leftJoin('brands', 'product_classifications.brand_id', '=', 'brands.id')
+        // ->leftJoin('units', 'product_classifications.unit_id', '=', 'units.id')
+        // ->
+        where('name', 'like', '%'.$input.'%')
+        // ->orWhere('product_classifications.properties->name', 'like', '%'.$input.'%')
+        // ->with('latestProductValueVariation')
+        ->get());   
      }
     /**
      * Display the specified resource.

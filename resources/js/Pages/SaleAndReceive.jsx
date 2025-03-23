@@ -46,14 +46,23 @@ export default function SaleAndReceive({auth,operation}){
         const response = await axios.get(route('productClassification.fetchWithUnit',input ? input: '-0'))
         var tmpSugests=[];
         prodClasSugestIds.current=[];
-        response.data.forEach((item)=>{
+        response.data.data.forEach((item)=>{
+            var val 
+            if(operation==='sale')
+            {
+             val = item.price
+            }
+            else
+            {
+             val = item.cost   
+            }
             console.log(item)
-         tmpSugests.push(item.name+' '+item.brand+' '+item.unit)  
+         tmpSugests.push(item.name+' '+item.brand+' '+item.unit+' '+val)  
          prodClasSugestIds.current.push({id:item.id,value:item.name+' '+item.brand+' '+item.unit})  
          console.log(prodClasSugestIds)
         })
         setSuggessionsProdClas(tmpSugests)
-        if(!response.data?.length){
+        if(!response.data.data?.length){
              setError('product_classification','No such a project classification')
         }else{
              clearErrors('product_classification') 
@@ -122,7 +131,7 @@ return (<AuthenticatedLayout
                         </div>
                         <div className='flex flex-col md:flex-row md:space-x-4'>
                             <div className='w-full md:w-1/2' >
-                                <InputLabel htmlFor="third_party" value="Third Party" />
+                                <InputLabel htmlFor="third_party" value={operation==='sale'?'Customer':'Supplier'} />
 
                                 <AutoCompleteTextInput
                                     id="third_party"

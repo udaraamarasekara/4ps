@@ -93,7 +93,31 @@ export default function ProductClassification({ auth,productClassifications }) {
         <Modal show={show} onClose={()=>setShow(false)} >
             <div className='w-full h-auto p-5 flex flex-col items-center'>
               <div className='font-bold uppercase text-2xl'>{item.name}</div>
-              <div className=' w-4/5 text-center w-full max-w-[600px] mx-auto break-words whitespace-normal'>{item.description}</div>
+              <div className=' w-4/5 text-center w-full max-w-[600px] mx-auto break-words whitespace-normal'>
+                <div className="grid grid-cols-1  gap-4">
+                    {item?.properties?.length ? item.properties.map((prop, index) => (
+                    <div
+                        key={index}
+                        className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 border border-gray-200 dark:border-gray-700"
+                    >
+                        <div className="flex justify-between items-center">
+                        <div>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Name</p>
+                            <p className="text-lg font-semibold text-gray-900 dark:text-white">{prop.name}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Type</p>
+                            <p className="text-lg font-semibold text-indigo-600 dark:text-indigo-400">{prop.type}</p>
+                        </div>
+                        </div>
+                    </div>
+                    )) : (
+                    <div className="col-span-full text-center text-gray-500 dark:text-gray-400 py-6">
+                        No properties available
+                    </div>
+                    )}
+              </div>
+              </div>
             </div>
         </Modal>
         </AuthenticatedLayout>
