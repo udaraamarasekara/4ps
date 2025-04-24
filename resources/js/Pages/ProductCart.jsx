@@ -10,9 +10,9 @@ export default function ProductCart({products,setProducts=()=>{}}){
 
 
 
-return (<div className='w-full pb-6 flex justify-center'>
-<section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-<table className="w-full  ">
+return (<div className='md:w-4/5 pb-6 flex mb-auto justify-center'>
+<section className="w-4/5 md:w-full relative overflow-x-auto  mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
+<table className="w-full table-auto">
                  <thead>
                      <tr>
                      <th>Name</th>

@@ -5,7 +5,7 @@ import { useRef,useState } from 'react';
 import TextInput from '@/Components/TextInput';
 import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
 import ProductCart from './ProductCart';
-export default function DealAndReceivePartOne({setData=()=>{},errors,processing,movetoPartTwo=()=>{},clearErrors=()=>{},setError=()=>{},data,operation}){
+export default function DealAndReceivePartOne({setData=()=>{},errors,processing,clearErrors=()=>{},setError=()=>{},data,operation}){
    const [singleItemToDeal,setSingleItemToDeal] =useState({ 
         product_classification_id: '',
         quantity:'',
@@ -63,9 +63,9 @@ export default function DealAndReceivePartOne({setData=()=>{},errors,processing,
         }
     }  
 
-return (<div className='w-full pb-6 flex justify-center'>
+return (<div className='w-full pb-6 flex items-center justify-center md:flex-row flex-col'>
 <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-    <form onSubmit={(e)=>movetoPartTwo(e)} className="mt-6 space-y-6">
+    <form onSubmit={(e)=>e.preventDefault()} className="mt-6 space-y-6">
             <div className='flex flex-col md:flex-row md:space-x-4'>
                 <div className='w-full md:w-1/2' >
                     <InputLabel htmlFor="product_classification" value="Product Class" />
@@ -102,6 +102,10 @@ return (<div className='w-full pb-6 flex justify-center'>
             <div className="flex items-center gap-4">
                 <PrimaryButton 
              onClick={() => {
+                if(singleItemToDeal.product_classification_id)
+                {    
+                if(singleItemToDeal.quantity)
+                 {       
                 setData(prev => {
                   const isItemExists = prev.items.some(item => item.id === singleItemToDeal.id);
               
@@ -112,7 +116,13 @@ return (<div className='w-full pb-6 flex justify-center'>
                     items: [...prev.items, singleItemToDeal],
                   };
                 });
-              }}
+              }else{
+                 setError('quantity','you must select a quantity')
+              }}else{
+                  setError('product_classification_id','you must enter product')
+              }
+            }
+            }
               
                 disabled={processing}>Save</PrimaryButton>
             
