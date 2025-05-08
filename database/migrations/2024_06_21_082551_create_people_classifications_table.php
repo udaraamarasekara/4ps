@@ -16,8 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->timestamps();
             $table->softDeletes();  // Adds a `deleted_at` column
-            $table->enum('party',['third_party','first_party']);
-
+            $table->enum('type',['customer','supplier','employee']);
         });
     }
 

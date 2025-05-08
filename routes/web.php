@@ -48,6 +48,8 @@ Route::middleware('auth')->group(function () {
     Route::get('categoryCheck{input}',[CategoryController::class,'check'])->name('category.check');
     Route::get('categoryFetch{input}',[CategoryController::class,'fetch'])->name('category.fetch');
     Route::get('projectClassificationFetch{input}',[ProjectClassificationController::class,'fetch'])->name('projectClassification.fetch');
+    Route::post('productClassificationCostPrice',[ProductClassificationController::class,'productClassificationCostPrice'])->name('productClassificationCostPrice');
+
     Route::get('productClassificationFetchWithUnit{input}',[ProductClassificationController::class,'fetchWithUnit'])->name('productClassification.fetchWithUnit');
     Route::get('productClassificationFetch{input}',[ProductClassificationController::class,'fetch'])->name('productClassification.fetch');
     Route::resource('projectClassification', ProjectClassificationController::class);

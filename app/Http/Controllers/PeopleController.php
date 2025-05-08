@@ -46,7 +46,6 @@ class PeopleController extends Controller
     {
         return PeopleClassification::join('people', 'people.people_classifications_id', '=', 'people_classifications.id')
         ->join('users', 'users.id', '=', 'people.users_id')
-        ->where('people_classifications.party', 'third_party')
         ->where('users.name', 'like', "%{$input}%")
         ->select('users.name as user_name', 'people_classifications.name as classification_name','people.id as id')
         ->get(); 

@@ -5,6 +5,9 @@ import { useRef,useState } from 'react';
 import TextInput from '@/Components/TextInput';
 import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
 import ProductCart from './ProductCart';
+import { useCallback } from 'react';
+import { debounce } from 'lodash';
+
 export default function DealAndReceivePartOne({setData=()=>{},errors,processing,clearErrors=()=>{},setError=()=>{},data,operation}){
    const [singleItemToDeal,setSingleItemToDeal] =useState({ 
         product_classification_id: '',
@@ -16,7 +19,6 @@ export default function DealAndReceivePartOne({setData=()=>{},errors,processing,
     })
     const prodClasSugestIds=useRef([]);
   
-     const [products,setProducts] = useState(); 
     
     function setClickedProdClas(e){
         setSingleItemToDeal(prevState => ({
@@ -32,11 +34,13 @@ export default function DealAndReceivePartOne({setData=()=>{},errors,processing,
     }
 
     const productClassification = useRef();
-    const thirdParty = useRef();
     const quantity = useRef();
 
     const [suggessioinsProdClas,setSuggessionsProdClas] = useState();
-    const updateProductClassificationSuggessions =async (input) =>{
+
+
+
+    const updateProductClassificationSuggessions =useCallback( debounce(async (input) =>{
         const response = await axios.get(route('productClassification.fetchWithUnit',input ? input: '-0'))
         var tmpSugests=[];
         prodClasSugestIds.current=[];
@@ -61,7 +65,7 @@ export default function DealAndReceivePartOne({setData=()=>{},errors,processing,
         }else{
              clearErrors('product_classification') 
         }
-    }  
+    },300 ),[]) 
 
 return (<div className='w-full pb-6 flex items-center justify-center md:flex-row flex-col'>
 <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">

@@ -6,6 +6,7 @@ use App\Models\ProductClassification;
 use App\Models\Unit;
 use App\Models\Brand;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AddCostPriceToProdClas;
 use App\Http\Requests\StoreProductClassifiactionRequest;
 use App\Http\Requests\UpdateProductClassifiactionRequest;
 use App\Http\Resources\ProductClassificationResource;
@@ -157,6 +158,13 @@ class ProductClassificationController extends Controller
     public function destroy(ProductClassification $productClassification)
     {
       $productClassification->delete();
+    }
+
+    public function productClassificationCostPrice(AddCostPriceToProdClas $request)
+    {
+        $rawInput = $request->validated();
+       return ProductValueVariation::create(['product_classifications_id'=>$rawInput['id'],'cost'=>$rawInput['cost'],'price'=>$rawInput['price']]);
+
     }
 
 }

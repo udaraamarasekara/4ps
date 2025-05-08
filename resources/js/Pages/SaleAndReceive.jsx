@@ -13,7 +13,7 @@ export default function SaleAndReceive({auth,operation}){
     const [page,setPage]=useState(1);   
     const { data, setData, errors, setError,clearErrors,post, reset, processing, recentlySuccessful } = useForm({
      items:[],
-     thirdParty:null 
+     third_party:null 
      
     });
     const movetoPartOne = () => setPage(1)
@@ -32,19 +32,7 @@ export default function SaleAndReceive({auth,operation}){
 
     },[]) 
 
-    const updateThirdPartySuggessions =async (input) =>{
-        const response = await axios.get(route('people.thirdPartyFetch',input ? input: '-0'))
-        var tmpSugests=[];
-        response.data.forEach((item)=>{
-         tmpSugests.push(item.user_name+' '+item.classification_name)    
-        })
-        setSuggessionsThirdParty(tmpSugests)
-        if(!suggesioinsThirdParty?.length){
-             setError('third_party','No such a third party')
-        }else{
-           clearErrors('third_party') 
-        }
-    }  
+ 
     const goBack = () => {
     router.visit(route('product.index'))
      }
@@ -63,9 +51,9 @@ return (<AuthenticatedLayout
            }  
         </div>
          {
-          page ==1 ? <SaleAndReceivePartOne errors={errors} data={data} setData={setData} setError={setError} operation={operation} /> 
+          page ==1 ? <SaleAndReceivePartOne  processing={processing} errors={errors} data={data} setData={setData} setError={setError} operation={operation} /> 
           :
-          <SaleAndReceivePartTwo/> 
+          <SaleAndReceivePartTwo processing={processing} errors={errors} data={data} setData={setData} setError={setError} operation={operation}/> 
          }
         </AuthenticatedLayout>
              
