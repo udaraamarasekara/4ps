@@ -11,7 +11,7 @@ class StorePeopleClassificationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class StorePeopleClassificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'type'=>['required','exists:people_classifications,id'],
+            'name'=>['required','string']
         ];
     }
 }

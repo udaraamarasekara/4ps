@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
     Route::get('categoryFetch{input}',[CategoryController::class,'fetch'])->name('category.fetch');
     Route::get('projectClassificationFetch{input}',[ProjectClassificationController::class,'fetch'])->name('projectClassification.fetch');
     Route::post('productClassificationCostPrice',[ProductClassificationController::class,'productClassificationCostPrice'])->name('productClassificationCostPrice');
+    Route::get('peopleClassification{input}',[PeopleClassificationController::class,'fetch'])->name('peopleClassification.fetch');
 
     Route::get('productClassificationFetchWithUnit{input}',[ProductClassificationController::class,'fetchWithUnit'])->name('productClassification.fetchWithUnit');
     Route::get('productClassificationFetch{input}',[ProductClassificationController::class,'fetch'])->name('productClassification.fetch');

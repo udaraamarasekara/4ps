@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePeopleClassificationRequest;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use App\Http\Resources\PeopleClassificationResource;
+use App\Models\PeopleClassification;
 
 class PeopleClassificationController extends Controller
 {
@@ -12,7 +16,8 @@ class PeopleClassificationController extends Controller
      */
     public function index()
     {
-        //
+        $peopleClassifications = PeopleClassificationResource::collection(PeopleClassification::paginate(10));
+        return Inertia::render('PeopleClassification',['peopleClassifications'=>$peopleClassifications]);
     }
 
     /**
@@ -20,15 +25,18 @@ class PeopleClassificationController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('NewPeopleClassification');
+
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StorePeopleClassificationRequest $request)
     {
-        //
+        $input =  $request->validated();
+        PeopleClassification::create(['type_id'=>$input['type'],'name'=>$input['name']]);
+        return back();
     }
 
     /**
@@ -62,4 +70,13 @@ class PeopleClassificationController extends Controller
     {
         //
     }
+
+    public function fetch(string $input)
+    {
+        return PeopleClassification::
+        where('name', 'like', "%{$input}%")
+        ->select('name','id')
+        ->get(); 
+    }
+
 }

@@ -1,15 +1,12 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head,Link ,useForm} from '@inertiajs/react';
-import { PencilSquareIcon,TrashIcon,EyeIcon,CurrencyDollarIcon } from '@heroicons/react/24/solid'
+import { PencilSquareIcon,TrashIcon,EyeIcon } from '@heroicons/react/24/solid'
 import Modal from '@/Components/Modal';
 import { useState } from 'react';
 import { router } from '@inertiajs/react'
 import axios from 'axios';
 import { Transition } from '@headlessui/react';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
+
 
 export default function PeopleClassification({ auth,peopleClassifications }) {
    const [show,setShow]=useState(false)
@@ -67,11 +64,7 @@ export default function PeopleClassification({ auth,peopleClassifications }) {
                  <thead>
                      <tr>
                      <th>Name</th>
-                     <th>Brand</th>
-                     <th>Unit</th>
-                     <th>Cost</th>
-                     <th>Price</th>
-                     <th>Category</th>
+                     <th>Type</th>
                      <th>Actions</th>
 
                      </tr>
@@ -81,11 +74,7 @@ export default function PeopleClassification({ auth,peopleClassifications }) {
 
              return <tr key={object.id}>
                          <td className='text-center'>{object.name}</td>
-                         <td className='text-center' >{object.brand}</td>
-                         <td className='text-center'>{object.unit}</td>
-                         <td className='text-center' >{object.cost}</td>
-                         <td className='text-center'>{object.price}</td>
-                         <td className='text-center'>{object.category}</td>
+                         <td className='text-center' >{object.type}</td>
                          <td className='flex justify-center gap-5' >
                              <div onClick={()=>{setItem(object),setShow(true)}} className='bg-green-400 text-black hover:cursor-pointer rounded-full min-w-5 p-2 min-h-5' ><EyeIcon className='min-w-5 h-auto' /></div>
                              <div onClick={()=>router.get(route('peopleClassification.edit',object.id))} className='bg-yellow-500 text-black rounded-full hover:cursor-pointer min-w-5 p-2 min-h-5' ><PencilSquareIcon className='min-w-5 h-auto' /></div>

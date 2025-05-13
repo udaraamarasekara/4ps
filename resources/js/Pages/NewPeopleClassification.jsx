@@ -3,46 +3,61 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head,useForm,router } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
-import { useState } from 'react';
+import { useState, useCallback} from 'react';
+import { debounce } from 'lodash';
+import InputError from '@/Components/InputError';
+import InputLabel from '@/Components/InputLabel';
+import PrimaryButton from '@/Components/PrimaryButton';
+import TextInput from '@/Components/TextInput';
+import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
+import { useRef } from 'react';
+
 export default function NewPeopleClassification({ auth }) {
 
  const [page,setPage]=useState(1);   
-
+ const [typeSugges,setTypeSugges]= useState()
+ const types = useRef([])
     const { data, setData, errors, setError,clearErrors,post, reset, processing, recentlySuccessful } = useForm({
         name: '',
-        parent_name: '',
-        description: '',
-        ingredients:[{}],
-        humanResources:[{}],
-        properties:[{}]
+        type: '',
+      
 
     });
-const movetoPartOne = () => setPage(1)
-const movetoPartTwo = () => setPage(2)
 const [showPopup,setShowPopup] =useState(false)
 const [isSuccessPopup,setIsSuccessPopup]= useState(true)
 const goBack = () => {
-   page===1? router.visit(route('projectClassification.index')):page===2?setPage(1):setPage(2) 
+ router.visit(route('peopleClassification.index'))
+}
+    const updateTypeSuggessions =useCallback(
+            debounce(async (input) =>{
+        const response = await axios.get(route('peopleClassification.fetch',input ? input: '-0'))
+        types.current = response.data
+        setTypeSugges(response.data.map((row)=>{
+           return row.name
+        }))
+        
+       
+      
+},300),[])
+
+const setType = (el)=>{
+  setData('type',types.current.find(t=>t.name ===el ).id) 
 }
 
-const addNewProjectClassification = (e) =>{
+const addNewPeopleClassification = (e) =>{
   
     e.preventDefault()
    if(!data.name)
     {
-     setError('name','Project name Required')
+     setError('name','Name Required')
     }
-   else if(!data.description)
+   else if(!data.type)
     {
-     setError('description','Description required')   
+     setError('type','Type required')   
     }
-   else if(data.description.length<100)
-    {
-     setError('description','Description must be at least 100 characters')   
-    } 
     else
     {
-        post(route('projectClassification.store'), {
+        post(route('peopleClassification.store'), {
             preserveScroll: true,
             onSuccess: () => {reset()
                 setShowPopup(true)
@@ -63,9 +78,9 @@ const addNewProjectClassification = (e) =>{
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Project Classification</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">People Classification</h2>}
         >
-        <Head title="Project Classification" />
+        <Head title="People Classification" />
         <div  className='w-full flex justify-start'>
           <ArrowLeftIcon onClick={()=>goBack()} className=' m-6 bold p-3 w-12 h-auto bg-white border border-gray-200 rounded-full text-3xl font-extrabold flex items-center justify-center hover:cursor-pointer' />
         </div>
@@ -84,70 +99,45 @@ const addNewProjectClassification = (e) =>{
         </Transition>
        <div className='w-full pb-6 flex items-center justify-center md:flex-row flex-col'>
        <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-           <form onSubmit={(e)=>e.preventDefault()} className="mt-6 space-y-6">
+           <form onSubmit={(e)=>addNewPeopleClassification(e)} className="mt-6 space-y-6">
                    <div className='flex flex-col md:flex-row md:space-x-4'>
                        <div className='w-full md:w-1/2' >
-                           <InputLabel htmlFor="product_classification" value="Product Class" />
+                           <InputLabel htmlFor="type" value="Type" />
        
                            <AutoCompleteTextInput
-                               id="product_classification"
-                               ref={productClassification}
-                               value={singleItemToDeal.product_classification_id}
-                               suggestions={suggessioinsProdClas}
-                               onChange={(e) => updateProductClassificationSuggessions(e.target.value)}
+                               id="type"
+                               value={data.type}
+                               suggestions={typeSugges}
+                               onChange={(e) => updateTypeSuggessions(e.target.value)}
                                className="mt-1 block w-full"
-                               setClickedElement={(el) => setClickedProdClas(el)}
-                               
+                               setClickedElement={(el) =>setType(el)}
                            />
        
-                           <InputError message={errors.product_classification_id} className="mt-2" />
+                           <InputError message={errors.type} className="mt-2" />
                        </div>
                        <div className='w-full md:w-1/2' >
-                           <InputLabel htmlFor="quantity" value="Quantity" />
+                           <InputLabel htmlFor="name" value="name" />
        
                               <TextInput
-                               id="quantity"
-                               ref={quantity}
-                               value={singleItemToDeal.quantity}
+                               id="name"
+                               value={data.name}
                                type="text"
-                               onChange={(e)=>setSingleItemToDeal(prev=>({...prev,quantity:e.target.value}))}
+                               onChange={(e)=>setData('name',e.target.value)}
                                className="mt-1 block w-full"
-                               autoComplete="quantity"
+                               autoComplete="name"
                            />
        
-                           <InputError message={errors.quantity} className="mt-2" />
+                           <InputError message={errors.name} className="mt-2" />
                        </div>
                    </div>
                    <div className="flex items-center gap-4">
                        <PrimaryButton 
-                    onClick={() => {
-                       if(singleItemToDeal.product_classification_id)
-                       {    
-                       if(singleItemToDeal.quantity)
-                        {       
-                       setData(prev => {
-                         const isItemExists = prev.items.some(item => item.id === singleItemToDeal.id);
-                     
-                         if (isItemExists) return prev;
-                     
-                         return {
-                           ...prev,
-                           items: [...prev.items, singleItemToDeal],
-                         };
-                       });
-                     }else{
-                        setError('quantity','you must select a quantity')
-                     }}else{
-                         setError('product_classification_id','you must enter product')
-                     }
-                   }
-                   }
-                     
+                   
                        disabled={processing}>Save</PrimaryButton>
                    
                    </div>
            </form>
-       </section><ProductCart products={data.items} setProducts={(id)=>  {setData(prev =>({...prev, items:prev.items.filter((item) => item.product_classification_id !== id)}))}}/>
+       </section>
        </div>
         </AuthenticatedLayout>
     );

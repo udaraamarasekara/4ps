@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->timestamps();
             $table->softDeletes();  // Adds a `deleted_at` column
-            $table->enum('type',['customer','supplier','employee']);
+            $table->unsignedInteger('type_id')->nullable();
         });
     }
 
