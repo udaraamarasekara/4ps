@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\PeopleClassification;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,7 +18,8 @@ class PeopleClassificationResource extends JsonResource
         return [
             'id'=>$this->id,
             'name'=>$this->name,
-            'type'=>$this->type,
+            'type_id'=>$this->type_id,
+            'type'=>PeopleClassification::find($this->type_id)?->name,
             
         ];  
     }

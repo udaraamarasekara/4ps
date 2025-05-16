@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePeopleClassificationRequest;
+use App\Http\Requests\UpdatePeopleClassificationRequest;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Resources\PeopleClassificationResource;
@@ -35,7 +36,8 @@ class PeopleClassificationController extends Controller
     public function store(StorePeopleClassificationRequest $request)
     {
         $input =  $request->validated();
-        PeopleClassification::create(['type_id'=>$input['type'],'name'=>$input['name']]);
+        $root = PeopleClassification::find($input['type'])->root;
+        PeopleClassification::create(['type_id'=>$input['type'],'name'=>$input['name'],'root'=>$root]);
         return back();
     }
 
@@ -50,25 +52,27 @@ class PeopleClassificationController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(PeopleClassification $peopleClassification)
     {
-        //
+             return Inertia::render('EditPeopleClassification',['peopleClassification'=> new PeopleClassificationResource($peopleClassification)]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdatePeopleClassificationRequest $request, PeopleClassification $peopleClassification)
     {
-        //
+      $validated = $request->validated();  
+      $peopleClassification->update(['name'=>$validated['name'],'type_id'=>$validated['type']]);
+      return redirect()->back();
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(PeopleClassification $peopleClassification)
     {
-        //
+      $peopleClassification->delete();
     }
 
     public function fetch(string $input)

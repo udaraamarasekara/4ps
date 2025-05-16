@@ -77,9 +77,10 @@ export default function PeopleClassification({ auth,peopleClassifications }) {
                          <td className='text-center' >{object.type}</td>
                          <td className='flex justify-center gap-5' >
                              <div onClick={()=>{setItem(object),setShow(true)}} className='bg-green-400 text-black hover:cursor-pointer rounded-full min-w-5 p-2 min-h-5' ><EyeIcon className='min-w-5 h-auto' /></div>
+                             { (object.name !=='Supplier' && object.name !=='Customer' && object.name !=='Employee' )&& <>
                              <div onClick={()=>router.get(route('peopleClassification.edit',object.id))} className='bg-yellow-500 text-black rounded-full hover:cursor-pointer min-w-5 p-2 min-h-5' ><PencilSquareIcon className='min-w-5 h-auto' /></div>
                              <div onClick={()=>deleteItem(object.id)} className='bg-red-500 text-white hover:cursor-pointer rounded-full min-w-5 p-2 min-h-5' ><TrashIcon className='min-w-5 h-auto' /></div>
-
+              </>    }
                          </td>
                      </tr>
                   }

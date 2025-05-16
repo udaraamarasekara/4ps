@@ -19,8 +19,11 @@ class UpdatePeopleClassificationRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    public function rules():array
     {
-
+        return [
+            'type'=>['required','exists:people_classifications,id'],
+            'name'=>['required','string']
+        ];
     }
 }

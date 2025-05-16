@@ -14,10 +14,9 @@ return new class extends Migration
         Schema::create('people', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('users_id')->constrained();
-            $table->foreignId('people_classifications_id')->constrained();
-            $table->softDeletes();  // Adds a `deleted_at` column
-
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('address');
         });
     }
 

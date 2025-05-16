@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('people_classifications', function (Blueprint $table) {
+       Schema::create('people_user_roles', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
             $table->timestamps();
-            $table->softDeletes();  // Adds a `deleted_at` column
-            $table->unsignedInteger('type_id')->nullable();
+            $table->morphs('rolable');
+        
         });
     }
 
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('people_classifications');
+        //
     }
 };

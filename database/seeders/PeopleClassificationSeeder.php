@@ -14,9 +14,9 @@ class PeopleClassificationSeeder extends Seeder
     public function run(): void
     {
       $people_classifications =  [
-            ['name' => 'Customer'],
-            ['name' => 'Supplier'],
-            ['name' => 'Employee']
+            ['name' => 'Customer','root'=>'Customer'],
+            ['name' => 'Supplier','root'=>'Supplier'],
+            ['name' => 'Employee','root'=>'Employee']
 
         ];
 

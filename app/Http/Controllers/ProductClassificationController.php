@@ -44,14 +44,14 @@ class ProductClassificationController extends Controller
         {
             $category_id = Category::where('name',$rawInput['category_name'])->first()->id;
             $rawInput['category_id']=$category_id; 
+          unset($rawInput['category_name']);
         }
-        unset($rawInput['category_name']);
-
+        if(isset($rawInput['brand_name']))
+        {
         $brand_id = Brand::where('name', $rawInput['brand_name'])->first()->id;
         $rawInput['brand_id'] = $brand_id;
-
         unset($rawInput['brand_name']);
-
+        }
         $unit_id = Unit::where('name', $rawInput['unit_name'])->first()->id;
         $rawInput['unit_id'] = $unit_id;
 
