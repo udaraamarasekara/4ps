@@ -50,13 +50,13 @@ Route::middleware('auth')->group(function () {
     Route::get('projectClassificationFetch{input}',[ProjectClassificationController::class,'fetch'])->name('projectClassification.fetch');
     Route::post('productClassificationCostPrice',[ProductClassificationController::class,'productClassificationCostPrice'])->name('productClassificationCostPrice');
     Route::get('peopleClassification{input}',[PeopleClassificationController::class,'fetch'])->name('peopleClassification.fetch');
-
     Route::get('productClassificationFetchWithUnit{input}',[ProductClassificationController::class,'fetchWithUnit'])->name('productClassification.fetchWithUnit');
     Route::get('productClassificationFetch{input}',[ProductClassificationController::class,'fetch'])->name('productClassification.fetch');
     Route::resource('projectClassification', ProjectClassificationController::class);
     Route::resource('productClassification', ProductClassificationController::class);
     Route::resource('propertyClassification',PropertyClassificationController::class);
     Route::resource('peopleClassification',PeopleClassificationController::class);
+    Route::get('people{input}',[PeopleController::class,'fetch'])->name('people.fetch');
     Route::get('dashboard',function () { return Inertia::render('Dashboard');})->name('dashboard');
 
 });

@@ -64,7 +64,7 @@ export default forwardRef(function AutocompleteTextInput({
           {suggestions.map((suggestion, index) => (
             <li
               key={index}
-              className={`px-4 py-2 cursor-pointer ${index === suggestionIndex ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
+              className={`px-4 py-2 hover:bg-blue-50 cursor-pointer ${index === suggestionIndex ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
               onClick={() => handleSuggestionClick(index)}
             >
               {suggestion}

@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\People;
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePeopleRequest;
 use App\Http\Requests\UpdatePeopleRequest;
 use App\Models\PeopleClassification;
+use Exception;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class PeopleController extends Controller
 {
@@ -15,7 +20,7 @@ class PeopleController extends Controller
      */
     public function index()
     {
-        //
+              return Inertia::render('NewPerson');
     }
 
     /**
@@ -31,7 +36,25 @@ class PeopleController extends Controller
      */
     public function store(StorePeopleRequest $request)
     {
-        //
+      $rawInput = $request->validated();
+      if($rawInput['type']=='User')
+      {
+       DB::table('people_user_roles')->insert(['rolable_type'=>'App\Models\User::class','rolable_id'=>$rawInput['user']]);
+      }
+      else
+      {
+       try{ 
+        DB::beginTransaction();
+        $fileName = time().'.'.$rawInput['user']['photo']->getClientOriginalExtension();
+        Storage::disk('public')->put($fileName, file_get_contents($rawInput['user']['photo'])); 
+        $people = People::create(['name'=>$rawInput['user']['name'],'email'=>$rawInput['user']['email'],'address'=>$rawInput['user']['address'],'photo'=>$fileName]);
+        DB::table('people_user_roles')->insert(['rolable_type'=>'App\Models\People::class','rolable_id'=>$people->id]);
+        DB::commit(); 
+    }catch(Exception $e)
+       {dd($e);
+        DB::rollBack();
+       }     
+      }
     }
 
     /**
@@ -73,5 +96,10 @@ class PeopleController extends Controller
     public function destroy(People $people)
     {
         //
+    }
+
+    public function fetch(string $input)
+    {
+      return User::where('name', 'like', "%{$input}%")->get();
     }
 }
