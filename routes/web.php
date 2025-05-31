@@ -39,7 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('property',PropertyController::class);
     Route::get('sale',[ProductController::class,'sale'])->name('sale');
     Route::get('receive',[ProductController::class,'receive'])->name('receive');
-    Route::get('thirdPartyPeopleFetch{input}',[PeopleController::class,'thirdPartyFetch'])->name('people.thirdPartyFetch');
+    Route::get('thirdPartyPeopleFetch{input}{operation}',[PeopleController::class,'thirdPartyFetch'])->name('people.thirdPartyFetch');
     Route::resource('people',PeopleController::class);
     Route::get('brandFetch{input}',[BrandController::class,'fetch'])->name('brand.fetch');
     Route::get('brandCheck{input}',[BrandController::class,'check'])->name('brand.check');

@@ -7,8 +7,9 @@ import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
 import ProductCart from './ProductCart';
 import { useCallback } from 'react';
 import { debounce } from 'lodash';
+import { useEffect } from 'react';
 
-export default function DealAndReceivePartOne({setData=()=>{},errors,processing,clearErrors=()=>{},setError=()=>{},data,operation}){
+export default function SaleAndReceivePartOne({setData=()=>{},errors,processing,clearErrors=()=>{},setError=()=>{},data,operation}){
    const [singleItemToDeal,setSingleItemToDeal] =useState({ 
         product_classification_id: '',
         quantity:'',
@@ -18,7 +19,6 @@ export default function DealAndReceivePartOne({setData=()=>{},errors,processing,
         priceOrCost :''  
     })
     const prodClasSugestIds=useRef([]);
-  
     
     function setClickedProdClas(e){
         setSingleItemToDeal(prevState => ({
@@ -33,14 +33,22 @@ export default function DealAndReceivePartOne({setData=()=>{},errors,processing,
         console.log(singleItemToDeal)
     }
 
+    
+    
+ 
     const productClassification = useRef();
     const quantity = useRef();
-
+useEffect(()=>{
+        productClassification.current.value=""
+               quantity.current.value=""
+     
+    },[data])
     const [suggessioinsProdClas,setSuggessionsProdClas] = useState();
 
 
 
     const updateProductClassificationSuggessions =useCallback( debounce(async (input) =>{
+        setSingleItemToDeal(prev=>({...prev,quantity:''}))
         const response = await axios.get(route('productClassification.fetchWithUnit',input ? input: '-0'))
         var tmpSugests=[];
         prodClasSugestIds.current=[];
@@ -57,7 +65,6 @@ export default function DealAndReceivePartOne({setData=()=>{},errors,processing,
             console.log(item)
          tmpSugests.push(item.name+' '+item.brand+' '+item.unit+' '+val)  
          prodClasSugestIds.current.push({id:item.id,value:item.name+' '+item.brand+' '+item.unit+' '+val,name:item.name,brand:item.brand,unit:item.unit,priceOrCost:val})  
-         console.log(prodClasSugestIds)
         })
         setSuggessionsProdClas(tmpSugests)
         if(!response.data.data?.length){
@@ -67,11 +74,11 @@ export default function DealAndReceivePartOne({setData=()=>{},errors,processing,
         }
     },300 ),[]) 
 
-return (<div className='w-full pb-6 flex items-center justify-center md:flex-row flex-col'>
-<section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-    <form onSubmit={(e)=>e.preventDefault()} className="mt-6 space-y-6">
+return (<div className='w-full z-0 pb-6 flex items-center justify-center md:flex-row flex-col'>
+<section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white  dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
+    <form  onSubmit={(e)=>e.preventDefault()}  className="mt-6 space-y-6">
             <div className='flex flex-col md:flex-row md:space-x-4'>
-                <div className='w-full md:w-1/2' >
+                <div className='w-full  md:w-1/2' >
                     <InputLabel htmlFor="product_classification" value="Product Class" />
 
                     <AutoCompleteTextInput
@@ -95,7 +102,7 @@ return (<div className='w-full pb-6 flex items-center justify-center md:flex-row
                         ref={quantity}
                         value={singleItemToDeal.quantity}
                         type="text"
-                        onChange={(e)=>setSingleItemToDeal(prev=>({...prev,quantity:e.target.value}))}
+                        onChange={(e)=>{setSingleItemToDeal(prev=>({...prev,quantity:e.target.value}))}}
                         className="mt-1 block w-full"
                         autoComplete="quantity"
                     />
@@ -111,8 +118,7 @@ return (<div className='w-full pb-6 flex items-center justify-center md:flex-row
                 if(singleItemToDeal.quantity)
                  {       
                 setData(prev => {
-                  const isItemExists = prev.items.some(item => item.id === singleItemToDeal.id);
-              
+                  const isItemExists = prev.items.some(item => item.product_classification_id === singleItemToDeal.product_classification_id);
                   if (isItemExists) return prev;
               
                   return {

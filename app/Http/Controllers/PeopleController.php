@@ -51,7 +51,7 @@ class PeopleController extends Controller
         DB::table('people_user_roles')->insert(['rolable_type'=>'App\Models\People::class','rolable_id'=>$people->id]);
         DB::commit(); 
     }catch(Exception $e)
-       {dd($e);
+       {
         DB::rollBack();
        }     
       }
@@ -65,13 +65,14 @@ class PeopleController extends Controller
         //
     }
 
-    public function thirdPartyFetch(string $input)
+    public function thirdPartyFetch(string $input,string $operation)
     {
-        return PeopleClassification::join('people', 'people.people_classifications_id', '=', 'people_classifications.id')
-        ->join('users', 'users.id', '=', 'people.users_id')
-        ->where('users.name', 'like', "%{$input}%")
-        ->select('users.name as user_name', 'people_classifications.name as classification_name','people.id as id')
-        ->get(); 
+        $role = 'Supplier';
+        if($operation=='Sale'){
+         $role = 'Customer';
+        } 
+
+        return PeopleClassification::where('root','');
     }
 
     /**

@@ -16,14 +16,14 @@ export default function SaleAndReceivePartTwo({setData=()=>{},errors,processing,
     const thirdParty = useRef();
 
     const updateThirdPartySuggessions =async (input) =>{
-        const response = await axios.get(route('people.thirdPartyFetch',input ? input: '-0'))
+        const response = await axios.get(route('people.thirdPartyFetch',input ? input: '-0',operation))
         var tmpSugests=[];
         response.data.forEach((item)=>{
          tmpSugests.push(item.user_name+' '+item.classification_name)    
         })
         setSuggessionsThirdParty(tmpSugests)
         if(!suggesioinsThirdParty?.length){
-             setError('third_party','No such a third party')
+             setError('third_party','No such a'+operation=="Sale" ? "Customer" : "Supplier")
         }else{
            clearErrors('third_party') 
         }
@@ -55,7 +55,7 @@ export default function SaleAndReceivePartTwo({setData=()=>{},errors,processing,
                             
                         />
     
-                        <InputError message={errors.product_classification} className="mt-2" />
+                        <InputError message={errors.third_party} className="mt-2" />
                     </div>
                 </div>
                

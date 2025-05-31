@@ -35,10 +35,10 @@ export default function NewPerson({ auth }) {
         role: "",
         user: null,
     });
-        const [name, setName] = useState();
-    const [email, setEmail] = useState();
-    const [address, setAddress] = useState();
-    const [photo, setPhoto] = useState();
+        const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [address, setAddress] = useState('');
+    const [photo, setPhoto] = useState('');
     const [showPopup, setShowPopup] = useState(false);
     const [isSuccessPopup, setIsSuccessPopup] = useState(true);
     const goBack = () => {

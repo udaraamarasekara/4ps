@@ -60,7 +60,7 @@ export default forwardRef(function AutocompleteTextInput({
         autoComplete="off"
       />
       {showSuggestions && (
-        <ul className="absolute bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-md w-full">
+        <ul className="relative overflow-auto bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-md w-full">
           {suggestions.map((suggestion, index) => (
             <li
               key={index}
