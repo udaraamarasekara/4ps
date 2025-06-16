@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->morphs('rolable');
+            $table->foreignId('people_classification_id');
         
         });
     }
