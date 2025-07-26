@@ -100,7 +100,7 @@ export default function NewProdClasFormPartTwo({setData=()=>{},errors,processing
                             value={data.unit_name}
                             suggestions={unitSuggessioins}
                             onChange={(e) => updateUnitSuggessions(e.target.value)}
-                            setClickedElement={(el)=>{setData('unit_name',el),prevUnitSugst.current=el}}
+                            setClickedElement={(el)=>{setData('unit_name',el);prevUnitSugst.current=el}}
 
                             className="mt-1 block w-full"
                         />

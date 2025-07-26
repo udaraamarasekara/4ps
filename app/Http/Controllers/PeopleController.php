@@ -67,8 +67,30 @@ class PeopleController extends Controller
         if ($operation == 'Sale') {
             $role = 'Customer';
         }
+        return DB::table('people_user_roles')
+            ->join('people', 'people.id', '=', 'people_user_roles.rolable_id')
+            ->join('people_classifications', 'people_classifications.id', '=', 'people_user_roles.people_classification_id')
+            ->where('rolable_type', 'App\Models\People::class')
+            ->where('people_classifications.root', $role)
+            ->where('people.name', operator: 'like', value: "%{$input}%")
+            ->select('people.name as user_name', 'people_classifications.name as classification_name')
+            ->get()->map(function ($item) {
+                $item->table = ' (People)';
+                return $item;
+            })->merge(
+                DB::table('people_user_roles')
+                    ->join('users', 'users.id', '=', 'people_user_roles.rolable_id')
+                    ->join('people_classifications', 'people_classifications.id', '=', 'people_user_roles.people_classification_id')
+                    ->where('rolable_type', 'App\Models\User::class')
+                    ->where('people_classifications.root', $role)
+                    ->where('users.name', 'like', "%{$input}%")
+                    ->select('users.name as user_name', 'people_classifications.name as classification_name')
+                    ->get()->map(function ($item) {
+                        $item->table = ' (User)';
+                        return $item;
+                    }   )
+            );
 
-        return DB::table('people_classifications')->join('people_user_roles', 'people_classifications.id', '=', 'people_user_roles.people_classification_id')->where('people_classifications.root', $role)->get();
     }
 
     /**
@@ -97,6 +119,6 @@ class PeopleController extends Controller
 
     public function fetch(string $input)
     {
-        return User::where('name', 'like', "%{$input}%")->get();
+        return User::where('name', operator: 'like', value: "%{$input}%")->get();
     }
 }

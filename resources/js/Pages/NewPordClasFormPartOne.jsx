@@ -24,7 +24,6 @@ export default function NewProdClasFormPartOne({setData=()=>{},errors,processing
         setCategorySugges(response.data[1])
         setAddNewCategory(response.data[0])
        
-        console.log(categorySugges)
       
 },300),[])
     
@@ -40,8 +39,10 @@ export default function NewProdClasFormPartOne({setData=()=>{},errors,processing
         }
         else
         {
+            
           isNotInitialMount.current =true;  
-        }     
+        } 
+        console.log(data.name)    
      },[category.current?.value])
     
  return (
@@ -75,7 +76,7 @@ export default function NewProdClasFormPartOne({setData=()=>{},errors,processing
                             value={data.category_name}
                             suggestions={categorySugges}
                             onChange={(e) => updateCategorySuggessions(e.target.value)}
-                            setClickedElement={(el)=>{setData('category_name',el),prevCatSugst.current=el}}
+                            setClickedElement={(el)=>{setData('category_name',el);prevCatSugst.current=el}}
                             className="mt-1 block w-full"
                         />
                         {addNewCategory ?
