@@ -17,7 +17,8 @@ export default function NewProductClassification({ auth }) {
         brand_name:'',
         unit_name:'',
         cost:'',
-        price:''
+        price:'',
+        initial_stock_quantity:''
     });
 const movetoPartOne = () => setPage(1)
 const movetoPartTwo = (e) => {

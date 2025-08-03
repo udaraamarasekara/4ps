@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ProductClassification extends Model
 {
   use HasFactory, SoftDeletes;
-  protected $guarded = [];
+  protected $guarded = ['initial_stock_quantity'];
 
   protected $casts = [
     'properties' => 'array', // Ensure properties is stored as JSON

@@ -16,7 +16,8 @@ export default function SaleAndReceive({auth,operation}){
     const [page,setPage]=useState(1);   
     const { data, setData, errors, setError,clearErrors,post, reset, processing, recentlySuccessful } = useForm({
      items:[],
-     third_party:null 
+     third_party:null ,
+     operation:operation,
      
     });
     const movetoPartOne = () => setPage(1)
@@ -69,7 +70,8 @@ return (<AuthenticatedLayout
          {
           page ==1 ? <SaleAndReceivePartOne  processing={processing} errors={errors} data={data} setData={setData} setError={setError} operation={operation} /> 
           :
-          <SaleAndReceivePartTwo processing={processing} errors={errors} data={data} setData={setData} setError={setError} operation={operation}/> 
+          <SaleAndReceivePartTwo setShowPopup={setShowPopup} setIsSuccessPopup={setIsSuccessPopup}
+           post={post} processing={processing} errors={errors} data={data} setData={setData} setError={setError} operation={operation}/> 
          }
         </AuthenticatedLayout>
              

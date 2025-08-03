@@ -16,7 +16,8 @@ return new class extends Migration
             $table->timestamps();
             $table->morphs('rolable');
             $table->foreignId('people_classification_id');
-        
+            $table->softDeletes();  // Adds a `deleted_at` column
+
         });
     }
 

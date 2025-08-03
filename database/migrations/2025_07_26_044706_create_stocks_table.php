@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('product_classification_id');
             $table->float('quantity');
             $table->timestamps();
+            $table->softDeletes();  // Adds a `deleted_at` column
+
         });
     }
 

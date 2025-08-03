@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import AutoCompleteTextInput from "@/Components/AutoCompleteTextInput";
 import { useEffect, useCallback } from "react";
 import { debounce } from "lodash";
+import { router } from "@inertiajs/react";
 
 export default function SaleAndReceivePartTwo({
     setData = () => {},
@@ -18,7 +19,8 @@ export default function SaleAndReceivePartTwo({
     operation,
 }) {
     const [suggesioinsThirdParty, setSuggessionsThirdParty] = useState();
-
+    const [addNewThirdParty,setAddNewThirdParty] = useState(true);
+    const thirdPartyName = operation=='Sale'?'Customer':'Supplier';
     const [tot, setTot] = useState();
     useEffect(() => {
         setTot(
@@ -52,6 +54,44 @@ export default function SaleAndReceivePartTwo({
         []
     );
 
+    const addNewDeal = (e) => {
+        e.preventDefault();
+        clearErrors();
+        if (data.third_party === "") {
+            setError("third_party", "You must select a " + thirdPartyName);
+            return;
+        }
+        if (data.items.length === 0) {
+            setError(
+                "product_classification_id",
+                "You must have at least one product for sale"
+            );
+            return;
+        }
+        post(route("product.store"), {
+            onSuccess: () => {
+                setAddNewThirdParty(true);
+                setSuggessionsThirdParty([]);
+                setData({
+                    items: [],
+                    third_party: null,
+                });
+                setIsSuccessPopup(true);
+                setShowPopup(true);
+                setTimeout(() => {
+                    setShowPopup(false);
+                }, 2000);
+            },
+            onError: () => {
+                setIsSuccessPopup(false);
+                setShowPopup(true);
+                setTimeout(() => {
+                    setShowPopup(false);
+                }, 2000);
+            },
+        });
+    };
+
     useEffect(() => {
         if (isNotInitialMount.current) {
             if (
@@ -59,12 +99,12 @@ export default function SaleAndReceivePartTwo({
                 thirdParty.current.value !== "" &&
                 prevThirdPartySugst!== data.third_party
             ) {
-                addNewCategory
+                addNewThirdParty
                     ? setError(
                           "third_party",
-                          "No such a Category. Click to add new category"
+                          "No such a "+thirdPartyName + ". Click to add new "+thirdPartyName
                       )
-                    : setError("third_party", "No such a Category");
+                    : setError("third_party","No such a "+thirdPartyName)
             } else {
                 clearErrors("third_party");
             }
@@ -112,10 +152,12 @@ export default function SaleAndReceivePartTwo({
                                 }}
                             />
 
-                            <InputError
-                                message={errors.third_party}
-                                className="mt-2"
-                            />
+                           {addNewThirdParty ?
+                                                    <div onClick={()=>router.visit(route('people.create'))}>
+                                                      <InputError message={errors.third_party} className="mt-2 hover:underline hover:cursor-pointer" /> 
+                                                    </div>  
+                                                   :<InputError message={errors.third_party} className="mt-2" />
+                                                  }
                         </div>
                     </div>
 

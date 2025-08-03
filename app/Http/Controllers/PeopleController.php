@@ -20,7 +20,6 @@ class PeopleController extends Controller
      */
     public function index()
     {
-        return Inertia::render('NewPerson');
     }
 
     /**
@@ -28,7 +27,7 @@ class PeopleController extends Controller
      */
     public function create()
     {
-        //
+     return Inertia::render('NewPerson');
     }
 
     /**

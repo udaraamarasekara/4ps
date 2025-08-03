@@ -15,9 +15,13 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->enum('deal_type',['sale','receive']);
-            $table->foreignId('product_classifications_id')->constrained();
-            $table->unsignedInteger('quantity');
+            $table->foreignId('people_id')->constrained();
+            $table->decimal('total_bill', 10, 2);
+            $table->json('items')->nullable();
+            $table->decimal('paid_amount', 10, 2)->default(0);
             $table->foreignId('users_id')->constrained();
+            $table->softDeletes();  // Adds a `deleted_at` column
+
         });
     }
 

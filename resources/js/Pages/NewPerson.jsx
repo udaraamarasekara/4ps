@@ -65,6 +65,7 @@ export default function NewPerson({ auth }) {
                 route("people.fetch", input ? input : "-0")
             );
             users.current = response.data;
+            response.data &&
             setUserSugges(
                 response.data.map((row) => {
                     return row.name;
@@ -190,7 +191,7 @@ export default function NewPerson({ auth }) {
 
                         <div className="flex flex-col md:flex-row md:space-x-4">
                             {data.type === "User" ? (
-                                <div className="w-full z-10 md:w-1/2">
+                                <div className="w-full z-9 md:w-1/2">
                                     <InputLabel htmlFor="user" value="User" />
 
                                     <AutoCompleteTextInput

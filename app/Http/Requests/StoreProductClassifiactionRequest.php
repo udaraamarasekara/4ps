@@ -26,6 +26,7 @@ class StoreProductClassifiactionRequest extends FormRequest
             'brand_name'=>['nullable','string','exists:brands,name'],
             'unit_name'=>['required','string','exists:units,name'],
             'category_name'=>['required','string','exists:categories,name'],
+            'initial_stock_quantity'=>['nullable','regex:/^\d+(\.\d{1,2})?$/'],
             'properties' => 'nullable|array',
             'properties.*.name' => ['required_if:properties,!=,null|string'],
             'properties.*.type' => ['required_if:properties,!=,null|string|in:text,number,boolean'],

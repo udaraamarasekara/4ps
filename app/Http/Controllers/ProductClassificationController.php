@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProductClassification;
+use App\Models\Stock;
 use App\Models\Unit;
 use App\Models\Brand;
 use App\Http\Controllers\Controller;
@@ -64,6 +65,10 @@ class ProductClassificationController extends Controller
         unset($rawInput['cost']);
         $productClassification = ProductClassification::create($rawInput);
         ProductValueVariation::create(['product_classifications_id'=>$productClassification->id,'price'=>$price,'cost'=>$cost]);
+        if($rawInput['initial_stock_quantity'])
+        {
+          Stock::create(['product_classification_id'=>$productClassification->id,'quantity'=>$rawInput['initial_stock_quantity']]);  
+        }
         return back();
     }
 
