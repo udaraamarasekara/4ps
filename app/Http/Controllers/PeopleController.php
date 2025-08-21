@@ -74,7 +74,7 @@ class PeopleController extends Controller
             ->where('people.name', operator: 'like', value: "%{$input}%")
             ->select('people.name as user_name', 'people_classifications.name as classification_name')
             ->get()->map(function ($item) {
-                $item->table = ' (People)';
+                $item->table = ' People';
                 return $item;
             })->merge(
                 DB::table('people_user_roles')
@@ -85,7 +85,7 @@ class PeopleController extends Controller
                     ->where('users.name', 'like', "%{$input}%")
                     ->select('users.name as user_name', 'people_classifications.name as classification_name')
                     ->get()->map(function ($item) {
-                        $item->table = ' (User)';
+                        $item->table = ' User';
                         return $item;
                     }   )
             );

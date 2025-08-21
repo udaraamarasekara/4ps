@@ -1,7 +1,7 @@
 <?php
 namespace App\Utilities;
 use App\Models\Stock;
- Class StockService{
+class StockService{
 
 public static function InitializeProductForStock(int $productClassificationId, float $quantity){
    Stock::create(['product_classification_id'=>$productClassificationId,'quantity'=>$quantity]);

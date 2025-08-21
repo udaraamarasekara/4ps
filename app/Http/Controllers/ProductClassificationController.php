@@ -38,7 +38,7 @@ class ProductClassificationController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(StoreProductClassifiactionRequest $request)
-    {
+    {   
         $category_id=null;
         $rawInput =$request->validated();  
         if(isset($rawInput['category_name']))

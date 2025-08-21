@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreProductRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class StoreProductRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,6 +23,8 @@ class StoreProductRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'operation'=>[Rule::in(['Sale', 'Grn'])],
+            'third_party' => ['nullable'],
             'items' => 'nullable|array',
             'items.*.product_classification_id' => ['required_if:items,!=,null|exists:product_classifications,id'],
             'items.*.quantity' => ['required_if:items,!=,null|numeric|min:1|max:999999.99'],
