@@ -57,6 +57,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('propertyClassification',PropertyClassificationController::class);
     Route::resource('peopleClassification',PeopleClassificationController::class);
     Route::get('people/{input}',[PeopleController::class,'fetch'])->name('people.fetch');
+    Route::get('stock',[ProductController::class,'currentStock'])->name('stock');
     Route::get('dashboard',function () { return Inertia::render('Dashboard');})->name('dashboard');
 
 });

@@ -23,7 +23,7 @@ class StoreProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'operation'=>[Rule::in(['Sale', 'Grn'])],
+            'operation'=>[Rule::in(['Sale', 'Receive'])],
             'third_party' => ['nullable'],
             'items' => 'nullable|array',
             'items.*.product_classification_id' => ['required_if:items,!=,null|exists:product_classifications,id'],

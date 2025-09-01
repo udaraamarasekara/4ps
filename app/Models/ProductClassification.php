@@ -40,4 +40,8 @@ class ProductClassification extends Model
                     ->latest('updated_at'); // Orders by `updated_at`
     }
 
+    public function stock()
+    {
+      return $this->hasOne(Stock::class,'product_classification_id');
+    }
 }

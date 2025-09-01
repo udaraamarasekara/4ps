@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProductRequest;
+use App\Http\Resources\CurrentStockResource;
 use App\Models\Product;
 use App\Http\Controllers\Controller;
 use App\Models\ProductValueVariation;
@@ -42,14 +43,15 @@ class ProductController extends Controller
         $rawInput = $request->validated();
 
         DB::beginTransaction();
+        if ($rawInput['third_party']['table'] == 'People') {
+            $rawInput['third_party']['peopleable_id'] = People::where('name', $rawInput['third_party']['user_name'])->first()->id;
+            $rawInput['third_party']['peopleable_type'] = 'App\Models\People';
+        } elseif ($rawInput['third_party']['table'] == 'Company') {
+            $rawInput['third_party']['peopleable_id'] = User::where('name', $rawInput['third_party']['user_name'])->first()->id;
+            $rawInput['third_party']['peopleable_type'] = 'App\Models\User';
+        }
         if ($rawInput['operation'] === 'Sale') {
-            if ($rawInput['third_party']['table'] == 'People') {
-                $rawInput['third_party']['peopleable_id'] = People::where('name', $rawInput['third_party']['user_name'])->first()->id;
-                $rawInput['third_party']['peopleable_type'] = 'App\Models\People';
-            } elseif ($rawInput['third_party']['table'] == 'Company') {
-                $rawInput['third_party']['peopleable_id'] = User::where('name', $rawInput['third_party']['user_name'])->first()->id;
-                $rawInput['third_party']['peopleable_type'] = 'App\Models\User';
-            }
+
             $rawInput['total_bill'] = $this->calTotalBillForSale($rawInput['items']);
             foreach ($rawInput['items'] as $item) {
                 if (StockService::checkProductAvailability($item['product_classification_id'], $item['quantity'])) {
@@ -106,7 +108,7 @@ class ProductController extends Controller
 
     private function calTotalBillForReceive($items)
     {
-       $total = 0;
+        $total = 0;
         foreach ($items as $item) {
             $product = ProductValueVariation::where('product_classifications_id', $item['product_classification_id'])->latest()->first();
             $cost = $product->cost ?? 0;
@@ -149,5 +151,17 @@ class ProductController extends Controller
     public function sale()
     {
         return Inertia::render('SaleAndReceive', ['operation' => 'Sale']);
+    }
+
+
+    public function receive()
+    {
+        return Inertia::render('SaleAndReceive', ['operation' => 'Receive']);
+    }
+
+     public function currentStock()
+    {
+        $currentStock = CurrentStockResource::collection(ProductClassification::paginate(10));
+        return Inertia::render('Stock', ['currentStock' => $currentStock]);
     }
 }

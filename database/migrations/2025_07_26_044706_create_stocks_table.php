@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_classification_id');
+            $table->foreignId('product_classification_id')->unique()->constrained();
             $table->float('quantity');
             $table->timestamps();
             $table->softDeletes();  // Adds a `deleted_at` column
