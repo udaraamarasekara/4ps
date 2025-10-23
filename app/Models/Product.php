@@ -10,7 +10,9 @@ class Product extends Model
 {
     use HasFactory,SoftDeletes;
     protected $guarded = [];
-      protected $casts = [
-        'items' => 'array', // Ensure items is stored as JSON
-    ];
+
+    public function items()
+    {
+        return $this->hasMany(SaleItem::class);
+    }
 }

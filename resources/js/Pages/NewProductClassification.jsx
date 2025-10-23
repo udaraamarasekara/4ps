@@ -18,7 +18,8 @@ export default function NewProductClassification({ auth }) {
         unit_name:'',
         cost:'',
         price:'',
-        initial_stock_quantity:''
+        initial_stock_quantity:'',
+        image:null, 
     });
 const movetoPartOne = () => setPage(1)
 const movetoPartTwo = (e) => {
@@ -47,6 +48,7 @@ const addNewProductClassification = (e) =>{
     }
     else if(!((errors.unit_name && data.unit_name )||(data.brand_name && errors.brand_name))){
         post(route('productClassification.store'), {
+            forceFormData: true, 
             preserveScroll: true,
             onSuccess: () => {reset()
                 setIsSuccessPopup(true)

@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head,Link ,useForm} from '@inertiajs/react';
-import { PencilSquareIcon,TrashIcon,EyeIcon } from '@heroicons/react/24/solid'
+import { PencilSquareIcon,TrashIcon,EyeIcon,ArrowLeftIcon } from '@heroicons/react/24/solid'
 import { useState } from 'react';
 import { router } from '@inertiajs/react'
 
@@ -13,13 +13,11 @@ export default function Stock({ auth,currentStock }) {
     return (
         <AuthenticatedLayout 
         user={auth.user}
-        header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">People Classification</h2>}
+        header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Stock</h2>}
     >
-        <Head title="People Classification" />
+        <Head title="Stock" />
         <div className='w-full flex justify-end'>
-            <Link href={route('peopleClassification.create')}>
-                <div className=' m-6 p-6 w-10 h-10 bg-white border border-gray-200 rounded-full text-3xl font-extrabold flex items-center justify-center hover:cursor-pointer' >+</div>
-            </Link>
+          <ArrowLeftIcon  onClick={()=>router.visit('/product')} className=' m-6 bold p-3 w-12 h-auto bg-white border border-gray-200 rounded-full text-3xl font-extrabold flex items-center justify-center hover:cursor-pointer' />
         </div>
         <div className='w-full pb-6 flex justify-center'>
             <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-x-auto sm:rounded-lg">

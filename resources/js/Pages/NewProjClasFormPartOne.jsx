@@ -25,7 +25,7 @@ export default function NewProjClasFormPartOne({setData=()=>{},errors,processing
  return (
     <div className='w-full pb-6 flex justify-center'>
     <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-        <form onSubmit={(e)=>movetoPartTwo(e)} className="mt-6 space-y-6">
+        <form onSubmit={(e)=>movetoPartTwo(e)} encType="multipart/form-data" className="mt-6 space-y-6">
                 <div className='flex flex-col md:flex-row md:space-x-4'>
                     <div className='w-full md:w-1/2' >
                         <InputLabel htmlFor="Project name" value="Project name" />

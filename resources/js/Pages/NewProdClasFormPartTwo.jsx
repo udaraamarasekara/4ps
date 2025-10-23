@@ -8,7 +8,7 @@ import AutoCompleteTextInput from "@/Components/AutoCompleteTextInput";
 import NewBrandModal from "./NewBrandModal";
 import NewUnitModal from "./NewUnitModal";
 import { debounce } from "lodash";
-
+import FileInput from "@/Components/FileInput";
 export default function NewProdClasFormPartTwo({
     setData = () => {},
     errors,
@@ -225,6 +225,23 @@ export default function NewProdClasFormPartTwo({
 
                             <InputError
                                 message={errors.cost}
+                                className="mt-2"
+                            />
+                        </div>
+                         <div className="w-full md:w-1/2">
+                            <InputLabel htmlFor="image" value="Image (optional)" />
+
+                            <FileInput
+                                id="image"
+                                onChange={(e) =>
+                                    setData("image", e.target.files[0])
+                                }
+                                className="mt-1 block w-full"
+                                accept="image/*"
+                            />
+
+                            <InputError
+                                message={errors.image}
                                 className="mt-2"
                             />
                         </div>

@@ -30,7 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
+    Route::get('transactions',[ProductController::class,'transactions'])->name('transactions');
     Route::resource('project', ProjectController::class);
     Route::resource('brand', BrandController::class);
     Route::resource('unit', UnitController::class);

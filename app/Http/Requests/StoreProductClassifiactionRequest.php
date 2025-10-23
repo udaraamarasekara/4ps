@@ -31,7 +31,8 @@ class StoreProductClassifiactionRequest extends FormRequest
             'properties.*.name' => ['required_if:properties,!=,null|string'],
             'properties.*.type' => ['required_if:properties,!=,null|string|in:text,number,boolean'],
             'cost'=>['required','regex:/^\d+(\.\d{1,2})?$/'],
-            'price'=>['required','regex:/^\d+(\.\d{1,2})?$/']
+            'price'=>['required','regex:/^\d+(\.\d{1,2})?$/'],
+            'image'=>['nullable','image','mimes:jpeg,png,jpg,gif,svg','max:5120'],
 
         ];
     }

@@ -44,4 +44,10 @@ class ProductClassification extends Model
     {
       return $this->hasOne(Stock::class,'product_classification_id');
     }
+
+    public function image()
+    {
+      return $this->hasOne(ProductClassificationImage::class,'product_classification_id');
+    }
+
 }
