@@ -8,7 +8,7 @@ import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
 import { debounce } from 'lodash';
 import NewCategoryModal from './NewCategoryModal';
 import DynamicPropertyPane from '@/Components/DynamicPropertyPane';
-export default function EditProdClasFormPartOne({setData,errors,processing,movetoPartTwo=()=>{},clearErrors=()=>{},setError=()=>{},data}){
+export default function EditProdClasFormPartOne({setData = () => {},errors,processing,movetoPartTwo=()=>{},clearErrors=()=>{},setError=()=>{},data}){
     const prevCatSugst =  useRef();
     const productName = useRef();
     const category = useRef();
@@ -72,14 +72,17 @@ export default function EditProdClasFormPartOne({setData,errors,processing,movet
                         <InputLabel htmlFor="category" value="Category" />
 
                         <AutoCompleteTextInput
+                            key={'category_auto_complete'}
                             id="category"
                             ref={category}
                             value={data.category_name}
                             suggestions={categorySugges}
-                            onChange={(e) => updateCategorySuggessions(e.target.value)}
+                            onChange={(e) =>{ updateCategorySuggessions(e.target.value),setData('category_name',e.target.value)
+}}
                             setClickedElement={(el)=>{setData('category_name',el),prevCatSugst.current=el}}
                             className="mt-1 block w-full"
                         />
+    
                         {addNewCategory ?
                           <div onClick={()=>setShowCategory(true)}>
                             <InputError message={errors.category_name} className="mt-2 hover:underline hover:cursor-pointer" /> 

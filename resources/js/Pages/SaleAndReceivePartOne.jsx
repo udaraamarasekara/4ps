@@ -19,7 +19,8 @@ export default function SaleAndReceivePartOne({setData=()=>{},errors,processing,
         priceOrCost :''  
     })
     const prodClasSugestIds=useRef([]);
-    
+    const [singleItemsNameText,setSingleItemsNameText]=useState('');
+
     function setClickedProdClas(e){
         setSingleItemToDeal(prevState => ({
             ...prevState,
@@ -29,8 +30,7 @@ export default function SaleAndReceivePartOne({setData=()=>{},errors,processing,
             unit: prodClasSugestIds.current.filter(i=>i.value===e)[0].unit,
             priceOrCost : prodClasSugestIds.current.filter(i=>i.value===e)[0].priceOrCost    
         }));
-
-        console.log(singleItemToDeal)
+      setSingleItemsNameText(prodClasSugestIds.current.filter(i=>i.value===e)[0].name+' '+prodClasSugestIds.current.filter(i=>i.value===e)[0].brand+' '+prodClasSugestIds.current.filter(i=>i.value===e)[0].unit+' '+prodClasSugestIds.current.filter(i=>i.value===e)[0].priceOrCost);
     }
 
     
@@ -84,9 +84,9 @@ return (<div className='w-full z-0 pb-6 flex items-center justify-center md:flex
                     <AutoCompleteTextInput
                         id="product_classification"
                         ref={productClassification}
-                        value={singleItemToDeal.product_classification_id}
+                        value={singleItemsNameText}
                         suggestions={suggessioinsProdClas}
-                        onChange={(e) => updateProductClassificationSuggessions(e.target.value)}
+                        onChange={(e) => {setSingleItemsNameText(e.target.value);updateProductClassificationSuggessions(e.target.value)}}
                         className="mt-1 block w-full"
                         setClickedElement={(el) => setClickedProdClas(el)}
                         

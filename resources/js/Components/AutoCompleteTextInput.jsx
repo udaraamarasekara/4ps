@@ -13,17 +13,31 @@ export default forwardRef(function AutoCompleteTextInput(
   },
   ref
 ) {
-  const input = ref ? ref : useRef();
+  const inputRef = ref ? ref : useRef();
   const [suggestionIndex, setSuggestionIndex] = useState(-1);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const wrapperRef = useRef(null);
 
+  // Focus input when prop isFocused = true
   useEffect(() => {
-    if (isFocused) input.current?.focus();
+    if (isFocused) inputRef.current?.focus();
   }, [isFocused]);
 
+  // Hide suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleInputChange = (e) => {
-    onChange(e); // Let parent update the value
+    onChange(e);
     setShowSuggestions(true);
+    setSuggestionIndex(-1);
   };
 
   const handleKeyDown = (e) => {
@@ -37,6 +51,8 @@ export default forwardRef(function AutoCompleteTextInput(
       );
     } else if (e.key === "ArrowUp") {
       setSuggestionIndex((prev) => Math.max(prev - 1, -1));
+    } else if (e.key === "Escape") {
+      setShowSuggestions(false);
     }
   };
 
@@ -47,11 +63,11 @@ export default forwardRef(function AutoCompleteTextInput(
   };
 
   return (
-    <div className="relative z-0">
+    <div ref={wrapperRef} className="relative z-0">
       <input
         {...props}
         type={type}
-        ref={input}
+        ref={inputRef}
         value={value}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
@@ -59,7 +75,7 @@ export default forwardRef(function AutoCompleteTextInput(
         className={
           "border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 " +
           "focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 " +
-          "dark:focus:ring-indigo-600 rounded-md shadow-sm " +
+          "dark:focus:ring-indigo-600 rounded-md shadow-sm w-full " +
           className
         }
       />

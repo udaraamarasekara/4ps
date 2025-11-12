@@ -22,7 +22,7 @@ export default function SaleAndReceivePartTwo({
     operation,
 }) {
     const [suggesioinsThirdParty, setSuggessionsThirdParty] = useState();
-    const [addNewThirdParty, setAddNewThirdParty] = useState(true);
+    const addNewThirdParty = true;
     const thirdPartyName = operation == "Sale" ? "Customer" : "Supplier";
     const [tot, setTot] = useState();
     const [isTotalPaid, setIsTotalPaid] = useState(false);
@@ -53,12 +53,12 @@ export default function SaleAndReceivePartTwo({
             );
             var tmpSugests = [];
             thirdPartyObject.current = response.data;
-            clearErrors("third_party");
             response.data.forEach((person) => {
                 tmpSugests.push(
                     person.user_name + " " + person.classification_name
                 );
             });
+            tmpSugests.length === 0 && input !== "" ? setErrorsForThirdParty() : setError("third_party","");
             setSuggessionsThirdParty(tmpSugests);
         }, 300),
         []
@@ -71,7 +71,8 @@ export default function SaleAndReceivePartTwo({
         );
         if (selectedThirdParty) {
             setData("third_party", selectedThirdParty);
-            console.log(selectedThirdParty);
+            thirdParty.current.value = selectedThirdParty.user_name + " " + selectedThirdParty.classification_name;
+            console.log(thirdParty.current.value);
         }
     };
 
@@ -139,31 +140,20 @@ export default function SaleAndReceivePartTwo({
             }, 1000);
         }
     };
-
-    useEffect(() => {
-        if (isNotInitialMount.current) {
-            if (
-                !suggesioinsThirdParty?.length &&
-                thirdParty.current.value !== "" &&
-                prevThirdPartySugst !== data.third_party
-            ) {
-                addNewThirdParty
-                    ? setError(
-                          "third_party",
-                          "No such a " +
-                              thirdPartyName +
-                              ". Click to add new " +
-                              thirdPartyName
-                      )
-                    : setError("third_party", "No such a " + thirdPartyName);
+        const setErrorsForThirdParty = () => {
+            if (addNewThirdParty) {
+                setError(
+                    "third_party",
+                    "No such a " +
+                        thirdPartyName +
+                        ". Click to add new " +
+                        thirdPartyName
+                );
             } else {
-                clearErrors("third_party");
+                setError("third_party", "No such a " + thirdPartyName);
             }
-        } else {
-            isNotInitialMount.current = true;
-        }
-    }, [thirdParty.current?.value]);
-
+        };
+           
     return (
         <div className="w-full pb-6 flex justify-center">
             <Transition
@@ -207,10 +197,12 @@ export default function SaleAndReceivePartTwo({
                             <AutoCompleteTextInput
                                 id="third_party"
                                 ref={thirdParty}
-                                value={data.third_party}
                                 suggestions={suggesioinsThirdParty}
+                                value={ data.third_party.user_name ? data.third_party.user_name ? data.third_party.user_name + " " + data.third_party.classification_name : '':data.third_party.length ?data.third_party:""}
                                 onChange={(e) =>
+                                    {setData("third_party", e.target.value),
                                     updateThirdPartySuggessions(e.target.value)
+                                    }
                                 }
                                 className="mt-1 block w-full"
                                 setClickedElement={(el) => {
