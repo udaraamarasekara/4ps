@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head,Link ,useForm} from '@inertiajs/react';
+import { Head,Link} from '@inertiajs/react';
 import { PencilSquareIcon,TrashIcon,EyeIcon } from '@heroicons/react/24/solid'
 import Modal from '@/Components/Modal';
 import { useState } from 'react';

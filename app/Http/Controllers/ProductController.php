@@ -130,7 +130,7 @@ class ProductController extends Controller
         if (isset($filters['type']) && in_array($filters['type'], ['sale', 'receive'])) {
             $transactions->where('deal_type', $filters['type']);
         }
-dd($transactions->first()->items);
+// dd($transactions->first()->items);
         // if (isset($filters['name'])) {
             // $transactions->whereHas('productClassifications', function ($query) use ($filters) {
             //     $query->where('name', 'like', '%' . 'tikiri mari'. '%');

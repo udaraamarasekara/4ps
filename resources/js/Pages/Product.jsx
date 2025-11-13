@@ -26,7 +26,7 @@ export default function Product({ auth }) {
                 </div>
                 <div onClick={() => router.visit(route('transactions'))} className="max-w-7xl py-3 md:py-12 w-4/5 md:w-1/4  mx-auto sm:px-6 lg:px-8">
                     <div className="bg-cyan-300 min-h-40 flex flex-col items-center justify-center dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-2xl font-bold text-gray-900 dark:text-gray-100"> Transactions</div>
+                        <div className="p-6 text-2xl font-bold text-gray-900 dark:text-gray-100"> Transactions Reports</div>
                     </div>
                 </div>
                 
