@@ -41,6 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::get('receive',[ProductController::class,'receive'])->name('receive');
     Route::get('thirdPartyPeopleFetch/{input}/{operation}',[PeopleController::class,'thirdPartyFetch'])->name('people.thirdPartyFetch');
     Route::resource('people',PeopleController::class);
+    Route::get('productClassification/{input}',[ProductClassificationController::class,'getName'])->name('productClassification.getName');
     Route::get('brandFetch/{input}',[BrandController::class,'fetch'])->name('brand.fetch');
     Route::get('brandCheck/{input}',[BrandController::class,'check'])->name('brand.check');
     Route::get('unitCheck/{input}',[UnitController::class,'check'])->name('unit.check');

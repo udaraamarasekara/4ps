@@ -137,6 +137,12 @@ class ProductClassificationController extends Controller
   {
     return ProductClassification::where('name', 'like', '%' . $input . '%')->orWhere('properties->name', 'like', '%' . $input . '%')->unit?->name;
   }
+
+ public function getName(string $input)
+  {
+    return ProductClassification::where('name', 'like', '%' . $input . '%')->pluck('name');
+  }
+
   /**
    * Show the form for editing the specified resource.
    */

@@ -137,7 +137,7 @@ export default function ProductClassification({ auth,productClassifications }) {
         <Modal show={show} onClose={()=>setShow(false)} >
             <div className='w-full h-auto p-5 flex flex-col items-center'>
               <div className='font-bold uppercase text-2xl'>{item.name}</div>
-              <div className=' w-4/5 text-center w-full max-w-[600px] mx-auto break-words whitespace-normal'>
+              <div className='text-center w-full max-w-[600px] mx-auto break-words whitespace-normal'>
                 <div className="grid grid-cols-1  gap-4">
                     {item?.properties?.length ? item.properties.map((prop, index) => (
                     <div
@@ -168,7 +168,7 @@ export default function ProductClassification({ auth,productClassifications }) {
         <Modal show={showEditCostPrice} onClose={()=>setShowEditCostPrice(false)} >
             <div className='w-full h-auto p-5 flex flex-col items-center'>
               <div className='font-bold uppercase text-2xl'>{itemName}</div>
-              <div className=' w-4/5 text-center w-full max-w-[600px] mx-auto break-words whitespace-normal'>
+              <div className='text-center w-full max-w-[600px] mx-auto break-words whitespace-normal'>
                 <div className='flex flex-col md:flex-row md:space-x-4'>
                 <div className='w-full md:w-1/2' >
                         <InputLabel htmlFor="cost" value="cost" />
