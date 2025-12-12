@@ -107,15 +107,17 @@ export default function NewProdClasFormPartTwo({
                                 htmlFor="brand_name "
                                 value="Brand (optional)"
                             />
-
+   
                             <AutoCompleteTextInput
                                 id="brand_name"
                                 ref={brand}
                                 value={data.brand_name}
                                 suggestions={brandSuggessioins}
-                                onChange={(e) =>
-                                    updateBrandSuggessions(e.target.value)
-                                }
+                                onChange={(e) => {
+                                    const input = e.target.value;
+                                    setData('brand_name', input);
+                                    updateBrandSuggessions(input);
+                                }}
                                 setClickedElement={(el) =>
                                     setData("brand_name", el)
                                 }
@@ -143,9 +145,11 @@ export default function NewProdClasFormPartTwo({
                                 ref={unit}
                                 value={data.unit_name}
                                 suggestions={unitSuggessioins}
-                                onChange={(e) =>
-                                    updateUnitSuggessions(e.target.value)
-                                }
+                                onChange={(e) => {
+                                    const input = e.target.value;
+                                    setData('unit_name', input);
+                                    updateUnitSuggessions(input);
+                                }}
                                 setClickedElement={(el) => {
                                     setData("unit_name", el);
                                     prevUnitSugst.current = el;

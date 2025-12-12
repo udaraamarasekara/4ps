@@ -14,8 +14,8 @@ use DB;
 use App\Models\People;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Session\Store;
 use Inertia\Inertia;
+use Illuminate\Validation\Rule;
 use App\Models\ProductClassification;
 
 class ProductController extends Controller
@@ -119,16 +119,36 @@ class ProductController extends Controller
     }
 
 
-    public function transactions(array $filters = [])
+    public function transactions()
     {
         $transactions = Product::with('items')->orderBy('created_at', 'desc');
+        
+        
+        return Inertia::render('Transactions', [
+            'transactions' => $transactions->paginate(10),
+        ]);
+    }
+public function transactionsSearch(array $filters = [])
+    {
+        $filters = request()->validate([
+            'startDate' => 'nullable|date',
+            'endDate' => 'nullable|date',
+            'type' => ['nullable',Rule::in(['sale','receive'])],
+             'name' => 'nullable|string',
+             'brand' => 'nullable|string',
+             'category' => 'nullable|string',
+             'property' => 'nullable|string',
+        ]); 
+        $transactions = Product::with('items')->orderBy('created_at', 'desc');
 
-        if (isset($filters['startDate']) && isset($filters['endDate'])) {
-            $transactions->whereBetween('created_at', [$filters['startDate'], $filters['endDate']]);
+        if (isset($filters['startDate'])) {
+            $transactions = $transactions->where('created_at', '>=', $filters['startDate']);
         }
-
-        if (isset($filters['type']) && in_array($filters['type'], ['sale', 'receive'])) {
-            $transactions->where('deal_type', $filters['type']);
+        if (isset($filters['endDate'])) {
+            $transactions = $transactions->where('created_at', '<=', $filters['endDate']);
+        }
+        if (isset($filters['type'])) {
+            $transactions = $transactions->where('deal_type', $filters['type']);
         }
 // dd($transactions->first()->items);
         // if (isset($filters['name'])) {
@@ -136,14 +156,10 @@ class ProductController extends Controller
             //     $query->where('name', 'like', '%' . 'tikiri mari'. '%');
             // });
         // }
-        
-        
-        return Inertia::render('Transactions', [
-            'transactions' => $transactions->paginate(10),
-            'filters' => $filters,
-        ]);
-    }
 
+
+        return response()->json($transactions->paginate(10));
+    }
     /**
      * Show the form for editing the specified resource.
      */

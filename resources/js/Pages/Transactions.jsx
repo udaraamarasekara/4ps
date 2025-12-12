@@ -7,15 +7,20 @@ import { useState } from 'react';
 import { router } from '@inertiajs/react'
 import axios from 'axios';
 import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
-
+import TextInput from '@/Components/TextInput';
 export default function Transactions({ auth, transactions }) {
-    const [typeFilter,setTypeFilter]=useState('All Types');
+    const [typeFilter,setTypeFilter]=useState('');
     const [nameFilter,setNameFilter]=useState('');
     const [transactionsData,setTransactionsData]=useState(transactions);
+    const [brandSuggestions,setBrandSuggestions]=useState([]);
     const [nameSuggestions,setNameSuggestions]=useState([]);
+    const [categorySuggestions,setCategorySuggestions]=useState([]);
+    const [propertySuggestions,setPropertySuggestions]=useState([]);
     const[brandFilter,setBrandFilter]=useState('');
     const[categoryFilter,setCategoryFilter]=useState('');
-    const [propertyFilter,setPropertyFilter]=useState('');
+    const [propertyFilter,setPropertyFilter]=useState();
+    const [startDateFilter,setStartDateFilter]=useState('');
+    const [endDateFilter,setEndDateFilter]=useState('');
     const updateNameSuggestions = useCallback(
             debounce(async (input) => {
                 const response = await axios.get(
@@ -28,6 +33,30 @@ export default function Transactions({ auth, transactions }) {
             }, 300),
             []
         );  
+    const updateBrandSuggestions = useCallback(
+            debounce(async (input) => {
+                const response = await axios.get(
+                    route('brand.fetchRow', input ? input : "-0")
+                );
+                setBrandSuggestions(
+                    response.data
+                );
+
+            }, 300),
+            []
+        );  
+    const updateCategorySuggestions = useCallback(
+            debounce(async (input) => {
+                const response = await axios.get(
+                    route('category.fetch', input ? input : "-0")
+                );
+                setCategorySuggestions(
+                    response.data
+                );
+
+            }, 300),
+            []
+        );
 const searchTransactions = async () => {
         const response = await axios.get(route('transactions.search'), {
             params: {
@@ -50,18 +79,40 @@ const searchTransactions = async () => {
        <div className='flex justify-center'> 
         <div className='w-4/5 mx-6 gap-2 flex flex-col md:flex-row items-center justify-between  pt-6'>
             <form method="GET" className='w-full grid grid-cols-1 md:grid-cols-4  items-center flex-col md:flex-row justify-between gap-2' action={route('transactions')}>
-                <select name="type" className='border-gray-300 w-full max-sm:w-full dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm  focus:ring-indigo-500 focus:border-indigo-500 '>
+                <select name="type" placeholder='All Types' className='border-gray-300 w-full max-sm:w-full dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm  focus:ring-indigo-500 focus:border-indigo-500 '>
                     <option value="">All Types</option>
                     <option value="sale">Sale</option>
                     <option value="receive">Receive</option>
                 </select>
-                <div className="w-full" >
-                 <AutoCompleteTextInput className="w-full" placeholder="Search by name" value={nameFilter} suggestions={nameSuggestions} onChange={(e) => {updateNameSuggestions(e.target.value),setNameFilter(e.target.value)}} />
+                 <div className="w-full" >
+                 <TextInput className="w-full" placeholder="Search by Start Date"  type="date" value={startDateFilter} onChange={(e) => {setStartDateFilter(e.target.value)}} />
 
                 </div>
-                <button type="submit" className='w-full py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700'>Filter</button>
+                 <div className="w-full" >
+                 <TextInput type="date" className="w-full" placeholder="Search by End Date"  value={endDateFilter} onChange={(e) => {setEndDateFilter(e.target.value)}} />
+
+                </div>
+                <div className="w-full" >
+                 <AutoCompleteTextInput className="w-full" placeholder="Search by name"   setClickedElement={(el) => {
+                                    setNameFilter(el);
+                                }} value={nameFilter} suggestions={nameSuggestions} onChange={(e) => {updateNameSuggestions(e.target.value),setNameFilter(e.target.value)}} />
+
+                </div>
+                <div className="w-full" >
+                 <AutoCompleteTextInput className="w-full" placeholder="Search by brand"   setClickedElement={(el) => {
+                                    setBrandFilter(el);
+                                }} value={brandFilter} suggestions={brandSuggestions} onChange={(e) => {updateBrandSuggestions(e.target.value),setBrandFilter(e.target.value)}} />
+
+                </div>
+                <div className="w-full" >
+                 <AutoCompleteTextInput className="w-full" placeholder="Search by category"   setClickedElement={(el) => {
+                                    setCategoryFilter(el);
+                                }} value={categoryFilter} suggestions={categorySuggestions} onChange={(e) => {updateCategorySuggestions(e.target.value),setCategoryFilter(e.target.value)}} />
+
+                </div>
+                <button onClick={(e)=>{e.preventDefault(),searchTransactions()}} type="submit" className='w-full py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700'>Filter</button>
             <Link className='max-sm:w-full' href={route('transactions')}>
-                <button onClick={(e)=>{e.preventDefault()}} className='  py-2 w-full  bg-gray-600 text-white rounded-md hover:bg-gray-700'>Clear Filters</button>
+                <button  className='  py-2 w-full  bg-gray-600 text-white rounded-md hover:bg-gray-700'>Clear Filters</button>
             </Link>
             </form>
             
@@ -84,13 +135,6 @@ const searchTransactions = async () => {
              return <tr key={object.id}>
                          <td className='text-center'>{object.name}</td>
                          <td className='text-center' >{object.type}</td>
-                         <td className='flex justify-center gap-5' >
-                             <div onClick={()=>{setItem(object),setShow(true)}} className='bg-green-400 text-black hover:cursor-pointer rounded-full min-w-5 p-2 min-h-5' ><EyeIcon className='min-w-5 h-auto' /></div>
-                             { (object.name !=='Supplier' && object.name !=='Customer' && object.name !=='Employee' )&& <>
-                             <div onClick={()=>router.get(route('peopleClassification.edit',object.id))} className='bg-yellow-500 text-black rounded-full hover:cursor-pointer min-w-5 p-2 min-h-5' ><PencilSquareIcon className='min-w-5 h-auto' /></div>
-                             <div onClick={()=>deleteItem(object.id)} className='bg-red-500 text-white hover:cursor-pointer rounded-full min-w-5 p-2 min-h-5' ><TrashIcon className='min-w-5 h-auto' /></div>
-              </>    }
-                         </td>
                      </tr>
                   }
                   )

@@ -80,7 +80,7 @@ export default forwardRef(function AutoCompleteTextInput(
         }
       />
       {showSuggestions && suggestions.length > 0 && (
-        <ul className="absolute bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-md w-full max-h-40 overflow-auto">
+        <ul className="max-sm:relative absolute bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-md w-full max-h-40 overflow-auto">
           {suggestions.map((suggestion, index) => (
             <li
               key={index}

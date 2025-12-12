@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('transactions',[ProductController::class,'transactions'])->name('transactions');
+    Route::get('transactions/search',[ProductController::class,'transactionsSearch'])->name('transactions.search');
     Route::resource('project', ProjectController::class);
     Route::resource('brand', BrandController::class);
     Route::resource('unit', UnitController::class);
@@ -41,8 +42,9 @@ Route::middleware('auth')->group(function () {
     Route::get('receive',[ProductController::class,'receive'])->name('receive');
     Route::get('thirdPartyPeopleFetch/{input}/{operation}',[PeopleController::class,'thirdPartyFetch'])->name('people.thirdPartyFetch');
     Route::resource('people',PeopleController::class);
-    Route::get('productClassification/{input}',[ProductClassificationController::class,'getName'])->name('productClassification.getName');
+    Route::get('productClassificationName/{input}',[ProductClassificationController::class,'getName'])->name('productClassification.getName');
     Route::get('brandFetch/{input}',[BrandController::class,'fetch'])->name('brand.fetch');
+    Route::get('brandRowFetch/{input}',[BrandController::class,'fetchRow'])->name('brand.fetchRow');
     Route::get('brandCheck/{input}',[BrandController::class,'check'])->name('brand.check');
     Route::get('unitCheck/{input}',[UnitController::class,'check'])->name('unit.check');
     Route::get('unitFetch/{input}',[UnitController::class,'fetch'])->name('unit.fetch');

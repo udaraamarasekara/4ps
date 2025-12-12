@@ -46,7 +46,10 @@ class BrandController extends Controller
        }
        return [$addNewBrand,Brand::where('name','like','%'.$input.'%')->get()->pluck('name')];
     }
-
+ public function fetchRow(string $input)
+    {
+       return Brand::where('name','like','%'.$input.'%')->get()->pluck('name');
+    }
     public function check(string $input)
     {
       return Brand::where('name',$input)->count();

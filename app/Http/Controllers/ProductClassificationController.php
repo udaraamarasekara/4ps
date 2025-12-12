@@ -156,7 +156,7 @@ class ProductClassificationController extends Controller
    * Update the specified resource in storage.
    */
   public function update(UpdateProductClassifiactionRequest $request, ProductClassification $productClassification)
-  {
+  { 
     $category_id = null;
     $brand_id = null;
     $unit_id = null;
