@@ -3,8 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SaleItem extends Model
 {
     protected $guarded = [];
+    public function productClassification(): BelongsTo
+    {
+        return $this->belongsTo(ProductClassification::class, 'product_classification_id');
+    }
 }

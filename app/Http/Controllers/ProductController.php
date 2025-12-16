@@ -79,7 +79,7 @@ class ProductController extends Controller
             'users_id' => auth()->id(),
         ]);
         foreach ($rawInput['items'] as $item) {
-           SaleItem::create([
+            SaleItem::create([
                 'product_classification_id' => $item['product_classification_id'],
                 'quantity' => $item['quantity'],
                 'product_id' => $product->id,
@@ -121,25 +121,40 @@ class ProductController extends Controller
 
     public function transactions()
     {
-        $transactions = Product::with('items')->orderBy('created_at', 'desc');
-        
-        
+        $transactions = Product::with([
+            'items' => function ($q) {
+                $q->with(['productClassification'=>function($query){
+                    $query->with('brand','category','unit','latestProductValueVariation','image');
+                }]);
+            },
+            'peopleable'
+        ])->orderBy('created_at', 'desc');
+
+
         return Inertia::render('Transactions', [
             'transactions' => $transactions->paginate(10),
         ]);
     }
-public function transactionsSearch(array $filters = [])
+    public function transactionsSearch(array $filters = [])
     {
         $filters = request()->validate([
             'startDate' => 'nullable|date',
             'endDate' => 'nullable|date',
-            'type' => ['nullable',Rule::in(['sale','receive'])],
-             'name' => 'nullable|string',
-             'brand' => 'nullable|string',
-             'category' => 'nullable|string',
-             'property' => 'nullable|string',
-        ]); 
-        $transactions = Product::with('items')->orderBy('created_at', 'desc');
+            'type' => ['nullable', Rule::in(['sale', 'receive'])],
+            'name' => 'nullable|string',
+            'brand' => 'nullable|string',
+            'category' => 'nullable|string',
+            'property' => 'nullable|string',
+        ]);
+        $transactions = Product::with([
+            'items' => function ($q) {
+                $q->with(['productClassification'=>function($query){
+                    $query->with('brand','category','unit','latestProductValueVariation','image');
+                }]);
+            },
+            'peopleable'
+        ])->orderBy('created_at', 'desc');
+
 
         if (isset($filters['startDate'])) {
             $transactions = $transactions->where('created_at', '>=', $filters['startDate']);
@@ -150,11 +165,11 @@ public function transactionsSearch(array $filters = [])
         if (isset($filters['type'])) {
             $transactions = $transactions->where('deal_type', $filters['type']);
         }
-// dd($transactions->first()->items);
+        // dd($transactions->first()->items);
         // if (isset($filters['name'])) {
-            // $transactions->whereHas('productClassifications', function ($query) use ($filters) {
-            //     $query->where('name', 'like', '%' . 'tikiri mari'. '%');
-            // });
+        // $transactions->whereHas('productClassifications', function ($query) use ($filters) {
+        //     $query->where('name', 'like', '%' . 'tikiri mari'. '%');
+        // });
         // }
 
 
@@ -195,7 +210,7 @@ public function transactionsSearch(array $filters = [])
         return Inertia::render('SaleAndReceive', ['operation' => 'Receive']);
     }
 
-     public function currentStock()
+    public function currentStock()
     {
         $currentStock = CurrentStockResource::collection(ProductClassification::paginate(10));
         return Inertia::render('Stock', ['currentStock' => $currentStock]);

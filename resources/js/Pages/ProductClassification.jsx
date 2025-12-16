@@ -133,6 +133,11 @@ export default function ProductClassification({ auth,productClassifications }) {
                  </tbody>
              </table>
             </section>
+            {productClassifications.links.length > 3 &&
+             <div className='mt-4' >
+               <Pagination links={productClassifications.links} />
+             </div>
+            }
         </div> 
         <Modal show={show} onClose={()=>setShow(false)} >
             <div className='w-full h-auto p-5 flex flex-col items-center'>

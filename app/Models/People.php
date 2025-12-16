@@ -10,4 +10,9 @@ class People extends Model
 {
     use HasFactory,SoftDeletes;
     protected $guarded = [];
+
+     public function products()
+    {
+        return $this->morphMany(Product::class, 'peopleable');
+    }
 }
