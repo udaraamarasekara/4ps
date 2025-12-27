@@ -1,22 +1,17 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link } from "@inertiajs/react";
-import {
-    PencilSquareIcon,
-    TrashIcon,
-    EyeIcon,
-} from "@heroicons/react/24/solid";
-import { useCallback } from "react";
-import { debounce } from "lodash";
-import { useState } from "react";
-import { router } from "@inertiajs/react";
+import { useCallback,useState } from "react";
+import { debounce, set } from "lodash";
+import Pagination from "@/Components/Pagination";
+import PaginationJson from "@/Components/PaginationJson";
 import axios from "axios";
 import AutoCompleteTextInput from "@/Components/AutoCompleteTextInput";
 import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
 export default function Transactions({ auth, transactions }) {
-    console.log(transactions);
     const [typeFilter, setTypeFilter] = useState("");
     const [nameFilter, setNameFilter] = useState("");
+    const [jsonPaginate, setJsonPaginate] = useState(false);
     const [transactionsData, setTransactionsData] = useState(transactions);
     const [brandSuggestions, setBrandSuggestions] = useState([]);
     const [nameSuggestions, setNameSuggestions] = useState([]);
@@ -55,6 +50,7 @@ export default function Transactions({ auth, transactions }) {
         []
     );
     const searchTransactions = async () => {
+        setJsonPaginate(true);
         const response = await axios.get(route("transactions.search"), {
             params: {
                 type: typeFilter,
@@ -254,12 +250,13 @@ export default function Transactions({ auth, transactions }) {
                         </tbody>
                     </table>
                 </section>
-                {transactionsData.links.length > 3 && (
+               
+            </div>
+             {transactionsData.links.length > 3 && (
                     <div className="mt-4">
-                        <Pagination links={transactionsData.links} />
+                     {jsonPaginate ? <PaginationJson links={transactionsData.links} setData={(data)=>setTransactionsData(data.data)} typeFilter={typeFilter} nameFilter={nameFilter} brandFilter={brandFilter} categoryFilter={categoryFilter} propertyFilter={propertyFilter} startDateFilter={startDateFilter} endDateFilter={endDateFilter} /> : <Pagination links={transactionsData.links} />}
                     </div>
                 )}
-            </div>
         </AuthenticatedLayout>
     );
 }

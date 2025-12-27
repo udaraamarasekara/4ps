@@ -18,7 +18,7 @@ export default function SaleAndReceive({auth,operation}){
      items:[],
      third_party:{} ,
      operation:operation,
-     paid_amount:0,
+     paid_amount:-1
      
     });
     const movetoPartOne = () => setPage(1)

@@ -75,7 +75,7 @@ useEffect(()=>{
     },300 ),[]) 
 
 return (<div className='w-full z-0 pb-6 flex items-center justify-center md:flex-row flex-col'>
-<section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white  dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
+<section className="w-4/5 mx-6 mt-6 px-6 py-4  bg-white  dark:bg-gray-800 shadow-md sm:rounded-lg">
     <form  onSubmit={(e)=>e.preventDefault()}  className="mt-6 space-y-6">
             <div className='flex flex-col md:flex-row md:space-x-4'>
                 <div className='w-full  md:w-1/2' >
@@ -87,7 +87,7 @@ return (<div className='w-full z-0 pb-6 flex items-center justify-center md:flex
                         value={singleItemsNameText}
                         suggestions={suggessioinsProdClas}
                         onChange={(e) => {setSingleItemsNameText(e.target.value);updateProductClassificationSuggessions(e.target.value)}}
-                        className="mt-1 block w-full"
+                        className="mt-1 z-1 block w-full"
                         setClickedElement={(el) => setClickedProdClas(el)}
                         
                     />
