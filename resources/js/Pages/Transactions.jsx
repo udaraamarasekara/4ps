@@ -43,7 +43,7 @@ export default function Transactions({ auth, transactions }) {
     const updateCategorySuggestions = useCallback(
         debounce(async (input) => {
             const response = await axios.get(
-                route("category.fetch", input ? input : "-0")
+                route("category.fetchRow", input ? input : "-0")
             );
             setCategorySuggestions(response.data);
         }, 300),
@@ -189,6 +189,7 @@ export default function Transactions({ auth, transactions }) {
                             <tr>
                                 <th>Transaction ID</th>
                                 <th>Type</th>
+                                <th>Date</th>
                                 <th>Customer/Supplier</th>
                                 <th>Product name</th>
                                 <th>Brand</th>
@@ -207,6 +208,11 @@ export default function Transactions({ auth, transactions }) {
                                         </td>
                                         <td className="text-center">
                                             {object.deal_type}
+                                        </td>
+                                         <td className="text-center">
+                                            {
+                                                item.created_at.split('T')[0]
+                                            }
                                         </td>
                                         <td className="text-center">
                                             {object.peopleable.name}

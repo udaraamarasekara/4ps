@@ -32,27 +32,26 @@ class BrandController extends Controller
      */
     public function store(StoreBrandRequest $request)
     {
-      $rawInput =$request->validated();  
-      Brand::create($rawInput); 
+        $rawInput = $request->validated();
+        Brand::create($rawInput);
     }
 
     public function fetch(string $input)
     {
-       $addNewBrand = false; 
-       $request = new StoreBrandRequest();
-       if($request->authorize()) 
-       {
-        $addNewBrand= true;
-       }
-       return [$addNewBrand,Brand::where('name','like','%'.$input.'%')->get()->pluck('name')];
+        $addNewBrand = false;
+        $request = new StoreBrandRequest();
+        if ($request->authorize()) {
+            $addNewBrand = true;
+        }
+        return [$addNewBrand, Brand::where('name', 'like', '%' . $input . '%')->get()->pluck('name')];
     }
- public function fetchRow(string $input)
+    public function fetchRow(string $input)
     {
-       return Brand::where('name','like','%'.$input.'%')->get()->pluck('name');
+        return Brand::where('name', 'like', '%' . $input . '%')->get()->pluck('name');
     }
     public function check(string $input)
     {
-      return Brand::where('name',$input)->count();
+        return Brand::where('name', $input)->count();
     }
 
     /**

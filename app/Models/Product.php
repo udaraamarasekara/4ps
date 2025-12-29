@@ -16,8 +16,11 @@ class Product extends Model
         return $this->hasMany(SaleItem::class);
     }
     public function peopleable()
-{
+    {
     return $this->morphTo();
-}
-
+    }
+    public function productItems()
+    {
+        return $this->hasMany(SaleItem::class);
+    }
 }

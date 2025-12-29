@@ -30,31 +30,32 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-      $rawInput =$request->validated();  
-      if($rawInput['parent_name'])
-      {
-        $parent_id= Category::where('name',$rawInput['parent_name'])->first()->id;
-        $rawInput['parent_id']=$parent_id;
-      }
-      unset($rawInput['parent_name']);
-      Category::create($rawInput); 
+        $rawInput = $request->validated();
+        if ($rawInput['parent_name']) {
+            $parent_id = Category::where('name', $rawInput['parent_name'])->first()->id;
+            $rawInput['parent_id'] = $parent_id;
+        }
+        unset($rawInput['parent_name']);
+        Category::create($rawInput);
     }
 
-
+    public function fetchRow(string $input)
+    {
+        return Category::where('name', 'like', '%' . $input . '%')->get()->pluck('name');
+    }
     public function fetch(string $input)
     {
-       $addNewCategory = false; 
-       $request = new StoreCategoryRequest();
-       if($request->authorize()) 
-       {
-        $addNewCategory= true;
-       }
-       return [$addNewCategory,Category::where('name','like','%'.$input.'%')->get()->pluck('name')];
+        $addNewCategory = false;
+        $request = new StoreCategoryRequest();
+        if ($request->authorize()) {
+            $addNewCategory = true;
+        }
+        return [$addNewCategory, Category::where('name', 'like', '%' . $input . '%')->get()->pluck('name')];
     }
 
     public function check(string $input)
     {
-      return Category::where('name',$input)->count();
+        return Category::where('name', $input)->count();
     }
 
 

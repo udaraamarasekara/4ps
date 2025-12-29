@@ -166,12 +166,34 @@ class ProductController extends Controller
             $transactions = $transactions->where('deal_type', $filters['type']);
         }
         // dd($transactions->first()->items);
-        // if (isset($filters['name'])) {
-        // $transactions->whereHas('productClassifications', function ($query) use ($filters) {
-        //     $query->where('name', 'like', '%' . 'tikiri mari'. '%');
-        // });
-        // }
+        if (isset($filters['name'])) {
+            $transactions->whereHas('productItems', function ($query) use ($filters) {
 
+                $query->whereHas('productClassification', function ($query) use ($filters) {
+                    $query->where('name', 'like', '%' . $filters['name'] . '%');
+                });
+            });
+        }
+         if (isset($filters['brand'])) {
+            $transactions->whereHas('productItems', function ($query) use ($filters) {
+
+                $query->whereHas('productClassification', function ($query) use ($filters) {
+                    $query->whereHas('brand', function ($query) use ($filters) {
+                        $query->where('name', 'like', '%' . $filters['brand'] . '%');
+                    });
+                });
+            });
+        }
+        if (isset($filters['category'])) {
+            $transactions->whereHas('productItems', function ($query) use ($filters) {
+
+                $query->whereHas('productClassification', function ($query) use ($filters) {
+                    $query->whereHas('category', function ($query) use ($filters) {
+                        $query->where('name', 'like', '%' . $filters['category'] . '%');
+                    });
+                });
+            });
+        }
 
         return response()->json($transactions->paginate(10));
     }
