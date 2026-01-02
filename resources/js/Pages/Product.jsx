@@ -33,13 +33,13 @@ export default function Product({ auth }) {
             </div> 
              <div className="flex flex-col md:flex-row">
                 <div className="max-w-7xl  py-3 md:py-12 w-4/5 md:w-1/4 mx-auto sm:px-6 lg:px-8">
-                    <div  onClick={() => router.visit(route('sale'))} className="bg-cyan-300 min-h-40 flex flex-col items-center justify-center dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div  onClick={() => router.visit(route('productClassification.priceCostVariationIndex'))} className="bg-cyan-300 min-h-40 flex flex-col items-center justify-center dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-2xl font-bold text-gray-900 dark:text-gray-100">Product Price & Cost Variations </div>
                     </div>
                 </div>
                 <div className="max-w-7xl py-3  md:py-12 w-4/5 md:w-1/4  mx-auto sm:px-6 lg:px-8">
                     <div onClick={() => router.visit(route('receive'))}  className="bg-cyan-300 min-h-40 flex flex-col items-center justify-center dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-2xl font-bold text-gray-900 dark:text-gray-100"> Receive</div>
+                        <div className="p-6 text-2xl font-bold text-gray-900 dark:text-gray-100">Profits and Losts</div>
                     </div>
                 </div>
                 <div  className="max-w-7xl py-3  md:py-12 w-4/5 md:w-1/4  mx-auto sm:px-6 lg:px-8">

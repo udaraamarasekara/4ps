@@ -11,10 +11,6 @@ class Product extends Model
     use HasFactory,SoftDeletes;
     protected $guarded = [];
 
-    public function items()
-    {
-        return $this->hasMany(SaleItem::class);
-    }
     public function peopleable()
     {
     return $this->morphTo();

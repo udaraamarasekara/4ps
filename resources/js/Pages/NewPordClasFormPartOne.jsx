@@ -8,6 +8,7 @@ import AutoCompleteTextInput from '@/Components/AutoCompleteTextInput';
 import NewCategoryModal from './NewCategoryModal';
 import DynamicPropertyPane from '@/Components/DynamicPropertyPane';
 import { debounce } from 'lodash';
+import { use } from 'react';
 
 export default function NewProdClasFormPartOne({
   setData = () => {},
@@ -27,6 +28,11 @@ export default function NewProdClasFormPartOne({
   const [addNewCategory, setAddNewCategory] = useState(false);
   const [categorySugges, setCategorySugges] = useState([]);
   const [propertiesVar, setPropertiesVar] = useState([]);
+
+  useEffect(() => { 
+    clearErrors();
+   }, [showCategory]);
+
 
   // Debounced API call to fetch suggestions
   const updateCategorySuggessions = useCallback(
@@ -71,7 +77,7 @@ export default function NewProdClasFormPartOne({
 
   return (
     <div className="w-full pb-6 flex justify-center">
-      <NewCategoryModal show={showCategory} setShow={setShowCategory} />
+      <NewCategoryModal  show={showCategory} setShow={()=>{setShowCategory}} />
 
       <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
         <form

@@ -10,6 +10,6 @@ class SaleItem extends Model
     protected $guarded = [];
     public function productClassification(): BelongsTo
     {
-        return $this->belongsTo(ProductClassification::class, 'product_classification_id');
+        return $this->belongsTo(ProductClassification::class);
     }
 }

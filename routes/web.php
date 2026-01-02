@@ -43,6 +43,8 @@ Route::middleware('auth')->group(function () {
     Route::get('thirdPartyPeopleFetch/{input}/{operation}',[PeopleController::class,'thirdPartyFetch'])->name('people.thirdPartyFetch');
     Route::resource('people',PeopleController::class);
     Route::get('productClassificationName/{input}',[ProductClassificationController::class,'getName'])->name('productClassification.getName');
+    Route::get('productPriceCostVariation',[ProductClassificationController::class,'priceCostVariation'])->name('productClassification.priceCostVariation');
+    Route::get('productPriceCostVariationIndex',[ProductClassificationController::class,'priceCostVariationIndex'])->name('productClassification.priceCostVariationIndex');
     Route::get('brandFetch/{input}',[BrandController::class,'fetch'])->name('brand.fetch');
     Route::get('brandRowFetch/{input}',[BrandController::class,'fetchRow'])->name('brand.fetchRow');
     Route::get('brandCheck/{input}',[BrandController::class,'check'])->name('brand.check');

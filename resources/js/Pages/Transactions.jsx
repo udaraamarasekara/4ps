@@ -22,6 +22,7 @@ export default function Transactions({ auth, transactions }) {
     const [propertyFilter, setPropertyFilter] = useState();
     const [startDateFilter, setStartDateFilter] = useState("");
     const [endDateFilter, setEndDateFilter] = useState("");
+    console.log("transactionsData", transactionsData);
     const updateNameSuggestions = useCallback(
         debounce(async (input) => {
             const response = await axios.get(
@@ -201,7 +202,7 @@ export default function Transactions({ auth, transactions }) {
                         </thead>
                         <tbody>
                             {transactionsData.data.map((object) => {
-                                return object.items.map((item) => (
+                                return object.product_items?.map((item) => (
                                     <tr key={item.id}>
                                         <td className="text-center">
                                             {object.id}

@@ -14,6 +14,7 @@ use App\Http\Resources\ProductClassificationResource;
 use App\Models\Category;
 use App\Models\ProductValueVariation;
 use App\Models\ProductClassificationImage;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 class ProductClassificationController extends Controller
 {
@@ -24,6 +25,22 @@ class ProductClassificationController extends Controller
   {
     $productClassifications = ProductClassificationResource::collection(ProductClassification::paginate(10));
     return Inertia::render('ProductClassification', ['productClassifications' => $productClassifications]);
+  }
+  public function priceCostVariationIndex()
+  {
+    return Inertia::render('ProductPriceCostVariations');
+  }
+ public function priceCostVariation(Request $request)
+  {  
+
+    $request->validate(['item'=>'exists:product_classifications,name',
+    'from'=>'nullable|date|before:today',
+    'to'=>'nullable|date|after:from',
+  ]);
+  $data = ProductValueVariation::whereHas('productClassification', function ($query) use ($request) {
+      $query->where('name', $request->item);
+    })->whereBetween('created_at', [$request->from ?? '1970-01-01', $request->to ?? now()])->orderBy('created_at','asc')->paginate(10);
+    return  response()->json($data);
   }
 
   /**
@@ -89,7 +106,7 @@ class ProductClassificationController extends Controller
 
     // Create value variation
     ProductValueVariation::create([
-      'product_classifications_id' => $productClassification->id,
+      'product_classification_id' => $productClassification->id,
       'price' => $price,
       'cost' => $cost
     ]);
@@ -174,11 +191,11 @@ class ProductClassificationController extends Controller
     }
     if (isset($rawInput['cost'])) {
       $cost = $rawInput['cost'];
-      ProductValueVariation::where('product_classifications_id', $productClassification->id)->latest()->first()->update(['cost' => $cost]);
+      ProductValueVariation::where('product_classification_id', $productClassification->id)->latest()->first()->update(['cost' => $cost]);
     }
     if (isset($rawInput['price'])) {
       $price = $rawInput['price'];
-      ProductValueVariation::where('product_classifications_id', $productClassification->id)->latest()->first()->update(['price' => $price]);
+      ProductValueVariation::where('product_classification_id', $productClassification->id)->latest()->first()->update(['price' => $price]);
     }
     $image_path = null;
     if ($request->hasFile('image')) {
@@ -225,7 +242,7 @@ class ProductClassificationController extends Controller
   public function productClassificationCostPrice(AddCostPriceToProdClas $request)
   {
     $rawInput = $request->validated();
-    return ProductValueVariation::create(['product_classifications_id' => $rawInput['id'], 'cost' => $rawInput['cost'], 'price' => $rawInput['price']]);
+    return ProductValueVariation::create(['product_classification_id' => $rawInput['id'], 'cost' => $rawInput['cost'], 'price' => $rawInput['price']]);
 
   }
 

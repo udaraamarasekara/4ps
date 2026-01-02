@@ -5,7 +5,6 @@ export default forwardRef(function FileInput(
   ref
 ) {
   const input = ref ? ref : useRef();
-
   const [previews, setPreviews] = useState(url ? [url] : []);
 
   useEffect(() => {
@@ -46,7 +45,7 @@ export default forwardRef(function FileInput(
           {previews.map((src, i) => (
             <img
               key={i}
-              src={src}
+              src={'/' + src}
               alt={`preview-${i}`}
               className="w-20 h-20 object-cover rounded-md border"
             />

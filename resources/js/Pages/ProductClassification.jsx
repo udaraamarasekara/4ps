@@ -142,6 +142,7 @@ export default function ProductClassification({ auth,productClassifications }) {
         <Modal show={show} onClose={()=>setShow(false)} >
             <div className='w-full h-auto p-5 flex flex-col items-center'>
               <div className='font-bold uppercase text-2xl'>{item.name}</div>
+              {item.image && <img src={item.image} alt={item.name} className='w-48 h-48 object-cover my-4 rounded-md' />}
               <div className='text-center w-full max-w-[600px] mx-auto break-words whitespace-normal'>
                 <div className="grid grid-cols-1  gap-4">
                     {item?.properties?.length ? item.properties.map((prop, index) => (

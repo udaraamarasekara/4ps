@@ -97,7 +97,7 @@ class ProductController extends Controller
     {
         $total = 0;
         foreach ($items as $item) {
-            $product = ProductValueVariation::where('product_classifications_id', $item['product_classification_id'])->latest()->first();
+            $product = ProductValueVariation::where('product_classification_id', $item['product_classification_id'])->latest()->first();
             $price = $product->price ?? 0;
             $total += $item['quantity'] * $price;
         }
@@ -110,7 +110,7 @@ class ProductController extends Controller
     {
         $total = 0;
         foreach ($items as $item) {
-            $product = ProductValueVariation::where('product_classifications_id', $item['product_classification_id'])->latest()->first();
+            $product = ProductValueVariation::where('product_classification_id', $item['product_classification_id'])->latest()->first();
             $cost = $product->cost ?? 0;
             $total += $item['quantity'] * $cost;
         }
@@ -122,7 +122,7 @@ class ProductController extends Controller
     public function transactions()
     {
         $transactions = Product::with([
-            'items' => function ($q) {
+            'productItems' => function ($q) {
                 $q->with(['productClassification'=>function($query){
                     $query->with('brand','category','unit','latestProductValueVariation','image');
                 }]);
@@ -147,7 +147,7 @@ class ProductController extends Controller
             'property' => 'nullable|string',
         ]);
         $transactions = Product::with([
-            'items' => function ($q) {
+            'productItems' => function ($q) {
                 $q->with(['productClassification'=>function($query){
                     $query->with('brand','category','unit','latestProductValueVariation','image');
                 }]);

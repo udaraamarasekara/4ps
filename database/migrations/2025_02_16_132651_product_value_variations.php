@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamps();
             $table->decimal('price', 8, 2); // 8 total digits, 2 decimal places
             $table->decimal('cost', 8, 2); // 8 total digits, 2 decimal places
-            $table->foreignId('product_classifications_id')->constrained();
+            $table->foreignId('product_classification_id')->constrained();
             $table->softDeletes();  // Adds a `deleted_at` column
 
         });

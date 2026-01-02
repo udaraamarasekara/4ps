@@ -32,22 +32,22 @@ class ProductClassification extends Model
 
     public function productValueVariations()
     {
-      return $this->hasMany(ProductValueVariation::class,'product_classifications_id');
+      return $this->hasMany(ProductValueVariation::class);
     }
     public function latestProductValueVariation()
     {
-        return $this->hasOne(ProductValueVariation::class, 'product_classifications_id')
+        return $this->hasOne(ProductValueVariation::class)
                     ->latest('updated_at'); // Orders by `updated_at`
     }
 
     public function stock()
     {
-      return $this->hasOne(Stock::class,'product_classification_id');
+      return $this->hasOne(Stock::class);
     }
 
     public function image()
     {
-      return $this->hasOne(ProductClassificationImage::class,'product_classification_id');
+      return $this->hasOne(ProductClassificationImage::class);
     }
 
 }
