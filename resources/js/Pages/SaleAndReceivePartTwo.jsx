@@ -25,7 +25,7 @@ export default function SaleAndReceivePartTwo({
     const addNewThirdParty = true;
     const thirdPartyName = operation == "Sale" ? "Customer" : "Supplier";
     const [tot, setTot] = useState();
-    const [isTotalPaid, setIsTotalPaid] = useState(false);
+    const [isTotalPaid, setIsTotalPaid] = useState(true);
     const [isSuccessPopup, setIsSuccessPopup] = useState(true);
     const [showPopup, setShowPopup] = useState(false);
     const thirdPartyObject = useRef([]);
@@ -77,82 +77,64 @@ export default function SaleAndReceivePartTwo({
     };
 
     const addNewDeal = async (e) => {
-        e.preventDefault();
-        clearErrors();
-        if (data.third_party === "") {
-            setError("third_party", "You must select a " + thirdPartyName);
-            return;
-        }
-        if (data.items.length === 0) {
-            setError(
-                "product_classification_id",
-                "You must have at least one product for sale"
-            );
-            return;
-        }
-        if (isTotalPaid && !data.paid_amount) {
-            setError("paid_amount", "Paid amount is required");
-            return;
-        }
-        if (isTotalPaid) {
-            setData("paid_amount", tot);
-        }
-        try {
-            let response = await axios.post(route("product.store"), data);
+    e.preventDefault();
+    clearErrors();
 
-            if (response.status === 200) {
-                setIsSuccessPopup(true);
-                setShowPopup(true);
-                setMessage(response.data.message);
+    if (!data.third_party) {
+        setError("third_party", "You must select a " + thirdPartyName);
+        return;
+    }
 
-                setTimeout(() => {
-                    setShowPopup(false);
-                    reset();
-                    movetoPartOne();
+    if (data.items.length === 0) {
+        setError(
+            "product_classification_id",
+            "You must have at least one product"
+        );
+        return;
+    }
 
-                }, 1000);
+    // 🔥 FIXED CONDITION
+    if (!isTotalPaid && !data.paid_amount) {
+        setError("paid_amount", "Paid amount is required");
+        return;
+    }
 
-            }
-        } catch (error) {
-            // Axios puts server errors here
-            if (error.response) {
-                // Laravel usually sends validation errors with 422
-                if (error.response.status === 422) {
-                    // If it's a validation error
-                    let validationErrors = error.response.data.errors;
-                    setMessage(
-                        Object.values(validationErrors).flat().join(", ")
-                    );
-                } else {
-                    setMessage(
-                        error.response.data.message || "Something went wrong"
-                    );
-                }
-            } else {
-                setMessage("Network error. Please try again.");
-            }
+    const payload = {
+        ...data,
+        total_bill: tot,
+        paid_amount: isTotalPaid ? tot : data.paid_amount,
+    };
 
-            setIsSuccessPopup(false);
+    try {
+        const response = await axios.post(route("product.store"), payload);
+
+        if (response.status === 200) {
+            setIsSuccessPopup(true);
             setShowPopup(true);
+            setMessage(response.data.message);
+
             setTimeout(() => {
-                setIsSuccessPopup(false);
                 setShowPopup(false);
+                reset();
+                movetoPartOne();
             }, 1000);
         }
-    };
-        const setErrorsForThirdParty = () => {
-            if (addNewThirdParty) {
-                setError(
-                    "third_party",
-                    "No such a " +
-                        thirdPartyName +
-                        ". Click to add new " +
-                        thirdPartyName
-                );
-            } else {
-                setError("third_party", "No such a " + thirdPartyName);
-            }
-        };
+    } catch (error) {
+        setIsSuccessPopup(false);
+        setShowPopup(true);
+
+        if (error.response?.status === 422) {
+            setMessage(
+                Object.values(error.response.data.errors).flat().join(", ")
+            );
+        } else {
+            setMessage("Something went wrong");
+        }
+
+        setTimeout(() => setShowPopup(false), 1000);
+    }
+};
+
            
     return (
         <div className="w-full pb-6 flex justify-center">
@@ -235,12 +217,12 @@ export default function SaleAndReceivePartTwo({
                                 value="Not Paid Completely"
                             />
                             <ToggleSwitch
-                                enabled={isTotalPaid}
+                                enabled={!isTotalPaid}
                                 setEnabled={setIsTotalPaid}
                             />
                         </div>
                     </div>
-                    {isTotalPaid && (
+                    {!isTotalPaid && (
                         <div className="flex flex-col md:flex-row md:space-x-4">
                             <div className="w-full md:w-1/2">
                                 <InputLabel

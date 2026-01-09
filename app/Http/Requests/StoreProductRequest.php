@@ -25,6 +25,8 @@ class StoreProductRequest extends FormRequest
         return [
             'operation'=>[Rule::in(['Sale', 'Receive'])],
             'third_party' => ['nullable'],
+            'total_bill' => ['nullable','numeric','min:0','max:999999.99'],
+            'paid_amount' => ['nullable','numeric','min:0','max:999999.99'],
             'items' => 'nullable|array',
             'items.*.product_classification_id' => ['required_if:items,!=,null|exists:product_classifications,id'],
             'items.*.quantity' => ['required_if:items,!=,null|numeric|min:1|max:999999.99'],

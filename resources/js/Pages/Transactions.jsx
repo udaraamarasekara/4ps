@@ -22,7 +22,6 @@ export default function Transactions({ auth, transactions }) {
     const [propertyFilter, setPropertyFilter] = useState();
     const [startDateFilter, setStartDateFilter] = useState("");
     const [endDateFilter, setEndDateFilter] = useState("");
-    console.log("transactionsData", transactionsData);
     const updateNameSuggestions = useCallback(
         debounce(async (input) => {
             const response = await axios.get(

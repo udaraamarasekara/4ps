@@ -35,7 +35,7 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request)
     {
         $rawInput = $request->validated();
-
+        $totalBill = 0;
         DB::beginTransaction();
         if ($rawInput['third_party']['table'] == 'People') {
             $rawInput['third_party']['peopleable_id'] = People::where('name', $rawInput['third_party']['user_name'])->first()->id;
@@ -46,7 +46,7 @@ class ProductController extends Controller
         }
         if ($rawInput['operation'] === 'Sale') {
 
-            $rawInput['total_bill'] = $this->calTotalBillForSale($rawInput['items']);
+            $totalBill = $this->calTotalBillForSale($rawInput['items']);
             foreach ($rawInput['items'] as $item) {
                 if (StockService::checkProductAvailability($item['product_classification_id'], $item['quantity'])) {
                     StockService::decreaseStock($item['product_classification_id'], $item['quantity']);
@@ -59,7 +59,7 @@ class ProductController extends Controller
                 }
             }
         } else {
-            $rawInput['total_bill'] = $this->calTotalBillForReceive($rawInput['items']);
+            $totalBill = $this->calTotalBillForReceive($rawInput['items']);
             foreach ($rawInput['items'] as $item) {
                 if (Stock::where('product_classification_id', $item['product_classification_id'])->exists()) {
                     StockService::increaseStock($item['product_classification_id'], $item['quantity']);
@@ -69,6 +69,10 @@ class ProductController extends Controller
 
                 }
             }
+        }
+        if ($totalBill != $rawInput['total_bill']) {
+            DB::rollBack();
+            return response()->json(['message' => 'Total bill amount mismatch. Calculated: ' . $totalBill . ', Provided: ' . $rawInput['total_bill']], 500);
         }
         $product = Product::create([
             'deal_type' => $rawInput['operation'] == 'Sale' ? 'sale' : 'receive',
@@ -123,9 +127,11 @@ class ProductController extends Controller
     {
         $transactions = Product::with([
             'productItems' => function ($q) {
-                $q->with(['productClassification'=>function($query){
-                    $query->with('brand','category','unit','latestProductValueVariation','image');
-                }]);
+                $q->with([
+                    'productClassification' => function ($query) {
+                        $query->with('brand', 'category', 'unit', 'latestProductValueVariation', 'image');
+                    }
+                ]);
             },
             'peopleable'
         ])->orderBy('created_at', 'desc');
@@ -148,9 +154,11 @@ class ProductController extends Controller
         ]);
         $transactions = Product::with([
             'productItems' => function ($q) {
-                $q->with(['productClassification'=>function($query){
-                    $query->with('brand','category','unit','latestProductValueVariation','image');
-                }]);
+                $q->with([
+                    'productClassification' => function ($query) {
+                        $query->with('brand', 'category', 'unit', 'latestProductValueVariation', 'image');
+                    }
+                ]);
             },
             'peopleable'
         ])->orderBy('created_at', 'desc');
@@ -174,7 +182,7 @@ class ProductController extends Controller
                 });
             });
         }
-         if (isset($filters['brand'])) {
+        if (isset($filters['brand'])) {
             $transactions->whereHas('productItems', function ($query) use ($filters) {
 
                 $query->whereHas('productClassification', function ($query) use ($filters) {
@@ -236,5 +244,47 @@ class ProductController extends Controller
     {
         $currentStock = CurrentStockResource::collection(ProductClassification::paginate(10));
         return Inertia::render('Stock', ['currentStock' => $currentStock]);
+    }
+
+    public function profitAndLost()
+    {
+        $rows = SaleItem::join('product_classifications', 'sale_items.product_classification_id', '=', 'product_classifications.id')
+            ->join('brands', 'product_classifications.brand_id', '=', 'brands.id')
+            ->join('categories', 'product_classifications.category_id', '=', 'categories.id')
+            ->join('units', 'product_classifications.unit_id', '=', 'units.id')
+            ->join('products', 'sale_items.product_id', '=', 'products.id')
+            ->join('product_value_variations', function ($join) {
+                $join->on('product_value_variations.product_classification_id', '=', 'product_classifications.id')
+                    ->whereRaw('product_value_variations.created_at <= sale_items.created_at')->latest('product_value_variations.created_at')->limit(1);
+            })
+            ->select('sale_items.id as id','sale_items.quantity as quantity', 'product_value_variations.price as price', 'products.deal_type as deal_type', 'product_value_variations.cost as cost', 'product_classifications.name as name', 'brands.name as brand', 'categories.name as category', 'units.name as unit');
+            foreach ($rows->get() as $row) {
+            if ($row->deal_type != 'sale') {
+                $sold[$row->name]['name'] = $row->name;
+                $sold[$row->name]['brand'] = $row->brand;
+                $sold[$row->name]['category'] = $row->category;
+                $sold[$row->name]['unit'] = $row->unit;
+                $sold[$row->name]['total_income'] = ($sold[$row->name]['total_income'] ?? 0) + ($row->quantity * $row->price);
+                $sold[$row->name]['unit_cost'] = $row->cost;
+                $sold[$row->name]['unit_price'] = $row->price;
+                $sold[$row->name]['quantity'] = ($sold[$row->name]['quantity'] ?? 0) + $row->quantity;
+            } else {
+                $received[$row->name]['name'] = $row->name;
+                $received[$row->name]['brand'] = $row->brand;
+                $received[$row->name]['category'] = $row->category;
+                $received[$row->name]['unit'] = $row->unit;
+                $received[$row->name]['unit_cost'] = $row->cost;
+                $received[$row->name]['unit_price'] = $row->price;
+                $received[$row->name]['total_spent'] = ($received[$row->name]['total_spent'] ?? 0) + ($row->quantity * $row->cost);
+                $received[$row->name]['quantity'] = ($received[$row->name]['quantity'] ?? 0) + $row->quantity;
+            }
+          
+        }
+        $totSold=array_chunk($sold,10,false);
+        $totReceived=array_chunk($received,10,false);
+        if (!session()->has('currentSoldPage')) {
+        session(['currentSoldPage'=>0,'currentReceivedPage'=>0]);
+}
+        return Inertia::render('ProfitAndLost', ['sold' => $totSold[session('currentSoldPage')], 'received' => $totReceived[session('currentReceivedPage')]]);
     }
 }
