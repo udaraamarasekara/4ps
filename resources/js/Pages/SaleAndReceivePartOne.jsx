@@ -79,7 +79,7 @@ return (<div className='w-full z-0 pb-6 flex items-center justify-center md:flex
     <form  onSubmit={(e)=>e.preventDefault()}  className="mt-6 space-y-6">
             <div className='flex flex-col md:flex-row md:space-x-4'>
                 <div className='w-full  md:w-1/2' >
-                    <InputLabel htmlFor="product_classification" value="Product Class" />
+                    <InputLabel htmlFor="product_classification" value="Product" />
 
                     <AutoCompleteTextInput
                         id="product_classification"
@@ -102,7 +102,7 @@ return (<div className='w-full z-0 pb-6 flex items-center justify-center md:flex
                         ref={quantity}
                         value={singleItemToDeal.quantity}
                         type="text"
-                        onChange={(e)=>{setSingleItemToDeal(prev=>({...prev,quantity:e.target.value}))}}
+                        onChange={(e)=>{setSingleItemToDeal(prev=>({...prev,quantity:e.target.value})),clearErrors('quantity')}}
                         className="mt-1 block w-full"
                         autoComplete="quantity"
                     />

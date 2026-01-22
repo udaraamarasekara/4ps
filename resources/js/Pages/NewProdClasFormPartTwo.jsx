@@ -107,7 +107,7 @@ export default function NewProdClasFormPartTwo({
                                 htmlFor="brand_name "
                                 value="Brand (optional)"
                             />
-   
+
                             <AutoCompleteTextInput
                                 id="brand_name"
                                 ref={brand}
@@ -115,12 +115,14 @@ export default function NewProdClasFormPartTwo({
                                 suggestions={brandSuggessioins}
                                 onChange={(e) => {
                                     const input = e.target.value;
-                                    setData('brand_name', input);
+                                    setData("brand_name", input);
                                     updateBrandSuggessions(input);
                                 }}
-                                setClickedElement={(el) =>
-                                    setData("brand_name", el)
-                                }
+                                setClickedElement={(el) => {
+                                    setData("brand_name", el);
+                                    prevBrandSugst.current = el;
+                                    clearErrors("brand_name");
+                                }}
                                 className="mt-1 block w-full"
                             />
                             {addNewBrand ? (
@@ -147,12 +149,13 @@ export default function NewProdClasFormPartTwo({
                                 suggestions={unitSuggessioins}
                                 onChange={(e) => {
                                     const input = e.target.value;
-                                    setData('unit_name', input);
+                                    setData("unit_name", input);
                                     updateUnitSuggessions(input);
                                 }}
                                 setClickedElement={(el) => {
                                     setData("unit_name", el);
                                     prevUnitSugst.current = el;
+                                    clearErrors("unit_name");
                                 }}
                                 className="mt-1 block w-full"
                             />
@@ -215,14 +218,20 @@ export default function NewProdClasFormPartTwo({
                     </div>
                     <div className="flex flex-col md:flex-row md:space-x-4">
                         <div className="w-full md:w-1/2">
-                            <InputLabel htmlFor="initialStock" value="Current Stock (optional)" />
+                            <InputLabel
+                                htmlFor="initialStock"
+                                value="Current Stock (optional)"
+                            />
 
                             <TextInput
                                 id="cost"
                                 value={data.initial_stock_quantity}
                                 type="number"
                                 onChange={(e) =>
-                                    setData("initial_stock_quantity", e.target.value)
+                                    setData(
+                                        "initial_stock_quantity",
+                                        e.target.value
+                                    )
                                 }
                                 className="mt-1 block w-full"
                             />
@@ -232,14 +241,18 @@ export default function NewProdClasFormPartTwo({
                                 className="mt-2"
                             />
                         </div>
-                         <div className="w-full md:w-1/2">
-                            <InputLabel htmlFor="image" value="Image (optional)" />
+                        <div className="w-full md:w-1/2">
+                            <InputLabel
+                                htmlFor="image"
+                                value="Image (optional)"
+                            />
 
                             <FileInput
                                 id="image"
                                 onChange={(e) =>
                                     setData("image", e.target.files[0])
                                 }
+                                url={data.url}
                                 className="mt-1 block w-full"
                                 accept="image/*"
                             />
@@ -249,7 +262,7 @@ export default function NewProdClasFormPartTwo({
                                 className="mt-2"
                             />
                         </div>
-                      </div>  
+                    </div>
                     <div className="flex items-center gap-4">
                         <PrimaryButton disabled={processing}>Add</PrimaryButton>
                     </div>

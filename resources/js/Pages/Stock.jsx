@@ -3,7 +3,7 @@ import { Head,Link ,useForm} from '@inertiajs/react';
 import { PencilSquareIcon,TrashIcon,EyeIcon,ArrowLeftIcon } from '@heroicons/react/24/solid'
 import { useState } from 'react';
 import { router } from '@inertiajs/react'
-
+import Pagination from '@/Components/Pagination';
 
 export default function Stock({ auth,currentStock }) {
    const [show,setShow]=useState(false)
@@ -50,7 +50,11 @@ export default function Stock({ auth,currentStock }) {
              </table>
             </section>
         </div> 
-       
+           {currentStock.meta.links &&
+                    <div className='mt-4' >
+                      <Pagination links={currentStock.meta.links} />
+                    </div>
+                   }
         </AuthenticatedLayout>
     );
 }

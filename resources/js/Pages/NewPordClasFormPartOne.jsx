@@ -77,7 +77,7 @@ export default function NewProdClasFormPartOne({
 
   return (
     <div className="w-full pb-6 flex justify-center">
-      <NewCategoryModal  show={showCategory} setShow={()=>{setShowCategory}} />
+      <NewCategoryModal  show={showCategory} setShow={()=>{setShowCategory(false)}} />
 
       <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
         <form

@@ -19,6 +19,7 @@ export default function NewProductClassification({ auth }) {
         cost:'',
         price:'',
         initial_stock_quantity:'',
+        url: '',
         image:null, 
     });
 const movetoPartOne = () => setPage(1)
@@ -54,6 +55,8 @@ const addNewProductClassification = (e) =>{
                 setIsSuccessPopup(true)
                 setShowPopup(true)
                 setTimeout(()=>{setShowPopup(false)},1000)  
+                reset()
+                movetoPartOne()
             },
             onError: (errors) => {
                 setShowPopup(true)

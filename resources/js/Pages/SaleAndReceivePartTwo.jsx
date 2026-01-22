@@ -128,7 +128,8 @@ export default function SaleAndReceivePartTwo({
                 Object.values(error.response.data.errors).flat().join(", ")
             );
         } else {
-            setMessage("Something went wrong");
+            console.log(error);
+            setMessage(error.response.data.message || "Something went wrong.");
         }
 
         setTimeout(() => setShowPopup(false), 1000);

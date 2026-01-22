@@ -10,8 +10,9 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-
+import Pagination from '@/Components/Pagination';
 export default function ProductClassification({ auth,productClassifications }) {
+    console.log("ProductClassification rendered with:", { productClassifications });
    const [show,setShow]=useState(false)
    const [item,setItem]=useState({})
    const [showPopup,setShowPopup] =useState(false)
@@ -72,9 +73,9 @@ export default function ProductClassification({ auth,productClassifications }) {
     return (
         <AuthenticatedLayout 
         user={auth.user}
-        header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Product Classification</h2>}
+        header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Product Catalog</h2>}
     >
-        <Head title="Product Classification" />
+        <Head title="Product Catalog" />
         <div className='w-full flex justify-end'>
             <Link href={route('productClassification.create')}>
                 <div className=' m-6 p-6 w-10 h-10 bg-white border border-gray-200 rounded-full text-3xl font-extrabold flex items-center justify-center hover:cursor-pointer' >+</div>
@@ -133,11 +134,7 @@ export default function ProductClassification({ auth,productClassifications }) {
                  </tbody>
              </table>
             </section>
-            {productClassifications.links.length > 3 &&
-             <div className='mt-4' >
-               <Pagination links={productClassifications.links} />
-             </div>
-            }
+        
         </div> 
         <Modal show={show} onClose={()=>setShow(false)} >
             <div className='w-full h-auto p-5 flex flex-col items-center'>
@@ -204,7 +201,11 @@ export default function ProductClassification({ auth,productClassifications }) {
               </div>
             </div>
         </Modal>
-
+    {productClassifications.meta.links &&
+             <div className='mt-4' >
+               <Pagination links={productClassifications.meta.links} />
+             </div>
+            }
         </AuthenticatedLayout>
     );
 }

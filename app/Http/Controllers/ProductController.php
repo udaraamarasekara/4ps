@@ -248,26 +248,136 @@ class ProductController extends Controller
 
     public function profitAndLost()
     {
-        $rows = SaleItem::join('product_classifications', 'sale_items.product_classification_id', '=', 'product_classifications.id')
+        $sold = [];
+        $received = [];
+        $totalIncome = 0;
+        $totalSpent = 0;
+        $priceSub = DB::table('product_value_variations as pvv')
+            ->select('pvv.id')
+            ->whereColumn('pvv.product_classification_id', 'product_classifications.id')
+            ->whereColumn('pvv.created_at', '<=', 'sale_items.created_at')
+            ->orderBy('pvv.created_at', 'desc')
+            ->limit(1);
+
+        $rows = SaleItem::query()
+            ->join('product_classifications', 'sale_items.product_classification_id', '=', 'product_classifications.id')
             ->join('brands', 'product_classifications.brand_id', '=', 'brands.id')
             ->join('categories', 'product_classifications.category_id', '=', 'categories.id')
             ->join('units', 'product_classifications.unit_id', '=', 'units.id')
             ->join('products', 'sale_items.product_id', '=', 'products.id')
-            ->join('product_value_variations', function ($join) {
-                $join->on('product_value_variations.product_classification_id', '=', 'product_classifications.id')
-                    ->whereRaw('product_value_variations.created_at <= sale_items.created_at')->latest('product_value_variations.created_at')->limit(1);
-            })
-            ->select('sale_items.id as id','sale_items.quantity as quantity', 'product_value_variations.price as price', 'products.deal_type as deal_type', 'product_value_variations.cost as cost', 'product_classifications.name as name', 'brands.name as brand', 'categories.name as category', 'units.name as unit');
-            foreach ($rows->get() as $row) {
-            if ($row->deal_type != 'sale') {
+            ->join('product_value_variations', 'product_value_variations.id', '=', DB::raw("({$priceSub->toSql()})"))
+            ->mergeBindings($priceSub)
+            ->select(
+                'sale_items.quantity',
+                'product_value_variations.price',
+                'product_value_variations.cost',
+                'products.deal_type',
+                'product_classifications.name',
+                'brands.name as brand',
+                'categories.name as category',
+                'units.name as unit'
+            )
+            ->get();
+
+        foreach ($rows as $row) {
+            if ($row->deal_type === 'sale') {
                 $sold[$row->name]['name'] = $row->name;
                 $sold[$row->name]['brand'] = $row->brand;
                 $sold[$row->name]['category'] = $row->category;
                 $sold[$row->name]['unit'] = $row->unit;
-                $sold[$row->name]['total_income'] = ($sold[$row->name]['total_income'] ?? 0) + ($row->quantity * $row->price);
                 $sold[$row->name]['unit_cost'] = $row->cost;
                 $sold[$row->name]['unit_price'] = $row->price;
-                $sold[$row->name]['quantity'] = ($sold[$row->name]['quantity'] ?? 0) + $row->quantity;
+                $sold[$row->name]['quantity'] =
+                    ($sold[$row->name]['quantity'] ?? 0) + $row->quantity;
+                $sold[$row->name]['total_income'] =
+                    ($sold[$row->name]['total_income'] ?? 0) + ($row->quantity * $row->price);
+                              $totalIncome += $row->quantity * $row->price;    
+
+                } else {
+                $received[$row->name]['name'] = $row->name;
+                $received[$row->name]['brand'] = $row->brand;
+                $received[$row->name]['category'] = $row->category;
+                $received[$row->name]['unit'] = $row->unit;
+                $received[$row->name]['unit_cost'] = $row->cost;
+                $received[$row->name]['unit_price'] = $row->price;
+                $received[$row->name]['quantity'] =
+                    ($received[$row->name]['quantity'] ?? 0) + $row->quantity;
+                $received[$row->name]['total_spent'] =
+                    ($received[$row->name]['total_spent'] ?? 0) + ($row->quantity * $row->cost);
+                    $totalSpent += $row->quantity * $row->cost;
+            }
+        }
+
+        $soldChunks = array_values(array_chunk($sold, 10));
+        $receivedChunks = array_values(array_chunk($received, 10));
+
+
+        return Inertia::render('ProfitAndLost', [
+            'sold' => $soldChunks[0] ?? [],
+            'received' => $receivedChunks[0] ?? [],
+            'totalSoldPages' => count($soldChunks),
+            'totalReceivedPages' => count($receivedChunks),
+            'totalIncome' => $totalIncome,
+            'totalSpent' => $totalSpent,
+        ]);
+    }
+
+    public function profitAndLostGivenDate(Request $request)
+    {
+        $request->validate([
+            'startDate' => 'required|date',
+            'endDate' => 'required|date',
+        ]);
+        $totalIncome = 0;
+        $totalSpent = 0;
+        $startDate = $request->startDate;
+        $endDate = $request->endDate;
+
+        $sold = [];
+        $received = [];
+
+        // Subquery for latest price before sale date
+        $priceSub = DB::table('product_value_variations as pvv')
+            ->select('pvv.id')
+            ->whereColumn('pvv.product_classification_id', 'product_classifications.id')
+            ->whereColumn('pvv.created_at', '<=', 'sale_items.created_at')
+            ->orderBy('pvv.created_at', 'desc')
+            ->limit(1);
+
+        $rows = SaleItem::query()
+            ->join('product_classifications', 'sale_items.product_classification_id', '=', 'product_classifications.id')
+            ->join('brands', 'product_classifications.brand_id', '=', 'brands.id')
+            ->join('categories', 'product_classifications.category_id', '=', 'categories.id')
+            ->join('units', 'product_classifications.unit_id', '=', 'units.id')
+            ->join('products', 'sale_items.product_id', '=', 'products.id')
+            ->join('product_value_variations', 'product_value_variations.id', '=', DB::raw("({$priceSub->toSql()})"))
+            ->mergeBindings($priceSub)
+            ->whereBetween('sale_items.created_at', [$startDate, $endDate])
+            ->select(
+                'sale_items.quantity',
+                'product_value_variations.price',
+                'product_value_variations.cost',
+                'products.deal_type',
+                'product_classifications.name',
+                'brands.name as brand',
+                'categories.name as category',
+                'units.name as unit'
+            )
+            ->get();
+
+        foreach ($rows as $row) {
+            if ($row->deal_type === 'sale') {
+                $sold[$row->name]['name'] = $row->name;
+                $sold[$row->name]['brand'] = $row->brand;
+                $sold[$row->name]['category'] = $row->category;
+                $sold[$row->name]['unit'] = $row->unit;
+                $sold[$row->name]['unit_cost'] = $row->cost;
+                $sold[$row->name]['unit_price'] = $row->price;
+                $sold[$row->name]['quantity'] =
+                    ($sold[$row->name]['quantity'] ?? 0) + $row->quantity;
+                $sold[$row->name]['total_income'] =
+                    ($sold[$row->name]['total_income'] ?? 0) + ($row->quantity * $row->price);
+                $totalIncome += $row->quantity * $row->price;    
             } else {
                 $received[$row->name]['name'] = $row->name;
                 $received[$row->name]['brand'] = $row->brand;
@@ -275,16 +385,145 @@ class ProductController extends Controller
                 $received[$row->name]['unit'] = $row->unit;
                 $received[$row->name]['unit_cost'] = $row->cost;
                 $received[$row->name]['unit_price'] = $row->price;
-                $received[$row->name]['total_spent'] = ($received[$row->name]['total_spent'] ?? 0) + ($row->quantity * $row->cost);
-                $received[$row->name]['quantity'] = ($received[$row->name]['quantity'] ?? 0) + $row->quantity;
+                $received[$row->name]['quantity'] =
+                    ($received[$row->name]['quantity'] ?? 0) + $row->quantity;
+                $received[$row->name]['total_spent'] =
+                    ($received[$row->name]['total_spent'] ?? 0) + ($row->quantity * $row->cost);
+               $totalSpent += $row->quantity * $row->cost;     
             }
-          
         }
-        $totSold=array_chunk($sold,10,false);
-        $totReceived=array_chunk($received,10,false);
-        if (!session()->has('currentSoldPage')) {
-        session(['currentSoldPage'=>0,'currentReceivedPage'=>0]);
-}
-        return Inertia::render('ProfitAndLost', ['sold' => $totSold[session('currentSoldPage')], 'received' => $totReceived[session('currentReceivedPage')]]);
+
+        $soldChunks = array_values(array_chunk($sold, 10));
+        $receivedChunks = array_values(array_chunk($received, 10));
+
+        return response()->json([
+            'sold' => $soldChunks[0] ?? [],
+            'received' => $receivedChunks[0] ?? [],
+            'totalSoldPages' => count($soldChunks),
+            'totalReceivedPages' => count($receivedChunks),
+            'totalIncome' => $totalIncome,
+            'totalSpent' => $totalSpent,
+        ]);
+    }
+
+    public function receivedPaginate(Request $request)
+    {
+          $request->validate([
+            'startDate' => 'nullable|date',
+            'endDate' => 'nullable|date',
+            'page' => 'required|integer|min:0',
+
+        ]);
+
+        $startDate = isset($request->startDate) ? $request->startDate : '1970-01-01';
+        $endDate = isset($request->endDate) ? $request->endDate : now()->toDateString();
+        $page = --$request->page;
+        $received = [];
+
+        $priceSub = DB::table('product_value_variations as pvv')
+            ->select('pvv.id')
+            ->whereColumn('pvv.product_classification_id', 'product_classifications.id')
+            ->whereColumn('pvv.created_at', '<=', 'sale_items.created_at')
+            ->orderBy('pvv.created_at', 'desc')
+            ->limit(1);
+
+        $rows = SaleItem::query()
+            ->join('product_classifications', 'sale_items.product_classification_id', '=', 'product_classifications.id')
+            ->join('brands', 'product_classifications.brand_id', '=', 'brands.id')
+            ->join('categories', 'product_classifications.category_id', '=', 'categories.id')
+            ->join('units', 'product_classifications.unit_id', '=', 'units.id')
+            ->join('products', 'sale_items.product_id', '=', 'products.id')
+            ->join('product_value_variations', 'product_value_variations.id', '=', DB::raw("({$priceSub->toSql()})"))
+            ->mergeBindings($priceSub)
+            ->select(
+                'sale_items.quantity',
+                'product_value_variations.price',
+                'product_value_variations.cost',
+                'product_classifications.name',
+                'brands.name as brand',
+                'categories.name as category',
+                'units.name as unit'
+            )->where('products.deal_type', 'sale')
+            ->whereBetween('sale_items.created_at', [$startDate, $endDate])
+            ->get();
+        foreach ($rows as $row) {
+
+            $received[$row->name]['name'] = $row->name;
+            $received[$row->name]['brand'] = $row->brand;
+            $received[$row->name]['category'] = $row->category;
+            $received[$row->name]['unit'] = $row->unit;
+            $received[$row->name]['unit_cost'] = $row->cost;
+            $received[$row->name]['unit_price'] = $row->price;
+            $received[$row->name]['quantity'] =
+                ($received[$row->name]['quantity'] ?? 0) + $row->quantity;
+            $received[$row->name]['total_spent'] =
+                ($received[$row->name]['total_spent'] ?? 0) + ($row->quantity * $row->cost);
+        }
+        $receivedChunks = array_values(array_chunk($received, 10));
+        return response()->json([
+            'received' => $receivedChunks[$page] ?? [],
+            'totalReceivedPages' => count($receivedChunks),
+            'currentReceivedPage' => $page + 1,
+        ]);
+    }
+     public function soldPaginate(Request $request)
+    {
+        $request->validate([
+            'startDate' => 'nullable|date',
+            'endDate' => 'nullable|date',
+            'page' => 'required|integer|min:0',
+
+        ]);
+
+        $startDate = isset($request->startDate) ? $request->startDate : '1970-01-01';
+        $endDate = isset($request->endDate) ? $request->endDate : now()->toDateString();
+        $page = --$request->page;
+        $sold = [];
+
+        $priceSub = DB::table('product_value_variations as pvv')
+            ->select('pvv.id')
+            ->whereColumn('pvv.product_classification_id', 'product_classifications.id')
+            ->whereColumn('pvv.created_at', '<=', 'sale_items.created_at')
+            ->orderBy('pvv.created_at', 'desc')
+            ->limit(1);
+
+        $rows = SaleItem::query()
+            ->join('product_classifications', 'sale_items.product_classification_id', '=', 'product_classifications.id')
+            ->join('brands', 'product_classifications.brand_id', '=', 'brands.id')
+            ->join('categories', 'product_classifications.category_id', '=', 'categories.id')
+            ->join('units', 'product_classifications.unit_id', '=', 'units.id')
+            ->join('products', 'sale_items.product_id', '=', 'products.id')
+            ->join('product_value_variations', 'product_value_variations.id', '=', DB::raw("({$priceSub->toSql()})"))
+            ->mergeBindings($priceSub)
+            ->select(
+                'sale_items.quantity',
+                'product_value_variations.price',
+                'product_value_variations.cost',
+                'product_classifications.name',
+                'brands.name as brand',
+                'categories.name as category',
+                'units.name as unit'
+            )->where('products.deal_type', 'sale')
+            ->whereBetween('sale_items.created_at', [$startDate, $endDate])
+            ->get();
+        foreach ($rows as $row) {
+
+            $sold[$row->name]['name'] = $row->name;
+            $sold[$row->name]['brand'] = $row->brand;
+            $sold[$row->name]['category'] = $row->category;
+            $sold[$row->name]['unit'] = $row->unit;
+            $sold[$row->name]['unit_cost'] = $row->cost;
+            $sold[$row->name]['unit_price'] = $row->price;
+            $sold[$row->name]['quantity'] =
+                ($sold[$row->name]['quantity'] ?? 0) + $row->quantity;
+            $sold[$row->name]['total_income'] =
+                ($sold[$row->name]['total_income'] ?? 0) + ($row->quantity * $row->price);
+        }
+        $soldChunks = array_values(array_chunk($sold, 10));
+        return response()->json([
+            'sold' => $soldChunks[$page] ?? [],
+            'totalSoldPages' => count($soldChunks),
+            'currentSoldPage' => $page + 1,
+        ]);
     }
 }

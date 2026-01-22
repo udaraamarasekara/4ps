@@ -69,7 +69,7 @@ return (<AuthenticatedLayout
            }  
         </div>
          {
-          page ==1 ? <SaleAndReceivePartOne  processing={processing} errors={errors} data={data} setData={setData} setError={setError} operation={operation} /> 
+          page ==1 ? <SaleAndReceivePartOne clearErrors={clearErrors} processing={processing} errors={errors} data={data} setData={setData} setError={setError} operation={operation} /> 
           :
           <SaleAndReceivePartTwo setShowPopup={setShowPopup} setIsSuccessPopup={setIsSuccessPopup}
            post={post} reset={reset} processing={processing} errors={errors} data={data} setData={setData} setError={setError}  movetoPartOne={movetoPartOne} operation={operation}/> 

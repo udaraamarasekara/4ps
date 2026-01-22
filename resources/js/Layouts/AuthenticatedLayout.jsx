@@ -65,8 +65,8 @@ export default function Authenticated({ user, header, children }) {
                                         </Dropdown.Trigger>
 
                                         <Dropdown.Content>
-                                            <Dropdown.Link href={route('productClassification.index')}>Product classification</Dropdown.Link>
-                                            <Dropdown.Link href={route('product.index')}>Product Instance</Dropdown.Link>
+                                            <Dropdown.Link href={route('productClassification.index')}>Product Catalog</Dropdown.Link>
+                                            <Dropdown.Link href={route('product.index')}>Product Transactions</Dropdown.Link>
                                         </Dropdown.Content>
                                     </Dropdown>
                                     </div>
@@ -103,7 +103,7 @@ export default function Authenticated({ user, header, children }) {
 
                                         <Dropdown.Content>
                                             <Dropdown.Link href={route('projectClassification.index')}>Project classification</Dropdown.Link>
-                                            <Dropdown.Link href={route('project.index')}>Project Instance</Dropdown.Link>
+                                            <Dropdown.Link href={route('project.index')}>Project Transactions</Dropdown.Link>
                                         </Dropdown.Content>
                                     </Dropdown>
                                     </div>
@@ -140,7 +140,7 @@ export default function Authenticated({ user, header, children }) {
 
                                         <Dropdown.Content>
                                             <Dropdown.Link href={route('propertyClassification.index')}>Property classification</Dropdown.Link>
-                                            <Dropdown.Link href={route('property.index')}>Property Instance</Dropdown.Link>
+                                            <Dropdown.Link href={route('property.index')}>Property Transactions</Dropdown.Link>
                                         </Dropdown.Content>
                                     </Dropdown>
                                     </div>
@@ -177,7 +177,7 @@ export default function Authenticated({ user, header, children }) {
 
                                         <Dropdown.Content>
                                             <Dropdown.Link href={route('peopleClassification.index')}>People classification</Dropdown.Link>
-                                            <Dropdown.Link href={route('people.index')}>People Instance</Dropdown.Link>
+                                            <Dropdown.Link href={route('people.index')}>People Transactions</Dropdown.Link>
                                         </Dropdown.Content>
                                     </Dropdown>
                                     </div>
@@ -267,7 +267,7 @@ export default function Authenticated({ user, header, children }) {
                                 <ResponsiveNavLink href={route('project.index')}>Project</ResponsiveNavLink>
                                 <ResponsiveNavLink href={route('property.index')}>Property</ResponsiveNavLink>
                                 <ResponsiveNavLink href={route('people.index')}>People</ResponsiveNavLink>
-                                <ResponsiveNavLink href={route('productClassification.index')}>Product Classification</ResponsiveNavLink>
+                                <ResponsiveNavLink href={route('productClassification.index')}>Product Catalog</ResponsiveNavLink>
                                 <ResponsiveNavLink href={route('projectClassification.index')}>Project Classification</ResponsiveNavLink>
                                 <ResponsiveNavLink href={route('propertyClassification.index')}>Property Classification</ResponsiveNavLink>
                                 <ResponsiveNavLink href={route('peopleClassification.index')}>People Classification</ResponsiveNavLink>            

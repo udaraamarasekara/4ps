@@ -1,144 +1,319 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link } from "@inertiajs/react";
-import { useCallback, useState } from "react";
-import { debounce, set } from "lodash";
-import Pagination from "@/Components/Pagination";
-import PaginationJson from "@/Components/PaginationJson";
+import { useState } from "react";
 import axios from "axios";
-import AutoCompleteTextInput from "@/Components/AutoCompleteTextInput";
 import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
-import PriceCostChart from "./PriceCostChart";
-export default function ProfitAndLost({ auth, sold,received }) {
-    const [filterChanged, setFilterChanged] = useState(0);
+import PaginationSession from "@/Components/PaginationSession";
+import { set } from "lodash";
+
+export default function ProfitAndLost({
+    auth,
+    sold,
+    received,
+    totalSoldPages,
+    totalReceivedPages,
+    totalIncome,
+    totalSpent,
+}) {
+    // ---------------- STATE ----------------
     const [startDateFilter, setStartDateFilter] = useState("");
+    const [totalSoldPagesState, setTotalSoldPagesState] = useState(totalSoldPages);
+    const [totalReceivedPagesState, setTotalReceivedPagesState] =
+        useState(totalReceivedPages);
+    const [currentSoldPageState, setCurrentSoldPageState] = useState(1);
+    const [currentReceivedPageState, setCurrentReceivedPageState] = useState(1);
     const [endDateFilter, setEndDateFilter] = useState("");
-    const [jsonPaginate, setJsonPaginate] = useState(false);
-    const [productClassificationData, setProductClassificationData] = useState(Object.entries(sold));
-    console.log(sold);
-    const searchTransactions = async () => {
-        setJsonPaginate(true);
-        const response = await axios.get(route("transactions.search"), {
-            params: {
-                startDate: startDateFilter,
-                endDate: endDateFilter,
-            },
-        });
-        setTransactionsData(response);
+    const [receivedData, setReceivedData] = useState(Object.values(received));
+    const [salesData, setSalesData] = useState(Object.values(sold));
+    const [loading, setLoading] = useState(false);
+
+    // ---------------- PAGINATION ----------------
+    const changeReceivedPage = async (page) => {
+        try {
+            setLoading(true);
+
+            const response = await axios.get(
+                route("product.receivedPaginate"),
+                {
+                    params: {
+                        page: page,
+                        startDate: startDateFilter,
+                        endDate: endDateFilter,
+                    },
+                },
+            );
+
+            // Normalize response
+            setReceivedData(response.data.received ?? []);
+            setCurrentReceivedPageState(response.data.currentReceivedPage);
+        } catch (error) {
+            console.error(error);
+            alert("Failed to fetch received data");
+        } finally {
+            setLoading(false);
+        }
     };
+
+    const changeSoldPage = async (page) => {
+        try {
+            setLoading(true);
+
+            const response = await axios.get(route("product.soldPaginate"), {
+                params: {
+                    page: page,
+                    startDate: startDateFilter,
+                    endDate: endDateFilter,
+                },
+            });
+
+            // Normalize response
+            setSalesData(response.data.sold ?? []);
+            setCurrentSoldPageState(response.data.currentSoldPage);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    // ---------------- SEARCH ----------------
+    const searchProfitLost = async () => {
+        if (!startDateFilter || !endDateFilter) return;
+
+        try {
+            setLoading(true);
+
+            const response = await axios.get(
+                route("product.profitAndLostGivenDate"),
+                {
+                    params: {
+                        startDate: startDateFilter,
+                        endDate: endDateFilter,
+                    },
+                },
+            );
+
+            // Normalize response
+            setSalesData(response.data.sold ?? []);
+            setReceivedData(response.data.received ?? []);
+        } catch (error) {
+            console.error(error);
+            alert("Failed to fetch profit & loss data");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // ---------------- UI ----------------
     return (
         <AuthenticatedLayout
             user={auth.user}
             header={
                 <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    Profit and Lost
+                    Profit and Loss
                 </h2>
             }
         >
-            <Head title="Profit and Lost" />
+            <Head title="Profit and Loss" />
+
+            {/* ---------------- FILTERS ---------------- */}
             <div className="flex justify-center">
-                <div className="w-4/5 mx-6 gap-2 flex flex-col md:flex-row items-center justify-between  pt-6">
+                <div className="w-4/5 mx-6 pt-6">
                     <form
-                        method="GET"
-                        className="w-full grid grid-cols-1 md:grid-cols-4  items-center flex-col md:flex-row justify-between gap-2"
-                        action={route("transactions")}
+                        className="grid grid-cols-1 md:grid-cols-4 gap-3"
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            searchProfitLost();
+                        }}
                     >
-                        <div className="w-full  flex flex-row justify-between">
-                            <InputLabel className="mr-2 mt-2">From</InputLabel>
+                        <div className="flex items-center">
+                            <InputLabel className="mr-2">From</InputLabel>
                             <TextInput
-                                className="w-full"
-                                placeholder="Search by Start Date"
                                 type="date"
+                                className="w-full"
                                 value={startDateFilter}
-                                onChange={(e) => {
-                                    setStartDateFilter(e.target.value);
-                                }}
+                                onChange={(e) =>
+                                    setStartDateFilter(e.target.value)
+                                }
                             />
                         </div>
-                        <div className="w-full flex flex-row justify-between">
-                            <InputLabel className="mr-2 mt-2">To</InputLabel>
+
+                        <div className="flex items-center">
+                            <InputLabel className="mr-2">To</InputLabel>
                             <TextInput
                                 type="date"
                                 className="w-full"
-                                placeholder="Search by End Date"
                                 value={endDateFilter}
-                                onChange={(e) => {
-                                    setEndDateFilter(e.target.value);
-                                }}
+                                onChange={(e) =>
+                                    setEndDateFilter(e.target.value)
+                                }
                             />
                         </div>
+
                         <button
-                            onClick={(e) => {
-                                e.preventDefault();
-                                setFilterChanged(filterChanged + 1);
-                            }}
                             type="submit"
-                            className="w-full py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                            disabled={loading}
+                            className="py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
                         >
-                            Filter
+                            {loading ? "Filtering..." : "Filter"}
                         </button>
-                        <Link
-                            className="max-sm:w-full"
-                            href={"/productPriceCostVariationIndex"}
-                        >
-                            <button className="  py-2 w-full  bg-gray-600 text-white rounded-md hover:bg-gray-700">
+
+                        <Link href={route("product.profitAndLost")}>
+                            <button
+                                type="button"
+                                className="w-full py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                            >
                                 Clear Filters
                             </button>
                         </Link>
                     </form>
                 </div>
             </div>
-            <div className="max-sm:w-full pb-6 flex justify-center">
-                <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-x-auto sm:rounded-lg">
-                    <table className="w-full  ">
-                        <thead>
-                            <tr>
-                                <th>Item</th>
-                                <th>Brand</th>
-                                <th>Unit</th>
-                                <th>Cost</th>
-                                <th>Price</th>
-                                <th>Category</th>
-                                <th>Quantity</th>
-                                <th>Income</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {productClassificationData.map(([key, value]) => {
-                                return (
-                                    <tr key={key}>
-                                        <td className="text-center">
-                                            {value.name}
-                                        </td>
-                                        <td className="text-center">
-                                            {value.brand}
-                                        </td>
-                                        <td className="text-center">
-                                            {value.unit}
-                                        </td>
-                                        <td className="text-center">
-                                            {value.unit_cost}
-                                        </td>
-                                        <td className="text-center">
-                                            {value.unit_price}
-                                        </td>
-                                        <td className="text-center">
-                                            {value.category}
-                                        </td>
-                                        <td className="text-center">
-                                            {value.quantity}
-                                        </td>
-                                        <td className="text-center">
-                                            {value.total_income}
+
+            {/* ---------------- TABLE ---------------- */}
+            <div className="flex flex-col">
+                <div className="text-2xl text-center">
+                    Expenditures in given period by buying: {totalIncome}
+                </div>
+                <div className="flex justify-center pb-6">
+                    <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-x-auto sm:rounded-lg">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Brand</th>
+                                    <th>Unit</th>
+                                    <th>Cost</th>
+                                    <th>Price</th>
+                                    <th>Category</th>
+                                    <th>Quantity</th>
+                                    <th>Income</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {salesData.length === 0 && (
+                                    <tr>
+                                        <td
+                                            colSpan="8"
+                                            className="text-center py-4 text-gray-500"
+                                        >
+                                            No records found
                                         </td>
                                     </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </section>
-           
+                                )}
+
+                                {salesData.map((item, index) => (
+                                    <tr key={index}>
+                                        <td className="text-center">
+                                            {item.name}
+                                        </td>
+                                        <td className="text-center">
+                                            {item.brand}
+                                        </td>
+                                        <td className="text-center">
+                                            {item.unit}
+                                        </td>
+                                        <td className="text-center">
+                                            {item.unit_cost}
+                                        </td>
+                                        <td className="text-center">
+                                            {item.unit_price}
+                                        </td>
+                                        <td className="text-center">
+                                            {item.category}
+                                        </td>
+                                        <td className="text-center">
+                                            {item.quantity}
+                                        </td>
+                                        <td className="text-center">
+                                            {item.total_income}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </section>
+                </div>
             </div>
+            {/* ---------------- PAGINATION ---------------- */}
+            <PaginationSession
+                totalPages={totalSoldPagesState}
+                currentPage={currentSoldPageState}
+                onPageChange={changeSoldPage}
+            />
+            {/* ---------------- TABLE ---------------- */}
+            <div className="flex flex-col">
+                <div className="text-2xl text-center">
+                    Expenditures in given period by buying: {totalSpent}
+                </div>
+
+                <div className="flex justify-center pb-6">
+                    <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-x-auto sm:rounded-lg">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Brand</th>
+                                    <th>Unit</th>
+                                    <th>Cost</th>
+                                    <th>Price</th>
+                                    <th>Category</th>
+                                    <th>Quantity</th>
+                                    <th>Cost spent</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {receivedData.length === 0 && (
+                                    <tr>
+                                        <td
+                                            colSpan="8"
+                                            className="text-center py-4 text-gray-500"
+                                        >
+                                            No records found
+                                        </td>
+                                    </tr>
+                                )}
+
+                                {receivedData.map((item, index) => (
+                                    <tr key={index}>
+                                        <td className="text-center">
+                                            {item.name}
+                                        </td>
+                                        <td className="text-center">
+                                            {item.brand}
+                                        </td>
+                                        <td className="text-center">
+                                            {item.unit}
+                                        </td>
+                                        <td className="text-center">
+                                            {item.unit_cost}
+                                        </td>
+                                        <td className="text-center">
+                                            {item.unit_price}
+                                        </td>
+                                        <td className="text-center">
+                                            {item.category}
+                                        </td>
+                                        <td className="text-center">
+                                            {item.quantity}
+                                        </td>
+                                        <td className="text-center ">
+                                            {item.total_spent}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </section>
+                </div>
+            </div>
+
+            {/* ---------------- PAGINATION ---------------- */}
+            <PaginationSession
+                totalPages={totalReceivedPagesState}
+                currentPage={currentReceivedPageState}
+                onPageChange={changeReceivedPage}
+            />
         </AuthenticatedLayout>
     );
 }

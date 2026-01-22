@@ -38,9 +38,12 @@ Route::middleware('auth')->group(function () {
     Route::resource('category', CategoryController::class);
     Route::resource('product',ProductController::class);
     Route::resource('property',PropertyController::class);
+    Route::get('profitAndLostGivenDate',[ProductController::class,'profitAndLostGivenDate'])->name('product.profitAndLostGivenDate');
     Route::get('profitAndLost',[ProductController::class,'profitAndLost'])->name('product.profitAndLost');
     Route::get('sale',[ProductController::class,'sale'])->name('sale');
     Route::get('receive',[ProductController::class,'receive'])->name('receive');
+        Route::get('soldPaginate',[ProductController::class,'soldPaginate'])->name('product.soldPaginate');
+    Route::get('receivedPaginate',[ProductController::class,'receivedPaginate'])->name('product.receivedPaginate');
     Route::get('thirdPartyPeopleFetch/{input}/{operation}',[PeopleController::class,'thirdPartyFetch'])->name('people.thirdPartyFetch');
     Route::resource('people',PeopleController::class);
     Route::get('productClassificationName/{input}',[ProductClassificationController::class,'getName'])->name('productClassification.getName');
