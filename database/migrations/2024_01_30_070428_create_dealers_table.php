@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('people_user_roles', function (Blueprint $table) {
+        Schema::create('dealers', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('telephone');
+            $table->enum('role',['Supplier','Customer']);
             $table->timestamps();
-            $table->morphs('rolable');
-            $table->foreignId('people_classification_id');
-            $table->softDeletes();  // Adds a `deleted_at` column
-
         });
     }
 
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('dealers');
     }
 };

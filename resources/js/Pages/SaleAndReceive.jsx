@@ -1,14 +1,12 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import axios from 'axios';
-import { useRef,useState } from 'react';
+import { useState } from 'react';
 
-import { Head,useForm,router,Link } from '@inertiajs/react';
+import { Head,useForm,router } from '@inertiajs/react';
 import { ArrowLeftIcon,ArrowRightIcon } from '@heroicons/react/24/solid';
 import { useEffect } from 'react';
 import SaleAndReceivePartOne from './SaleAndReceivePartOne';
 import SaleAndReceivePartTwo from './SaleAndReceivePartTwo';
 import { Transition } from '@headlessui/react';
-import { debounce } from 'lodash';  
 export default function SaleAndReceive({auth,operation}){
   
     const [showPopup,setShowPopup] =useState(false)
@@ -16,7 +14,8 @@ export default function SaleAndReceive({auth,operation}){
     const [page,setPage]=useState(1);   
     const { data, setData, errors, setError,clearErrors,post, reset, processing, recentlySuccessful } = useForm({
      items:[],
-     third_party:{} ,
+     dealer_id:null,
+     third_party:{},
      operation:operation,
      paid_amount:-1
      

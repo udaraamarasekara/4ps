@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->enum('deal_type',['sale','receive']);
-            $table->morphs('peopleable');
+            $table->foreignId('dealer_id')->constrained('dealers');
             $table->decimal('total_bill', 10, 2);
             $table->decimal('paid_amount', 10, 2)->default(0);
             $table->foreignId('users_id')->constrained();

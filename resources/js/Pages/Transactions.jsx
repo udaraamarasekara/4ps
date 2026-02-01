@@ -1,7 +1,8 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link,router } from "@inertiajs/react";
 import { useCallback,useState } from "react";
-import { debounce, set } from "lodash";
+import { debounce } from "lodash";
+import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import Pagination from "@/Components/Pagination";
 import PaginationJson from "@/Components/PaginationJson";
 import axios from "axios";
@@ -65,6 +66,12 @@ export default function Transactions({ auth, transactions }) {
         setTransactionsData(response.data);
     };
 
+   const goBack = () => {
+    router.visit(route('product.index'))
+     }
+
+
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -74,6 +81,7 @@ export default function Transactions({ auth, transactions }) {
                 </h2>
             }
         >
+           <ArrowLeftIcon  onClick={()=>goBack()} className=' m-6 bold p-3 w-12 h-auto bg-white border border-gray-200 rounded-full text-3xl font-extrabold flex items-center justify-center hover:cursor-pointer' />
             <Head title="Transactions Reports" />
             <div className="flex justify-center">
                 <div className="w-4/5 mx-6 gap-2 flex flex-col md:flex-row items-center justify-between  pt-6">
@@ -215,7 +223,7 @@ export default function Transactions({ auth, transactions }) {
                                             }
                                         </td>
                                         <td className="text-center">
-                                            {object.peopleable.name}
+                                            {object.dealer.name}
                                         </td>
                                         <td className="text-center">
                                             {item.product_classification.name}

@@ -6,7 +6,7 @@ import ToggleSwitch from "@/Components/ToggleSwitch";
 import { useRef, useState } from "react";
 import AutoCompleteTextInput from "@/Components/AutoCompleteTextInput";
 import { useEffect, useCallback } from "react";
-import { debounce } from "lodash";
+import { debounce, set } from "lodash";
 import { router } from "@inertiajs/react";
 import axios from "axios";
 import { Transition } from "@headlessui/react";
@@ -37,25 +37,34 @@ export default function SaleAndReceivePartTwo({
                 0
             )
         );
-    });
+     setData("third_party", "")
+    },[]);
     const prevThirdPartySugst = useRef();
-    const isNotInitialMount = useRef(false);
 
     const thirdParty = useRef();
+const goToDealerCreate = () => {
+    if (!thirdPartyName) {
+        console.warn("Missing thirdPartyName");
+        return;
+    }
+
+    router.visit(
+        route('dealer.create', { type: thirdPartyName})
+    );
+};
 
     const updateThirdPartySuggessions = useCallback(
         debounce(async (input) => {
             const response = await axios.get(
-                route("people.thirdPartyFetch", {
+                route(thirdPartyName.toLowerCase() + "Fetch", {
                     input: input ? input : "-0",
-                    operation,
                 })
             );
             var tmpSugests = [];
             thirdPartyObject.current = response.data;
             response.data.forEach((person) => {
                 tmpSugests.push(
-                    person.user_name + " " + person.classification_name
+                    person.name + " " + person.telephone
                 );
             });
             tmpSugests.length === 0 && input !== "" ? setErrorsForThirdParty() : setError("third_party","");
@@ -64,15 +73,19 @@ export default function SaleAndReceivePartTwo({
         []
     );
 
+        const setErrorsForThirdParty = () => {
+           addNewThirdParty ? setError("third_party", thirdPartyName+" not found click to add new") : setError("third_party", thirdPartyName+"Third party not found");
+
+        };
+
     const setThirdPartyObject = (el) => {
         const selectedThirdParty = thirdPartyObject.current.find(
             (person) =>
-                person.user_name + " " + person.classification_name === el
+                person.name + " " + person.telephone === el
         );
         if (selectedThirdParty) {
-            setData("third_party", selectedThirdParty);
-            thirdParty.current.value = selectedThirdParty.user_name + " " + selectedThirdParty.classification_name;
-            console.log(thirdParty.current.value);
+                        setData("dealer_id", selectedThirdParty.id);
+            setData("third_party", selectedThirdParty.name + " " + selectedThirdParty.telephone);
         }
     };
 
@@ -181,7 +194,7 @@ export default function SaleAndReceivePartTwo({
                                 id="third_party"
                                 ref={thirdParty}
                                 suggestions={suggesioinsThirdParty}
-                                value={ data.third_party.user_name ? data.third_party.user_name ? data.third_party.user_name + " " + data.third_party.classification_name : '':data.third_party.length ?data.third_party:""}
+                                value={ data.third_party}
                                 onChange={(e) =>
                                     {setData("third_party", e.target.value),
                                     updateThirdPartySuggessions(e.target.value)
@@ -196,9 +209,9 @@ export default function SaleAndReceivePartTwo({
 
                             {addNewThirdParty ? (
                                 <div
-                                    onClick={() =>
-                                        router.visit(route("people.create"))
-                                    }
+                         
+                                        onClick={goToDealerCreate}
+                                    
                                 >
                                     <InputError
                                         message={errors.third_party}

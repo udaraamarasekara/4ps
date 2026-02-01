@@ -18,7 +18,6 @@ export default function NewCategoryModal({show,setShow}){
     const [error,setError] = useState()
     const [processing,setProcessing] = useState()
     const [suggessioins,setSuggessions] = useState();
-    const [parentSugges,setParentSugges] = useState();
     const categoryNameChanged =
        useCallback(
       debounce(async (val) =>{
@@ -26,17 +25,11 @@ export default function NewCategoryModal({show,setShow}){
         setSuggessions(response.data)
       
       },300),[])
-      const updateParentSuggessions =useCallback(
-        debounce(async (input) =>{
-    const response = await axios.get(route('category.fetch',input ? input: '-0'))
-    setParentSugges(response.data[1])
-   
-  
-},300),[])
+      
       
     const newCategory = (e) =>{
       e.preventDefault()
-      axios.post('/category',{name:name,parent_name:parent}).then((res)=>{
+      axios.post('/category',{name:name}).then((res)=>{
         setShow(false)
       }).catch()
     }
@@ -57,8 +50,7 @@ export default function NewCategoryModal({show,setShow}){
             </button>
         </div>          
           <form onSubmit={(e)=>newCategory(e)} className='m-6'>
-          <div className='flex flex-col md:flex-row md:space-x-4'>
-            <div className='w-full md:w-1/2' >
+            <div className='w-full flex flex-row items-center justify-center gap-3 ' >
                  
               <InputLabel htmlFor="Name" value="Name" />
 
@@ -71,23 +63,9 @@ export default function NewCategoryModal({show,setShow}){
                     autoComplete="name"
                 />
              </div>
-             <div className='w-full md:w-1/2' >
-                 
-                 <InputLabel htmlFor="parent" value="Parent(optional)" />
-   
-                 <AutoCompleteTextInput
-                     id="parent"
-                     ref={parentRef}
-                     value={parent}
-                     suggestions={parentSugges}
-                     onChange={(e) => updateParentSuggessions(e.target.value)}
-                     setClickedElement={(el)=>{setParent(el),prevCatSugst.current=el}}
-                     className="mt-1 block w-full"
-                   />
-                </div>
-          </div>      
+           
             {error !=='' && <InputError message={error} className="mt-2" />}
-        <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
+        <div className="flex items-center justify-end  -mx-5 min-w-max mt-5  p-6 border-t border-solid border-blueGray-200 rounded-b">
            <PrimaryButton disabled={processing}>Add</PrimaryButton>
         </div> 
         </form>

@@ -21,6 +21,8 @@ export default function ProfitAndLost({
     const [totalSoldPagesState, setTotalSoldPagesState] = useState(totalSoldPages);
     const [totalReceivedPagesState, setTotalReceivedPagesState] =
         useState(totalReceivedPages);
+        const [totalIncomeState,setTotalIncomeState]= useState(totalIncome);
+        const [totalSpentState,setTotalSpentState] = useState(totalSpent);
     const [currentSoldPageState, setCurrentSoldPageState] = useState(1);
     const [currentReceivedPageState, setCurrentReceivedPageState] = useState(1);
     const [endDateFilter, setEndDateFilter] = useState("");
@@ -47,6 +49,7 @@ export default function ProfitAndLost({
             // Normalize response
             setReceivedData(response.data.received ?? []);
             setCurrentReceivedPageState(response.data.currentReceivedPage);
+           
         } catch (error) {
             console.error(error);
             alert("Failed to fetch received data");
@@ -96,6 +99,11 @@ export default function ProfitAndLost({
             // Normalize response
             setSalesData(response.data.sold ?? []);
             setReceivedData(response.data.received ?? []);
+                        setCurrentReceivedPageState(response.data.currentReceivedPage);
+              setCurrentSoldPageState(response.data.currentSoldPage);
+            setTotalSoldPagesState(response.data.changeSoldPage);
+            setTotalIncomeState(response.data.totalIncome);
+            setTotalSpentState(response.data.totalSpent);
         } catch (error) {
             console.error(error);
             alert("Failed to fetch profit & loss data");
@@ -173,7 +181,7 @@ export default function ProfitAndLost({
             {/* ---------------- TABLE ---------------- */}
             <div className="flex flex-col">
                 <div className="text-2xl text-center">
-                    Expenditures in given period by buying: {totalIncome}
+                    Income in given period by sales: {totalIncomeState}
                 </div>
                 <div className="flex justify-center pb-6">
                     <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-x-auto sm:rounded-lg">
@@ -244,7 +252,7 @@ export default function ProfitAndLost({
             {/* ---------------- TABLE ---------------- */}
             <div className="flex flex-col">
                 <div className="text-2xl text-center">
-                    Expenditures in given period by buying: {totalSpent}
+                    Expenditures in given period by buying: {totalSpentState}
                 </div>
 
                 <div className="flex justify-center pb-6">

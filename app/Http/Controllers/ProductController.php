@@ -11,8 +11,7 @@ use App\Models\Stock;
 use App\Models\SaleItem;
 use App\Utilities\StockService;
 use DB;
-use App\Models\People;
-use App\Models\User;
+use App\Models\Dealer;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
@@ -25,7 +24,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Product');
+        return Inertia::render('Dashboard');
     }
 
 
@@ -37,13 +36,6 @@ class ProductController extends Controller
         $rawInput = $request->validated();
         $totalBill = 0;
         DB::beginTransaction();
-        if ($rawInput['third_party']['table'] == 'People') {
-            $rawInput['third_party']['peopleable_id'] = People::where('name', $rawInput['third_party']['user_name'])->first()->id;
-            $rawInput['third_party']['peopleable_type'] = 'App\Models\People';
-        } elseif ($rawInput['third_party']['table'] == 'Company') {
-            $rawInput['third_party']['peopleable_id'] = User::where('name', $rawInput['third_party']['user_name'])->first()->id;
-            $rawInput['third_party']['peopleable_type'] = 'App\Models\User';
-        }
         if ($rawInput['operation'] === 'Sale') {
 
             $totalBill = $this->calTotalBillForSale($rawInput['items']);
@@ -76,11 +68,10 @@ class ProductController extends Controller
         }
         $product = Product::create([
             'deal_type' => $rawInput['operation'] == 'Sale' ? 'sale' : 'receive',
-            'peopleable_id' => $rawInput['third_party']['peopleable_id'] ?? null,
-            'peopleable_type' => $rawInput['third_party']['peopleable_type'] ?? null,
             'total_bill' => $rawInput['total_bill'] ?? 0,
             'paid_amount' => $rawInput['paid_amount'] ?? 0,
             'users_id' => auth()->id(),
+            'dealer_id' => $rawInput['dealer_id'] ?? null,
         ]);
         foreach ($rawInput['items'] as $item) {
             SaleItem::create([
@@ -133,7 +124,7 @@ class ProductController extends Controller
                     }
                 ]);
             },
-            'peopleable'
+            'dealer'
         ])->orderBy('created_at', 'desc');
 
 
@@ -160,7 +151,7 @@ class ProductController extends Controller
                     }
                 ]);
             },
-            'peopleable'
+            'dealer'
         ])->orderBy('created_at', 'desc');
 
 

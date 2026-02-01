@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { router } from '@inertiajs/react'
 import axios from 'axios';
 import { Transition } from '@headlessui/react';
-import InputError from '@/Components/InputError';
+import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
@@ -33,7 +33,9 @@ export default function ProductClassification({ auth,productClassifications }) {
       setItemName(item.name)
       setShowEditCostPrice(true)
    }
-
+  const goBack = () => {
+    router.visit(route('product.index'))
+     }
    const deleteItem = (id) => {
     axios.delete(route('productClassification.destroy', id))
         .then(() => {
@@ -76,7 +78,8 @@ export default function ProductClassification({ auth,productClassifications }) {
         header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Product Catalog</h2>}
     >
         <Head title="Product Catalog" />
-        <div className='w-full flex justify-end'>
+        <div className='w-full flex justify-between'>
+            <ArrowLeftIcon  onClick={()=>goBack()} className=' m-6 bold p-3 w-12 h-auto bg-white border border-gray-200 rounded-full text-3xl font-extrabold flex items-center justify-center hover:cursor-pointer' />
             <Link href={route('productClassification.create')}>
                 <div className=' m-6 p-6 w-10 h-10 bg-white border border-gray-200 rounded-full text-3xl font-extrabold flex items-center justify-center hover:cursor-pointer' >+</div>
             </Link>

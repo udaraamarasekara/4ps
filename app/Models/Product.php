@@ -11,9 +11,9 @@ class Product extends Model
     use HasFactory,SoftDeletes;
     protected $guarded = [];
 
-    public function peopleable()
+    public function dealer()
     {
-    return $this->morphTo();
+    return $this->belongsTo(Dealer::class);
     }
     public function productItems()
     {
