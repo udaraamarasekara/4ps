@@ -43,13 +43,15 @@ export default function SaleAndReceivePartTwo({
 
     const thirdParty = useRef();
 const goToDealerCreate = () => {
+      sessionStorage.setItem('dealData',JSON.stringify(data))
+      sessionStorage.setItem('fromDeal','saleAndReceive')
     if (!thirdPartyName) {
         console.warn("Missing thirdPartyName");
         return;
     }
 
     router.visit(
-        route('dealer.create', { type: thirdPartyName})
+        route('dealer.create', { type: thirdPartyName.toLowerCase()})
     );
 };
 
@@ -84,8 +86,8 @@ const goToDealerCreate = () => {
                 person.name + " " + person.telephone === el
         );
         if (selectedThirdParty) {
-                        setData("dealer_id", selectedThirdParty.id);
-            setData("third_party", selectedThirdParty.name + " " + selectedThirdParty.telephone);
+            setData({...data, third_party: selectedThirdParty.name + " " + selectedThirdParty.telephone,dealer_id: selectedThirdParty.id });
+
         }
     };
 
@@ -111,7 +113,7 @@ const goToDealerCreate = () => {
         setError("paid_amount", "Paid amount is required");
         return;
     }
-
+    
     const payload = {
         ...data,
         total_bill: tot,
@@ -232,7 +234,7 @@ const goToDealerCreate = () => {
                             />
                             <ToggleSwitch
                                 enabled={!isTotalPaid}
-                                setEnabled={setIsTotalPaid}
+                                setEnabled={()=>{setData('paid_amount',prev=>prev===0?-1:0),setIsTotalPaid(prev=>!prev)}}
                             />
                         </div>
                     </div>

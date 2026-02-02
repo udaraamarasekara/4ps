@@ -14,6 +14,7 @@ import Pagination from '@/Components/Pagination';
 export default function ProductClassification({ auth,productClassifications }) {
     console.log("ProductClassification rendered with:", { productClassifications });
    const [show,setShow]=useState(false)
+   const [showDelete,setShowDelete]=useState(false)
    const [item,setItem]=useState({})
    const [showPopup,setShowPopup] =useState(false)
    const [itemName,setItemName]= useState();
@@ -40,6 +41,7 @@ export default function ProductClassification({ auth,productClassifications }) {
     axios.delete(route('productClassification.destroy', id))
         .then(() => {
             setShowPopup(true)
+            setShowDelete(false)
             setIsSuccessPopup(true)
             setTimeout(()=>{setShowPopup(false)},1000)  
             productClassifications.data=productClassifications.data.filter(element => element.id !== id);
@@ -127,7 +129,7 @@ export default function ProductClassification({ auth,productClassifications }) {
                              <div onClick={()=>{setItem(object),setShow(true)}} className='bg-green-400 text-black hover:cursor-pointer rounded-full min-w-5 p-2 min-h-5' ><EyeIcon className='min-w-5 h-auto' /></div>
                              <div onClick={()=>router.get(route('productClassification.edit',object.id))} className='bg-yellow-500 text-black rounded-full hover:cursor-pointer min-w-5 p-2 min-h-5' ><PencilSquareIcon className='min-w-5 h-auto' /></div>
                              <div onClick={()=>updateCostPriceItem(object)} className='bg-gray-500 text-white hover:cursor-pointer rounded-full min-w-5 p-2 min-h-5' ><CurrencyDollarIcon className='min-w-5 h-auto' /></div>
-                             <div onClick={()=>deleteItem(object.id)} className='bg-red-500 text-white hover:cursor-pointer rounded-full min-w-5 p-2 min-h-5' ><TrashIcon className='min-w-5 h-auto' /></div>
+                             <div onClick={()=>{setItem(object.id),setShowDelete(true)}} className='bg-red-500 text-white hover:cursor-pointer rounded-full min-w-5 p-2 min-h-5' ><TrashIcon className='min-w-5 h-auto' /></div>
 
                          </td>
                      </tr>
@@ -139,6 +141,19 @@ export default function ProductClassification({ auth,productClassifications }) {
             </section>
         
         </div> 
+        <Modal show={showDelete} onClose={()=>setShowDelete(false)} >
+            <div className='w-full h-auto p-5 flex flex-col items-center'>
+              <div className='font-bold uppercase text-2xl'>Are you sure you want to delete {item.name}?</div>
+              <div className='text-center w-full max-w-[600px] mx-auto break-words whitespace-normal my-4'>
+                This action cannot be undone.
+              </div>
+              <div className='flex gap-4' >
+                <PrimaryButton className='w-min mx-auto mt-3 bg-red-500' onClick={()=>deleteItem(item)} >Delete</PrimaryButton>
+                <PrimaryButton className='w-min mx-auto mt-3' onClick={()=>setShowDelete(false)} >Cancel</PrimaryButton>
+
+              </div>
+            </div>
+        </Modal>
         <Modal show={show} onClose={()=>setShow(false)} >
             <div className='w-full h-auto p-5 flex flex-col items-center'>
               <div className='font-bold uppercase text-2xl'>{item.name}</div>

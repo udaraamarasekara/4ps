@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('product_classification_id')->constrained();
             $table->integer('quantity');
             $table->foreignId('product_id')->constrained();
+            $table->softDeletes();
         });
     }
 

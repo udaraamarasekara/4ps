@@ -33,12 +33,17 @@ export default function SaleAndReceive({auth,operation}){
 
 
     useEffect(()=>{
-
+      if(sessionStorage.getItem('dealData')){
+        const savedData=JSON.parse( sessionStorage.getItem('dealData'))
+        setData(savedData)
+        setPage(2)
+        sessionStorage.removeItem('dealData')
+      }
     },[]) 
 
  
     const goBack = () => {
-    router.visit(route('product.index'))
+        page===1?  router.visit(route('product.index')):setPage(1)
      }
 
 return (<AuthenticatedLayout

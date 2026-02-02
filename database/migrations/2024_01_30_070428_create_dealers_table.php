@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('telephone');
             $table->enum('role',['Supplier','Customer']);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

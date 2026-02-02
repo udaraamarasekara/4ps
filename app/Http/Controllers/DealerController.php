@@ -21,6 +21,19 @@ class DealerController extends Controller
       ]);
     }
 
+ public function suppliers() 
+    {   
+
+       $dealers = DealerResource::collection(Dealer::where('role', 'supplier')->paginate(10));
+      return Inertia::render('Suppliers', [
+        'dealers' => $dealers
+      ]);
+    }
+    public function deleteDealer($id)
+    {
+      Dealer::find($id)->delete();
+    }
+
 
 
     public function fetchSupplier(String $input)

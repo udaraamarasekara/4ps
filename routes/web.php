@@ -34,11 +34,11 @@ Route::middleware('auth')->group(function () {
     Route::get('profitAndLostGivenDate',[ProductController::class,'profitAndLostGivenDate'])->name('product.profitAndLostGivenDate');
     Route::get('profitAndLost',[ProductController::class,'profitAndLost'])->name('product.profitAndLost');
     Route::get('sale',[ProductController::class,'sale'])->name('sale');
-    Route::get('dealer/{type}',action: [DealerController::class,'dealer'])->name('dealer.create');
+    Route::get(uri: 'dealer/{type}',action: [DealerController::class,'dealer'])->name('dealer.create');
+    Route::delete(uri: 'dealer/{id}',action: [DealerController::class,'deleteDealer'])->name('deleteDealer');
     Route::get('dealers/customers',action: [DealerController::class,'customers'])->name('dealers.customers');
     Route::get('dealers/suppliers',action: [DealerController::class,'suppliers'])->name('dealers.suppliers');
-    Route::post('newCustomer',action: [DealerController::class,'newCustomer'])->name('dealer.newCustomer');
-    Route::post('newSupplier',action: [DealerController::class,'newSupplier'])->name('newSupplier');
+    Route::post('newDealer',action: [DealerController::class,'newDealer'])->name('newDealer');
     Route::get('receive',[ProductController::class,'receive'])->name('receive');
     Route::get('soldPaginate',[ProductController::class,'soldPaginate'])->name('product.soldPaginate');
     Route::get('receivedPaginate',[ProductController::class,'receivedPaginate'])->name('product.receivedPaginate');
