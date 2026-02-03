@@ -67,12 +67,12 @@ export default function Product({ auth }) {
                     </div>
                 </div>
                 <div  className="max-w-7xl py-3  md:py-12 w-4/5 md:w-1/4  mx-auto sm:px-6 lg:px-8">
-                    <div onClick={() => router.visit(route('pendingIncomes'))} className="bg-cyan-300 min-h-40 flex flex-col items-center justify-center hover:cursor-pointer dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div onClick={() => router.visit(route('pendings', {type: 'income'}))} className="bg-cyan-300 min-h-40 flex flex-col items-center justify-center hover:cursor-pointer dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-2xl font-bold text-gray-900 dark:text-gray-100"> Pending Incomes</div>
                     </div>
                 </div>
                 <div  className="max-w-7xl  py-3 md:py-12 w-4/5 md:w-1/4  mx-auto sm:px-6 lg:px-8">
-                    <div onClick={() => router.visit(route('pendingPayments'))} className="bg-cyan-300 min-h-40 flex flex-col items-center justify-center hover:cursor-pointer dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div onClick={() => router.visit(route('pendings', {type: 'payment'}))} className="bg-cyan-300 min-h-40 flex flex-col items-center justify-center hover:cursor-pointer dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-2xl font-bold text-gray-900 dark:text-gray-100">Pending Payments</div>
                     </div>
                 </div>

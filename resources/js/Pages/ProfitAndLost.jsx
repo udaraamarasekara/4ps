@@ -5,8 +5,8 @@ import axios from "axios";
 import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
 import PaginationSession from "@/Components/PaginationSession";
-import { set } from "lodash";
-
+import { ArrowLeftIcon } from "@heroicons/react/24/solid";
+import { router } from "@inertiajs/react";
 export default function ProfitAndLost({
     auth,
     sold,
@@ -79,6 +79,10 @@ export default function ProfitAndLost({
             setLoading(false);
         }
     };
+
+     const goBack = () => {
+        router.visit(route('product.index'))
+         }
     // ---------------- SEARCH ----------------
     const searchProfitLost = async () => {
         if (!startDateFilter || !endDateFilter) return;
@@ -123,6 +127,7 @@ export default function ProfitAndLost({
             }
         >
             <Head title="Profit and Loss" />
+                                    <ArrowLeftIcon  onClick={()=>goBack()} className=' m-6 bold p-3 w-12 h-auto bg-white border border-gray-200 rounded-full text-3xl font-extrabold flex items-center justify-center hover:cursor-pointer' />
 
             {/* ---------------- FILTERS ---------------- */}
             <div className="flex justify-center">

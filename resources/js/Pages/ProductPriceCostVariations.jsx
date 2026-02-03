@@ -2,8 +2,8 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link } from "@inertiajs/react";
 import { useCallback,useState } from "react";
 import { debounce, set } from "lodash";
-import Pagination from "@/Components/Pagination";
-import PaginationJson from "@/Components/PaginationJson";
+import { ArrowLeftIcon } from "@heroicons/react/24/solid";
+import { router } from "@inertiajs/react";
 import axios from "axios";
 import AutoCompleteTextInput from "@/Components/AutoCompleteTextInput";
 import InputLabel from "@/Components/InputLabel";
@@ -24,7 +24,9 @@ export default function ProductPriceCostVariations({ auth }) {
         }, 300),
         []
     );
-
+ const goBack = () => {
+    router.visit(route('product.index'))
+     }
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -34,6 +36,8 @@ export default function ProductPriceCostVariations({ auth }) {
                 </h2>
             }
         >
+                                    <ArrowLeftIcon  onClick={()=>goBack()} className=' m-6 bold p-3 w-12 h-auto bg-white border border-gray-200 rounded-full text-3xl font-extrabold flex items-center justify-center hover:cursor-pointer' />
+
             <Head title="Product Price Cost Variations" />
             <div className="flex justify-center">
                 <div className="w-4/5 mx-6 gap-2 flex flex-col md:flex-row items-center justify-between  pt-6">

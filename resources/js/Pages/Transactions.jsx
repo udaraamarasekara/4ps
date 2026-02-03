@@ -32,6 +32,7 @@ export default function Transactions({ auth, transactions }) {
         }, 300),
         []
     );
+    console.log(transactionsData);
     const updateBrandSuggestions = useCallback(
         debounce(async (input) => {
             const response = await axios.get(

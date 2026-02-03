@@ -8,6 +8,7 @@ import axios from 'axios';
 import { Transition } from '@headlessui/react';
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import Pagination from '@/Components/Pagination';
+import PrimaryButton from '@/Components/PrimaryButton';
 export default function Customers({ auth,dealers }) {
    const [showPopup,setShowPopup] =useState(false)
    const [isSuccessPopup,setIsSuccessPopup]= useState(true)

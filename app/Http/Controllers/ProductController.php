@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Resources\CurrentStockResource;
+use App\Http\Resources\PendingsResource;
 use App\Models\Product;
 use App\Http\Controllers\Controller;
 use App\Models\ProductValueVariation;
@@ -515,6 +516,22 @@ class ProductController extends Controller
             'sold' => $soldChunks[$page] ?? [],
             'totalSoldPages' => count($soldChunks),
             'currentSoldPage' => $page + 1,
+        ]);
+    }
+
+    public function pendings(string $type)
+    {
+        if($type !== 'income' && $type !== 'payment'){
+            return redirect()->back()->with('error', 'Invalid pending type specified.');
+        }
+        $type = $type === 'income' ? 'sale' : 'receive';
+        $pendings = PendingsResource::collection(Product::where([['deal_type', '=', $type],['total_bill', '>', 'paid_amount']])->with(['dealer'])->paginate());
+      
+
+
+        return Inertia::render('Pendings', [
+            'pendings' => $pendings,
+            'type' => $type
         ]);
     }
 }

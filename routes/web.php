@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::get('dealers/suppliers',action: [DealerController::class,'suppliers'])->name('dealers.suppliers');
     Route::post('newDealer',action: [DealerController::class,'newDealer'])->name('newDealer');
     Route::get('receive',[ProductController::class,'receive'])->name('receive');
+    Route::get('pendings/{type}',[ProductController::class,'pendings'])->name('pendings');
     Route::get('soldPaginate',[ProductController::class,'soldPaginate'])->name('product.soldPaginate');
     Route::get('receivedPaginate',[ProductController::class,'receivedPaginate'])->name('product.receivedPaginate');
     Route::get('productClassificationName/{input}',[ProductClassificationController::class,'getName'])->name('productClassification.getName');
