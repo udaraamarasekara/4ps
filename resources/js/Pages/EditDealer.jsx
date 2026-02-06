@@ -9,16 +9,16 @@ import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { debounce } from "lodash";
 import { Transition } from "@headlessui/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-export default function NewDealer({ auth,type }) {
-
+export default function EditDealer({ auth,type,dealer }) {
     const [showPopup,setShowPopup] =useState(false)
 const [isSuccessPopup,setIsSuccessPopup]= useState(true)
-    const { data, setData, post, processing, errors, reset } = useForm({
-        name: "",
-        telephone: "",
+    const { data, setData, put, processing, errors, reset } = useForm({
+        name: dealer.data.name,
+        telephone: dealer.data.telephone,
         type: type,
     });
 
+    // Debounced API call to fetch suggestion
  const goBack = () => {
     sessionStorage.getItem('fromDeal')==='saleAndReceive' ? router.visit(type==='customer'?'/sale':'/receive') :
     router.visit(route('dealers.'+ (type==='customer' ? 'customers':'suppliers')))
@@ -28,7 +28,7 @@ const [isSuccessPopup,setIsSuccessPopup]= useState(true)
     return (
         <AuthenticatedLayout 
               user={auth.user}
-              header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">New {type}</h2>}
+              header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Edit {type}</h2>}
           >
                         <ArrowLeftIcon  onClick={()=>goBack()} className=' m-6 bold p-3 w-12 h-auto bg-white border border-gray-200 rounded-full text-3xl font-extrabold flex items-center justify-center hover:cursor-pointer' />
           <Transition
@@ -48,7 +48,7 @@ const [isSuccessPopup,setIsSuccessPopup]= useState(true)
             <section className="w-4/5 mx-6 mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
                 <form onSubmit={(e) => {
                     e.preventDefault();
-                    post(route("newDealer"), { onSuccess: () => {setShowPopup(true); setIsSuccessPopup(true); setTimeout(() => setShowPopup(false), 3000); reset();} }); 
+                    put(route("updateDealer",dealer.data.id), { onSuccess: () => {setShowPopup(true); setIsSuccessPopup(true); setTimeout(() => setShowPopup(false), 3000);} }); 
                 }} className="mt-6 space-y-6">
                     <div className="flex flex-col md:flex-row md:space-x-4">
                         {/* Product Name */}

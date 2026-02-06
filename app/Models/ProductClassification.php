@@ -50,4 +50,8 @@ class ProductClassification extends Model
       return $this->hasOne(ProductClassificationImage::class);
     }
 
+    public function properties()
+    {
+        return $this->belongsToMany(Property::class, 'product_classification_property', 'product_id', 'property_id');
+    }
 }

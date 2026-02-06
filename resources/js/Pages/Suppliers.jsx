@@ -83,7 +83,7 @@ export default function Suppliers({ auth,dealers }) {
                      <tr>
                      <th>Name</th>
                      <th>Telephone</th>
-
+                      <th className='text-center' >Actions</th>
                      </tr>
                  </thead>
                  <tbody>
@@ -93,7 +93,7 @@ export default function Suppliers({ auth,dealers }) {
                          <td className='text-center'>{object.name}</td>
                          <td className='text-center' >{object.telephone}</td>
                          <td className='flex justify-center gap-5' >
-                             <div onClick={()=>router.get(route('dealer.edit',object.id))} className='bg-yellow-500 text-black rounded-full hover:cursor-pointer min-w-5 p-2 min-h-5' ><PencilSquareIcon className='min-w-5 h-auto' /></div>
+                             <div onClick={()=>router.get(route('dealer.edit',{id:object.id, type:'supplier'}))} className='bg-yellow-500 text-black rounded-full hover:cursor-pointer min-w-5 p-2 min-h-5' ><PencilSquareIcon className='min-w-5 h-auto' /></div>
                              <div onClick={()=>{setItem(object.id),setShowDelete(true)}} className='bg-red-500 text-white hover:cursor-pointer rounded-full min-w-5 p-2 min-h-5' ><TrashIcon className='min-w-5 h-auto' /></div>
 
                          </td>

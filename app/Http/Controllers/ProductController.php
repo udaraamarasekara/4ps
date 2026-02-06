@@ -525,7 +525,7 @@ class ProductController extends Controller
             return redirect()->back()->with('error', 'Invalid pending type specified.');
         }
         $type = $type === 'income' ? 'sale' : 'receive';
-        $pendings = PendingsResource::collection(Product::where([['deal_type', '=', $type],['total_bill', '>', 'paid_amount']])->with(['dealer'])->paginate());
+        $pendings = PendingsResource::collection(Product::where('deal_type', '=', $type)->whereColumn('total_bill', '>', 'paid_amount')->with(['dealer'])->paginate());
       
 
 
@@ -534,4 +534,46 @@ class ProductController extends Controller
             'type' => $type
         ]);
     }
+    
+    public function showPending($id)
+    {
+         $transactions = Product::where('id', $id)->with([
+            'productItems' => function ($q) {
+                $q->with([
+                    'productClassification' => function ($query) {
+                        $query->with('brand', 'category', 'unit', 'latestProductValueVariation', 'image');
+                    }
+                ]);
+            },
+            'dealer'
+        ])->orderBy('created_at', 'desc');
+
+
+        return Inertia::render('PendingDeal', [
+            'transactions' => $transactions->paginate(10),
+        ]);
+    }
+    
+    public function completePending(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:products,id',
+        ]);
+
+        $product = Product::find($request->id);
+        if (!$product) {
+            return response()->json(['message' => 'Pending transaction not found'], 404);
+        }
+
+        $pendingAmount = $product->total_bill - $product->paid_amount;
+        if ($pendingAmount <= 0) {
+            return response()->json(['message' => 'No pending amount to complete'], 400);
+        }
+
+        $product->paid_amount = $product->total_bill;
+        $product->save();
+
+        return response()->json(['message' => 'Pending transaction completed successfully'], 200);
+    }
+    
 }

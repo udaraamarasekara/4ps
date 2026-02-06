@@ -16,7 +16,6 @@ return new class extends Migration
             $table->timestamps();
             $table->unsignedInteger('category_id')->default(0)->nullable();
             $table->string('name')->unique();
-            $table->json('properties')->nullable();
             $table->unsignedInteger('brand_id')->nullable();
             $table->unsignedInteger('unit_id')->nullable();
           

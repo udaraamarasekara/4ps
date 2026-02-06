@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProductClassification;
+use App\Models\Property;
 use App\Models\Stock;
 use App\Models\Unit;
 use App\Models\Brand;
@@ -85,7 +86,10 @@ class ProductClassificationController extends Controller
       }
       unset($rawInput['unit_name']);
     }
+   if(isset($rawInput['properties'])) {
+    $properties = $rawInput['properties'];
 
+     unset($rawInput['properties']);
     // Values
     $price = $rawInput['price'];
     $cost = $rawInput['cost'];
@@ -103,6 +107,12 @@ class ProductClassificationController extends Controller
 
     // Create product classification
     $productClassification = ProductClassification::create($rawInput);
+
+    // Attach properties
+    foreach ($properties as $propertyData) {
+        $property = Property::firstOrCreate(['name' => $propertyData['name'], 'value' => $propertyData['type']]);
+        $productClassification->properties()->attach($property->id);
+    }
 
     // Create value variation
     ProductValueVariation::create([
@@ -130,7 +140,7 @@ class ProductClassificationController extends Controller
     return redirect()->back();
   }
 
-
+  }
   public function fetch(string $input)
   {
     return ProductClassification::where('name', 'like', '%' . $input . '%')->orWhere('properties->name', 'like', '%' . $input . '%')->get()->pluck('name');
@@ -221,6 +231,15 @@ class ProductClassificationController extends Controller
    if ($image_path && isset($imagePath) && file_exists(public_path($imagePath))) { 
     unlink($image_path);
 }
+    if(isset($rawInput['properties'])) {
+      $properties = $rawInput['properties'];
+      $propertyIds = [];
+      foreach ($properties as $propertyData) {
+          $property = Property::firstOrCreate(['name' => $propertyData['name'], 'value' => $propertyData['value']]);
+          $propertyIds[] = $property->id;
+      }
+      $productClassification->properties()->sync($propertyIds);
+    }
     unset($rawInput['price']);
     unset($rawInput['cost']);
     unset($rawInput['brand_name']);
@@ -244,6 +263,38 @@ class ProductClassificationController extends Controller
     $rawInput = $request->validated();
     return ProductValueVariation::create(['product_classification_id' => $rawInput['id'], 'cost' => $rawInput['cost'], 'price' => $rawInput['price']]);
 
+  }
+
+  public function findProducts(Request $request)
+  {
+    $request->validate(['query' => 'required|string']);
+    $query = $request->input('query');
+    $products = ProductClassification::where('name', 'like', '%' . $query . '%')
+        ->orWhereHas('properties', function ($q) use ($query) {
+            $q->where([['name', 'like', '%' . $query . '%'], ['value', 'like', '%' . $query . '%']]);
+        })
+        ->get();
+    return ProductClassificationResource::collection($products);
+  }
+
+  public function findProductView()
+  {
+    return Inertia::render('ProductFind');
+  }
+
+  public function getTypes(string $input,string $name=null)
+  {
+    if(isset($name)) {
+      return Property::where('name','like','%'.$name.'%')->where('value','like','%'.$input.'%')->get()->pluck('value');
+    } else {
+
+      return Property::where('value','like','%'.$input.'%')->get()->pluck('value');
+    }
+ }
+
+ public function getNames(string $input)
+  {
+   return Property::where('name','like','%'.$input.'%')->get()->pluck('name'); 
   }
 
 }

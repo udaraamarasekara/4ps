@@ -35,12 +35,16 @@ Route::middleware('auth')->group(function () {
     Route::get('profitAndLost',[ProductController::class,'profitAndLost'])->name('product.profitAndLost');
     Route::get('sale',[ProductController::class,'sale'])->name('sale');
     Route::get(uri: 'dealer/{type}',action: [DealerController::class,'dealer'])->name('dealer.create');
+    Route::get(uri: 'dealer/edit/{type}/{id}',action: [DealerController::class,'editDealer'])->name('dealer.edit');
+    Route::put(uri: 'dealer/update/{id}',action: [DealerController::class,'updateDealer'])->name('updateDealer');
     Route::delete(uri: 'dealer/{id}',action: [DealerController::class,'deleteDealer'])->name('deleteDealer');
     Route::get('dealers/customers',action: [DealerController::class,'customers'])->name('dealers.customers');
     Route::get('dealers/suppliers',action: [DealerController::class,'suppliers'])->name('dealers.suppliers');
     Route::post('newDealer',action: [DealerController::class,'newDealer'])->name('newDealer');
     Route::get('receive',[ProductController::class,'receive'])->name('receive');
     Route::get('pendings/{type}',[ProductController::class,'pendings'])->name('pendings');
+    Route::get('pending/{id}',[ProductController::class,'showPending'])->name('pending.show');
+    Route::post('completePending',[ProductController::class,'completePending'])->name('completePending');
     Route::get('soldPaginate',[ProductController::class,'soldPaginate'])->name('product.soldPaginate');
     Route::get('receivedPaginate',[ProductController::class,'receivedPaginate'])->name('product.receivedPaginate');
     Route::get('productClassificationName/{input}',[ProductClassificationController::class,'getName'])->name('productClassification.getName');
@@ -61,7 +65,11 @@ Route::middleware('auth')->group(function () {
     Route::get('productClassificationFetch/{input}',[ProductClassificationController::class,'fetch'])->name('productClassification.fetch');
     Route::resource('productClassification', ProductClassificationController::class);
     Route::get('stock',[ProductController::class,'currentStock'])->name('stock');
+    Route::get('findProducts',[ProductClassificationController::class,'findProduct'])->name('productClassification.findProduct'); 
+    Route::get('findProductsView',[ProductClassificationController::class,'findProductView'])->name('productClassification.findProductView');
     Route::get('dashboard',[ProductController::class,'index'])->name('dashboard');
+    Route::get('getNames/{input}',[ProductClassificationController::class,'getNames'])->name('productClassification.getNames');
+    Route::get('getTypes/{input}/{name?}',[ProductClassificationController::class,'getTypes'])->name('productClassification.getTypes');
 });
 
 require __DIR__.'/auth.php';

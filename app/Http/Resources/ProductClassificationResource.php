@@ -18,7 +18,9 @@ class ProductClassificationResource extends JsonResource
             'id'=>$this->id,
             'name'=>$this->name,
             'category'=>$this?->category?->name,
-            'properties'=>$this->properties,
+            'properties'=>$this->properties()->get()->map(function($property){
+                return ['name'=>$property->name,'type'=>$property->value];
+            }),
             'brand'=>$this?->brand?->name ,
             'unit'=>$this?->unit?->name ,
             'cost'=>$this?->latestProductValueVariation?->cost,

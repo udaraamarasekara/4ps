@@ -79,4 +79,35 @@ class DealerController extends Controller
      ]);
 
    }
+  
+
+
+    public function editDealer(string $type, int $id)
+    {
+      if($type !== 'customer' && $type !== 'supplier'){
+        return redirect()->back();
+          } 
+      return Inertia::render('EditDealer', [
+        'type' => $type,
+        'dealer' => new DealerResource(Dealer::find($id))
+      ]);
+    } 
+
+    public function updateDealer(Request $request, int $id)
+    {
+      $request->validate([
+        'name' => 'required|string|max:255',
+        'telephone' => 'required|string|max:255|unique:dealers,telephone,' . $id,
+         'type' => 'required|string|in:customer,supplier',
+      ]);
+       
+      Dealer::find($id)->update([
+        'name' => $request->name,
+        'telephone' => $request->telephone,
+        'role' => $request->type
+      ]);
+
+    }
+
+
 }

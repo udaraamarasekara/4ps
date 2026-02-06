@@ -33,7 +33,7 @@ export default forwardRef(function DynamicPropertyPane({ type = 'text', classNam
                 ref={propertyType}
               />
                
-            <PrimaryButton onClick={(e)=>{e.preventDefault();propertyName.current.value && (!properties.some(prop => prop.name === propertyName.current.value)) && addProperty({name:propertyName.current.value,type:propertyType.current.value})}} className='w-full h-12 hover:cursor-pointer flex justify-center' disabled={isDisabled}>
+            <PrimaryButton onClick={(e)=>{e.preventDefault();propertyName.current.value && (!properties.some(prop => prop.name === propertyName.current.value)) && addProperty({name:propertyName.current.value,type:propertyType.current.value}); propertyName.current.value = ''; propertyType.current.value = '';}} className='w-full h-12 hover:cursor-pointer flex justify-center' disabled={isDisabled}>
                 Add Item
             </PrimaryButton>
           </div>  
