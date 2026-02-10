@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Auth\ProfileController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductClassificationController;
 use App\Http\Controllers\UnitController;
@@ -65,7 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::get('productClassificationFetch/{input}',[ProductClassificationController::class,'fetch'])->name('productClassification.fetch');
     Route::resource('productClassification', ProductClassificationController::class);
     Route::get('stock',[ProductController::class,'currentStock'])->name('stock');
-    Route::get('findProducts',[ProductClassificationController::class,'findProduct'])->name('productClassification.findProduct'); 
+    Route::get('findProducts/',[ProductClassificationController::class,'findProduct'])->name('productClassification.findProduct'); 
     Route::get('findProductsView',[ProductClassificationController::class,'findProductView'])->name('productClassification.findProductView');
     Route::get('dashboard',[ProductController::class,'index'])->name('dashboard');
     Route::get('getNames/{input}',[ProductClassificationController::class,'getNames'])->name('productClassification.getNames');

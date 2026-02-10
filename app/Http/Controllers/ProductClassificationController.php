@@ -265,13 +265,13 @@ class ProductClassificationController extends Controller
 
   }
 
-  public function findProducts(Request $request)
+  public function findProduct(Request $request)
   {
-    $request->validate(['query' => 'required|string']);
-    $query = $request->input('query');
-    $products = ProductClassification::where('name', 'like', '%' . $query . '%')
-        ->orWhereHas('properties', function ($q) use ($query) {
-            $q->where([['name', 'like', '%' . $query . '%'], ['value', 'like', '%' . $query . '%']]);
+    $request->validate(['type' => 'required|exists:properties,value','name' => 'nullable|exists:properties,name']);
+    $type = $request->input('type');
+    $name = $request->input('name');
+    $products = ProductClassification::whereHas('properties', function ($q) use ($type,$name) {
+            $q->where([['name', 'like', '%' . $name . '%'], ['value', 'like', '%' . $type . '%']]);
         })
         ->get();
     return ProductClassificationResource::collection($products);
