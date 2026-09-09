@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Support\Tenancy\TenantContext;
+use App\Support\Tenancy\BranchContext;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -11,7 +13,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(TenantContext::class);
+        $this->app->singleton(BranchContext::class);
     }
 
     /**

@@ -16,6 +16,13 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
 
+        $middleware->alias([
+            'tenant' => \App\Http\Middleware\SetCurrentTenant::class,
+            'platform' => \App\Http\Middleware\EnsurePlatformAdmin::class,
+            'branch' => \App\Http\Middleware\SetCurrentBranch::class,
+            'tenant.role' => \App\Http\Middleware\EnsureTenantRole::class,
+        ]);
+
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {

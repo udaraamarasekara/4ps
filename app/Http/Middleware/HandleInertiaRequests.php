@@ -4,6 +4,8 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use App\Support\Tenancy\TenantContext;
+use App\Support\Tenancy\BranchContext;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -34,6 +36,11 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'workspace' => fn () => app(TenantContext::class)->tenantIsSet() ? [
+                'current' => app(TenantContext::class)->tenant(),
+                'branches' => app(TenantContext::class)->tenant()->branches()->where('is_active', true)->get(['id', 'name', 'code']),
+                'activeBranch' => app(BranchContext::class)->branchIsSet() ? app(BranchContext::class)->branch() : null,
+            ] : null,
         ];
     }
 }

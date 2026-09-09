@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Tenant;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -32,16 +35,38 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'workspace_name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'is_approved' => false,
-        ]);
+        [$user] = DB::transaction(function () use ($request): array {
+            $tenant = Tenant::create([
+                'name' => $request->workspace_name,
+                'slug' => Str::slug($request->workspace_name).'-'.Str::lower(Str::random(5)),
+                'plan' => 'starter',
+                'subscription_status' => 'trialing',
+                'paid_until' => now()->addDays(14),
+                'is_active' => true,
+            ]);
+
+            $tenant->branches()->create([
+                'name' => 'Main Branch',
+                'code' => 'MAIN',
+                'is_active' => true,
+            ]);
+
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'is_approved' => true,
+            ]);
+
+            $tenant->users()->attach($user, ['role' => 'owner']);
+
+            return [$user, $tenant];
+        });
 
         event(new Registered($user));
 

@@ -3,10 +3,15 @@ import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 
 export default function Authenticated({ user, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+    const { workspace } = usePage().props;
+
+    const switchBranch = (event) => {
+        router.post(route('branches.switch', event.target.value));
+    };
     return (
         <div  className="min-h-screen overflow-auto min-w-screen bg-gray-100 dark:bg-gray-900">
             <div className=" w-screen h-auto  min-h-screen    min-w-max bg-gray-100 dark:bg-gray-900">
@@ -17,6 +22,11 @@ export default function Authenticated({ user, header, children }) {
                         <div className=" py-6 px-4 sm:px-6 lg:px-8">{header}</div>
                 )}
                             <div className="hidden sm:flex sm:items-center sm:ms-6">
+                                {workspace?.branches?.length > 0 && (
+                                    <select value={workspace.activeBranch?.id ?? ''} onChange={switchBranch} className="me-4 border-gray-300 rounded-md text-sm">
+                                        {workspace.branches.map((branch) => <option key={branch.id} value={branch.id}>{branch.name}</option>)}
+                                    </select>
+                                )}
                                 <div className="ms-3 relative">
                                     <Dropdown>
                                         <Dropdown.Trigger>

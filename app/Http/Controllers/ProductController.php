@@ -17,6 +17,9 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
 use App\Models\ProductClassification;
+use App\Services\Audit\AuditLogger;
+use App\Models\Payment;
+use App\Models\ReturnTransaction;
 
 class ProductController extends Controller
 {
@@ -32,7 +35,7 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreProductRequest $request)
+    public function store(StoreProductRequest $request, AuditLogger $auditLogger)
     {
         $rawInput = $request->validated();
         $totalBill = 0;
@@ -42,7 +45,12 @@ class ProductController extends Controller
             $totalBill = $this->calTotalBillForSale($rawInput['items']);
             foreach ($rawInput['items'] as $item) {
                 if (StockService::checkProductAvailability($item['product_classification_id'], $item['quantity'])) {
-                    StockService::decreaseStock($item['product_classification_id'], $item['quantity']);
+                    try {
+                        StockService::decreaseStock($item['product_classification_id'], $item['quantity']);
+                    } catch (\RuntimeException $exception) {
+                        DB::rollBack();
+                        return response()->json(['message' => $exception->getMessage()], 409);
+                    }
                 } else {
                     DB::rollBack();
                     $productClassificationName = ProductClassification::find($item['product_classification_id'])->name ?? 'Unknown';
@@ -67,6 +75,10 @@ class ProductController extends Controller
             DB::rollBack();
             return response()->json(['message' => 'Total bill amount mismatch. Calculated: ' . $totalBill . ', Provided: ' . $rawInput['total_bill']], 500);
         }
+        if (($rawInput['paid_amount'] ?? 0) > $totalBill) {
+            DB::rollBack();
+            return response()->json(['message' => 'Paid amount cannot exceed the transaction total.'], 422);
+        }
         $product = Product::create([
             'deal_type' => $rawInput['operation'] == 'Sale' ? 'sale' : 'receive',
             'total_bill' => $rawInput['total_bill'] ?? 0,
@@ -81,6 +93,23 @@ class ProductController extends Controller
                 'product_id' => $product->id,
             ]);
         }
+        if (($rawInput['paid_amount'] ?? 0) > 0) {
+            Payment::create([
+                'tenant_id' => $product->tenant_id,
+                'branch_id' => $product->branch_id,
+                'product_id' => $product->id,
+                'dealer_id' => $product->dealer_id,
+                'user_id' => auth()->id(),
+                'direction' => $product->deal_type === 'sale' ? 'income' : 'expense',
+                'amount' => $rawInput['paid_amount'],
+                'method' => 'cash',
+                'paid_at' => now(),
+            ]);
+        }
+        $auditLogger->record($rawInput['operation'] === 'Sale' ? 'sale.completed' : 'stock.received', $product, [
+            'item_count' => count($rawInput['items']),
+            'total_bill' => $product->total_bill,
+        ]);
         DB::commit();
         return response()->json(['message' => 'Products processed successfully'], 200);
     }
@@ -409,7 +438,7 @@ class ProductController extends Controller
 
         $startDate = isset($request->startDate) ? $request->startDate : '1970-01-01';
         $endDate = isset($request->endDate) ? $request->endDate : now()->toDateString();
-        $page = --$request->page;
+        $page = $request->integer('page') - 1;
         $received = [];
 
         $priceSub = DB::table('product_value_variations as pvv')
@@ -469,7 +498,7 @@ class ProductController extends Controller
 
         $startDate = isset($request->startDate) ? $request->startDate : '1970-01-01';
         $endDate = isset($request->endDate) ? $request->endDate : now()->toDateString();
-        $page = --$request->page;
+        $page = $request->integer('page') - 1;
         $sold = [];
 
         $priceSub = DB::table('product_value_variations as pvv')
@@ -554,7 +583,7 @@ class ProductController extends Controller
         ]);
     }
     
-    public function completePending(Request $request)
+    public function completePending(Request $request, AuditLogger $auditLogger)
     {
         $request->validate([
             'id' => 'required|integer|exists:products,id',
@@ -573,7 +602,69 @@ class ProductController extends Controller
         $product->paid_amount = $product->total_bill;
         $product->save();
 
+        Payment::create([
+            'tenant_id' => $product->tenant_id,
+            'branch_id' => $product->branch_id,
+            'product_id' => $product->id,
+            'dealer_id' => $product->dealer_id,
+            'user_id' => auth()->id(),
+            'direction' => $product->deal_type === 'sale' ? 'income' : 'expense',
+            'amount' => $pendingAmount,
+            'method' => 'cash',
+            'paid_at' => now(),
+        ]);
+        $auditLogger->record('payment.completed', $product, ['amount' => $pendingAmount]);
+
         return response()->json(['message' => 'Pending transaction completed successfully'], 200);
+    }
+
+    public function returnTransaction(Request $request, AuditLogger $auditLogger)
+    {
+        $data = $request->validate([
+            'product_id' => ['required', 'integer', 'exists:products,id'],
+            'reason' => ['nullable', 'string', 'max:255'],
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.product_classification_id' => ['required', 'integer', 'exists:product_classifications,id'],
+            'items.*.quantity' => ['required', 'numeric', 'min:0.001'],
+        ]);
+
+        return DB::transaction(function () use ($data, $auditLogger) {
+            $product = Product::with('productItems')->findOrFail($data['product_id']);
+            $originalQuantities = $product->productItems->groupBy('product_classification_id')->map(fn ($items) => $items->sum('quantity'));
+            $total = 0;
+
+            $return = ReturnTransaction::create([
+                'original_product_id' => $product->id,
+                'dealer_id' => $product->dealer_id,
+                'user_id' => auth()->id(),
+                'type' => $product->deal_type,
+                'total_amount' => 0,
+                'reason' => $data['reason'] ?? null,
+            ]);
+
+            foreach ($data['items'] as $item) {
+                $quantity = (float) $item['quantity'];
+                abort_unless($quantity <= (float) ($originalQuantities[$item['product_classification_id']] ?? 0), 422, 'Return quantity exceeds the original transaction.');
+                $variation = ProductValueVariation::where('product_classification_id', $item['product_classification_id'])->latest()->first();
+                $unitAmount = (float) ($product->deal_type === 'sale' ? ($variation?->price ?? 0) : ($variation?->cost ?? 0));
+                $return->items()->create([
+                    'product_classification_id' => $item['product_classification_id'],
+                    'quantity' => $quantity,
+                    'unit_amount' => $unitAmount,
+                ]);
+                $total += $quantity * $unitAmount;
+                if ($product->deal_type === 'sale') {
+                    StockService::increaseStock($item['product_classification_id'], $quantity, 'sale_return');
+                } else {
+                    StockService::decreaseStock($item['product_classification_id'], $quantity, 'receive_return');
+                }
+            }
+
+            $return->update(['total_amount' => $total]);
+            $auditLogger->record('return.completed', $return, ['original_product_id' => $product->id, 'total_amount' => $total]);
+
+            return response()->json(['message' => 'Return processed successfully', 'return_id' => $return->id]);
+        });
     }
     
 }

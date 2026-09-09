@@ -5,10 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Concerns\BelongsToTenant;
+use App\Models\Concerns\BelongsToBranch;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory,SoftDeletes, BelongsToTenant, BelongsToBranch;
     protected $guarded = [];
 
     public function dealer()
@@ -18,5 +21,10 @@ class Product extends Model
     public function productItems()
     {
         return $this->hasMany(SaleItem::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
     }
 }

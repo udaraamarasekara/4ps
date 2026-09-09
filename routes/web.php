@@ -7,6 +7,10 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DealerController;
+use App\Http\Controllers\Platform\TenantController;
+use App\Http\Controllers\BranchController;
+use App\Http\Controllers\TenantUserController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -21,7 +25,7 @@ Route::get('/', function () {
 });
 
    
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'tenant', 'branch'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -45,6 +49,8 @@ Route::middleware('auth')->group(function () {
     Route::get('pendings/{type}',[ProductController::class,'pendings'])->name('pendings');
     Route::get('pending/{id}',[ProductController::class,'showPending'])->name('pending.show');
     Route::post('completePending',[ProductController::class,'completePending'])->name('completePending');
+    Route::post('returns',[ProductController::class,'returnTransaction'])->name('returns.store');
+    Route::get('reports/financial-summary', [ReportController::class, 'financialSummary'])->name('reports.financial-summary');
     Route::get('soldPaginate',[ProductController::class,'soldPaginate'])->name('product.soldPaginate');
     Route::get('receivedPaginate',[ProductController::class,'receivedPaginate'])->name('product.receivedPaginate');
     Route::get('productClassificationName/{input}',[ProductClassificationController::class,'getName'])->name('productClassification.getName');
@@ -70,6 +76,18 @@ Route::middleware('auth')->group(function () {
     Route::get('dashboard',[ProductController::class,'index'])->name('dashboard');
     Route::get('getNames/{input}',[ProductClassificationController::class,'getNames'])->name('productClassification.getNames');
     Route::get('getTypes/{input}/{name?}',[ProductClassificationController::class,'getTypes'])->name('productClassification.getTypes');
+    Route::post('branches/{branch}/switch', [BranchController::class, 'switch'])->name('branches.switch');
+});
+
+Route::middleware(['auth', 'tenant', 'branch', 'tenant.role:owner,manager'])->prefix('settings')->name('settings.')->group(function () {
+    Route::get('users', [TenantUserController::class, 'index'])->name('users.index');
+    Route::post('users', [TenantUserController::class, 'store'])->name('users.store');
+    Route::put('users/{user}', [TenantUserController::class, 'update'])->name('users.update');
+    Route::delete('users/{user}', [TenantUserController::class, 'destroy'])->name('users.destroy');
+});
+
+Route::middleware(['auth', 'platform'])->prefix('platform')->name('platform.')->group(function () {
+    Route::resource('tenants', TenantController::class)->only(['index', 'create', 'store', 'update']);
 });
 
 require __DIR__.'/auth.php';
