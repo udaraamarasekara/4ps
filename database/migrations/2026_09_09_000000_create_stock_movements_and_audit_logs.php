@@ -20,7 +20,10 @@ return new class extends Migration
             $table->decimal('balance_after', 12, 3);
             $table->nullableMorphs('reference');
             $table->timestamp('created_at')->useCurrent();
-            $table->index(['tenant_id', 'branch_id', 'product_classification_id']);
+            $table->index(
+                ['tenant_id', 'branch_id', 'product_classification_id'],
+                'stock_movements_scope_index'
+            );
         });
 
         Schema::create('audit_logs', function (Blueprint $table): void {

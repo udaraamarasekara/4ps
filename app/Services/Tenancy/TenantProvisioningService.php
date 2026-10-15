@@ -21,7 +21,8 @@ class TenantProvisioningService
                 'is_active' => true,
             ]);
 
-            $tenant->branches()->create([
+            $branch = $tenant->branches()->create([
+                'parent_id' => 0,
                 'name' => 'Main Branch',
                 'code' => 'MAIN',
                 'is_active' => true,
@@ -35,6 +36,7 @@ class TenantProvisioningService
             ]);
 
             $tenant->users()->attach($user, ['role' => 'owner']);
+            $branch->users()->attach($user);
 
             return [$tenant, $user];
         });

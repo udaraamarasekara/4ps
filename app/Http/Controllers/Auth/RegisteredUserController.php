@@ -51,6 +51,7 @@ class RegisteredUserController extends Controller
             ]);
 
             $tenant->branches()->create([
+                'parent_id' => 0,
                 'name' => 'Main Branch',
                 'code' => 'MAIN',
                 'is_active' => true,

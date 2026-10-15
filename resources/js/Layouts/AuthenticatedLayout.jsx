@@ -7,7 +7,8 @@ import { Link, router, usePage } from '@inertiajs/react';
 
 export default function Authenticated({ user, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
-    const { workspace } = usePage().props;
+    const { workspace, tenantRole } = usePage().props;
+    const canManageUsers = !user.is_platform_admin && ['owner', 'manager'].includes(tenantRole);
 
     const switchBranch = (event) => {
         router.post(route('branches.switch', event.target.value));
@@ -22,7 +23,24 @@ export default function Authenticated({ user, header, children }) {
                         <div className=" py-6 px-4 sm:px-6 lg:px-8">{header}</div>
                 )}
                             <div className="hidden sm:flex sm:items-center sm:ms-6">
-                                {workspace?.branches?.length > 0 && (
+                                <div className="flex items-center gap-4 me-4">
+                                    {user.is_platform_admin && (
+                                        <NavLink href={route('platform.tenants.index')} active={route().current('platform.tenants.*')}>
+                                            Workspaces
+                                        </NavLink>
+                                    )}
+                                    {canManageUsers && (
+                                        <>
+                                            <NavLink href={route('settings.users.index')} active={route().current('settings.users.*')}>
+                                                Staff access
+                                            </NavLink>
+                                            <NavLink href={route('settings.branches.index')} active={route().current('settings.branches.*')}>
+                                                Branches
+                                            </NavLink>
+                                        </>
+                                    )}
+                                </div>
+                                {!user.is_platform_admin && workspace?.branches?.length > 0 && (
                                     <select value={workspace.activeBranch?.id ?? ''} onChange={switchBranch} className="me-4 border-gray-300 rounded-md text-sm">
                                         {workspace.branches.map((branch) => <option key={branch.id} value={branch.id}>{branch.name}</option>)}
                                     </select>
@@ -91,9 +109,26 @@ export default function Authenticated({ user, header, children }) {
 
                     <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'}>
                         <div className="pt-2 pb-3 space-y-1">
-                            <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
-                                Dashboard
-                            </ResponsiveNavLink>
+                            {!user.is_platform_admin && (
+                                <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
+                                    Dashboard
+                                </ResponsiveNavLink>
+                            )}
+                            {user.is_platform_admin && (
+                                <ResponsiveNavLink href={route('platform.tenants.index')} active={route().current('platform.tenants.*')}>
+                                    Workspaces
+                                </ResponsiveNavLink>
+                            )}
+                            {canManageUsers && (
+                                <>
+                                    <ResponsiveNavLink href={route('settings.users.index')} active={route().current('settings.users.*')}>
+                                        Staff access
+                                    </ResponsiveNavLink>
+                                    <ResponsiveNavLink href={route('settings.branches.index')} active={route().current('settings.branches.*')}>
+                                        Branches
+                                    </ResponsiveNavLink>
+                                </>
+                            )}
                         </div>
 
                         <div className="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">

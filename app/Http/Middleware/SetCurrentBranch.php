@@ -20,11 +20,15 @@ class SetCurrentBranch
     {
         $branch = $this->tenantContext->tenant()->branches()
             ->where('is_active', true)
+            ->whereHas('users', fn ($query) => $query->whereKey($request->user()->id))
             ->when($request->session()->get('branch_id'), fn ($query, $branchId) => $query->whereKey($branchId))
             ->first();
 
         if (! $branch) {
-            $branch = $this->tenantContext->tenant()->branches()->where('is_active', true)->first();
+            $branch = $this->tenantContext->tenant()->branches()
+                ->where('is_active', true)
+                ->whereHas('users', fn ($query) => $query->whereKey($request->user()->id))
+                ->first();
             $request->session()->put('branch_id', $branch?->id);
         }
 

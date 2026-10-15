@@ -13,8 +13,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
-            UserSeeder::class,
-        ]);    
+        // $this->call([
+        //     UserSeeder::class,
+        // ]);    
+
+        if (env('SUPER_ADMIN_EMAIL') && env('SUPER_ADMIN_PASSWORD')) {
+            $this->call(SuperAdminSeeder::class);
+        }
     }
 }

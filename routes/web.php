@@ -25,10 +25,13 @@ Route::get('/', function () {
 });
 
    
-Route::middleware(['auth', 'tenant', 'branch'])->group(function () {
+Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::middleware(['auth', 'tenant.user', 'tenant', 'branch'])->group(function () {
     Route::get('transactions',[ProductController::class,'transactions'])->name('transactions');
     Route::get('transactions/search',[ProductController::class,'transactionsSearch'])->name('transactions.search');
     Route::resource('brand', BrandController::class);
@@ -79,7 +82,9 @@ Route::middleware(['auth', 'tenant', 'branch'])->group(function () {
     Route::post('branches/{branch}/switch', [BranchController::class, 'switch'])->name('branches.switch');
 });
 
-Route::middleware(['auth', 'tenant', 'branch', 'tenant.role:owner,manager'])->prefix('settings')->name('settings.')->group(function () {
+Route::middleware(['auth', 'tenant.user', 'tenant', 'branch', 'tenant.role:owner,manager'])->prefix('settings')->name('settings.')->group(function () {
+    Route::get('branches', [BranchController::class, 'index'])->name('branches.index');
+    Route::post('branches', [BranchController::class, 'store'])->name('branches.store');
     Route::get('users', [TenantUserController::class, 'index'])->name('users.index');
     Route::post('users', [TenantUserController::class, 'store'])->name('users.store');
     Route::put('users/{user}', [TenantUserController::class, 'update'])->name('users.update');

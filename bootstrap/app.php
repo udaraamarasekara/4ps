@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'tenant' => \App\Http\Middleware\SetCurrentTenant::class,
+            'tenant.user' => \App\Http\Middleware\RedirectPlatformAdmin::class,
             'platform' => \App\Http\Middleware\EnsurePlatformAdmin::class,
             'branch' => \App\Http\Middleware\SetCurrentBranch::class,
             'tenant.role' => \App\Http\Middleware\EnsureTenantRole::class,

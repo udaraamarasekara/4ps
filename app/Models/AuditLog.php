@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AuditLog extends Model
 {
+    public const UPDATED_AT = null;
+
     protected $guarded = [];
 
     protected function casts(): array

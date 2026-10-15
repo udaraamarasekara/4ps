@@ -18,7 +18,12 @@ trait BelongsToBranch
                 throw new RuntimeException('Cannot query branch-owned records without an active branch.');
             }
 
-            $builder->where($builder->getModel()->qualifyColumn('branch_id'), $context->id());
+            $accessibleBranchIds = $context->getAccessibleBranchIds();
+            if (count($accessibleBranchIds) === 1) {
+                $builder->where($builder->getModel()->qualifyColumn('branch_id'), $accessibleBranchIds[0]);
+            } else {
+                $builder->whereIn($builder->getModel()->qualifyColumn('branch_id'), $accessibleBranchIds);
+            }
         });
 
         static::creating(function (Model $model): void {

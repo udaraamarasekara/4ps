@@ -22,7 +22,7 @@ return new class extends Migration
 
         foreach (['stocks', 'products'] as $tableName) {
             Schema::table($tableName, function (Blueprint $table): void {
-                $table->foreignId('branch_id')->nullable()->constrained()->index();
+                $table->foreignId('branch_id')->nullable()->constrained();
             });
         }
 

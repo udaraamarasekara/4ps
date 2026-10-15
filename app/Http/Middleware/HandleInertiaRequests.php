@@ -38,9 +38,15 @@ class HandleInertiaRequests extends Middleware
             ],
             'workspace' => fn () => app(TenantContext::class)->tenantIsSet() ? [
                 'current' => app(TenantContext::class)->tenant(),
-                'branches' => app(TenantContext::class)->tenant()->branches()->where('is_active', true)->get(['id', 'name', 'code']),
+                'branches' => app(TenantContext::class)->tenant()->branches()
+                    ->where('is_active', true)
+                    ->whereHas('users', fn ($query) => $query->whereKey($request->user()->id))
+                    ->get(['id', 'name', 'code']),
                 'activeBranch' => app(BranchContext::class)->branchIsSet() ? app(BranchContext::class)->branch() : null,
             ] : null,
+            'tenantRole' => fn () => $request->user() && app(TenantContext::class)->tenantIsSet()
+                ? $request->user()->tenants()->whereKey(app(TenantContext::class)->id())->first()?->pivot?->role
+                : null,
         ];
     }
 }

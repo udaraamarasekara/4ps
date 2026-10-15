@@ -41,39 +41,48 @@ return new class extends Migration
 
         foreach ($this->tenantTables as $tableName) {
             Schema::table($tableName, function (Blueprint $table): void {
-                $table->foreignId('tenant_id')->nullable()->constrained()->index();
+                $table->foreignId('tenant_id')->nullable()->constrained();
             });
         }
 
         Schema::table('product_classification_property', function (Blueprint $table): void {
-            $table->foreignId('tenant_id')->nullable()->constrained()->index();
+            $table->foreignId('tenant_id')->nullable()->constrained();
         });
 
-        $tenantId = DB::table('tenants')->insertGetId([
-            'name' => 'Default Workspace',
-            'slug' => 'default-workspace',
-            'is_active' => true,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        $hasLegacyData = DB::table('users')->exists()
+            || DB::table('product_classification_property')->exists();
 
         foreach ($this->tenantTables as $tableName) {
-            DB::table($tableName)->whereNull('tenant_id')->update(['tenant_id' => $tenantId]);
+            $hasLegacyData = $hasLegacyData || DB::table($tableName)->exists();
         }
 
-        DB::table('product_classification_property')
-            ->whereNull('tenant_id')
-            ->update(['tenant_id' => $tenantId]);
-
-        $users = DB::table('users')->pluck('id');
-        foreach ($users as $userId) {
-            DB::table('tenant_user')->insert([
-                'tenant_id' => $tenantId,
-                'user_id' => $userId,
-                'role' => 'owner',
+        if ($hasLegacyData) {
+            $tenantId = DB::table('tenants')->insertGetId([
+                'name' => 'Default Workspace',
+                'slug' => 'default-workspace',
+                'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            foreach ($this->tenantTables as $tableName) {
+                DB::table($tableName)->whereNull('tenant_id')->update(['tenant_id' => $tenantId]);
+            }
+
+            DB::table('product_classification_property')
+                ->whereNull('tenant_id')
+                ->update(['tenant_id' => $tenantId]);
+
+            $users = DB::table('users')->pluck('id');
+            foreach ($users as $userId) {
+                DB::table('tenant_user')->insert([
+                    'tenant_id' => $tenantId,
+                    'user_id' => $userId,
+                    'role' => 'owner',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
         }
     }
 
