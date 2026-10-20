@@ -20,6 +20,7 @@ use App\Models\ProductClassification;
 use App\Services\Audit\AuditLogger;
 use App\Models\Payment;
 use App\Models\ReturnTransaction;
+use App\Support\Tenancy\BranchContext;
 
 class ProductController extends Controller
 {
@@ -54,7 +55,9 @@ class ProductController extends Controller
                 } else {
                     DB::rollBack();
                     $productClassificationName = ProductClassification::find($item['product_classification_id'])->name ?? 'Unknown';
-                    $quantity = Stock::where('product_classification_id', $item['product_classification_id'])->first()->quantity ?? 0;
+                    $quantity = Stock::where('product_classification_id', $item['product_classification_id'])
+                        ->where('branch_id', app(BranchContext::class)->id())
+                        ->value('quantity') ?? 0;
                     return response()->json(['message' => 'Insufficient stock for product : ' . $productClassificationName . ' (Available: ' . $quantity . ', Requested: ' . $item['quantity'] . ')'], 500);
 
                 }
@@ -62,7 +65,7 @@ class ProductController extends Controller
         } else {
             $totalBill = $this->calTotalBillForReceive($rawInput['items']);
             foreach ($rawInput['items'] as $item) {
-                if (Stock::where('product_classification_id', $item['product_classification_id'])->exists()) {
+                if (StockService::hasStockForCurrentBranch($item['product_classification_id'])) {
                     StockService::increaseStock($item['product_classification_id'], $item['quantity']);
 
                 } else {
@@ -263,7 +266,7 @@ class ProductController extends Controller
 
     public function currentStock()
     {
-        $currentStock = CurrentStockResource::collection(ProductClassification::paginate(10));
+        $currentStock = CurrentStockResource::collection(ProductClassification::with('stocks')->paginate(10));
         return Inertia::render('Stock', ['currentStock' => $currentStock]);
     }
 
@@ -273,6 +276,7 @@ class ProductController extends Controller
         $received = [];
         $totalIncome = 0;
         $totalSpent = 0;
+        $accessibleBranchIds = app(BranchContext::class)->getAccessibleBranchIds();
         $priceSub = DB::table('product_value_variations as pvv')
             ->select('pvv.id')
             ->whereColumn('pvv.product_classification_id', 'product_classifications.id')
@@ -288,6 +292,7 @@ class ProductController extends Controller
             ->join('products', 'sale_items.product_id', '=', 'products.id')
             ->join('product_value_variations', 'product_value_variations.id', '=', DB::raw("({$priceSub->toSql()})"))
             ->mergeBindings($priceSub)
+            ->whereIn('products.branch_id', $accessibleBranchIds)
             ->select(
                 'sale_items.quantity',
                 'product_value_variations.price',
@@ -353,6 +358,7 @@ class ProductController extends Controller
         $totalSpent = 0;
         $startDate = $request->startDate;
         $endDate = $request->endDate;
+        $accessibleBranchIds = app(BranchContext::class)->getAccessibleBranchIds();
 
         $sold = [];
         $received = [];
@@ -374,6 +380,7 @@ class ProductController extends Controller
             ->join('product_value_variations', 'product_value_variations.id', '=', DB::raw("({$priceSub->toSql()})"))
             ->mergeBindings($priceSub)
             ->whereBetween('sale_items.created_at', [$startDate, $endDate])
+            ->whereIn('products.branch_id', $accessibleBranchIds)
             ->select(
                 'sale_items.quantity',
                 'product_value_variations.price',
@@ -440,6 +447,7 @@ class ProductController extends Controller
         $endDate = isset($request->endDate) ? $request->endDate : now()->toDateString();
         $page = $request->integer('page') - 1;
         $received = [];
+        $accessibleBranchIds = app(BranchContext::class)->getAccessibleBranchIds();
 
         $priceSub = DB::table('product_value_variations as pvv')
             ->select('pvv.id')
@@ -466,6 +474,7 @@ class ProductController extends Controller
                 'units.name as unit'
             )->where('products.deal_type', 'sale')
             ->whereBetween('sale_items.created_at', [$startDate, $endDate])
+            ->whereIn('products.branch_id', $accessibleBranchIds)
             ->get();
         foreach ($rows as $row) {
 
@@ -500,6 +509,7 @@ class ProductController extends Controller
         $endDate = isset($request->endDate) ? $request->endDate : now()->toDateString();
         $page = $request->integer('page') - 1;
         $sold = [];
+        $accessibleBranchIds = app(BranchContext::class)->getAccessibleBranchIds();
 
         $priceSub = DB::table('product_value_variations as pvv')
             ->select('pvv.id')
@@ -526,6 +536,7 @@ class ProductController extends Controller
                 'units.name as unit'
             )->where('products.deal_type', 'sale')
             ->whereBetween('sale_items.created_at', [$startDate, $endDate])
+            ->whereIn('products.branch_id', $accessibleBranchIds)
             ->get();
         foreach ($rows as $row) {
 

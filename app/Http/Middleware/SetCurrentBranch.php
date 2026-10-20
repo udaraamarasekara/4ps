@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Support\Tenancy\BranchContext;
+use App\Support\Tenancy\BranchAccess;
 use App\Support\Tenancy\TenantContext;
 use Closure;
 use Illuminate\Http\Request;
@@ -13,22 +14,17 @@ class SetCurrentBranch
     public function __construct(
         private TenantContext $tenantContext,
         private BranchContext $branchContext,
+        private BranchAccess $branchAccess,
     ) {
     }
 
     public function handle(Request $request, Closure $next): Response
     {
-        $branch = $this->tenantContext->tenant()->branches()
-            ->where('is_active', true)
-            ->whereHas('users', fn ($query) => $query->whereKey($request->user()->id))
-            ->when($request->session()->get('branch_id'), fn ($query, $branchId) => $query->whereKey($branchId))
-            ->first();
+        $branches = $this->branchAccess->branchesFor($request->user(), $this->tenantContext->tenant());
+        $branch = $branches->firstWhere('id', $request->session()->get('branch_id'));
 
         if (! $branch) {
-            $branch = $this->tenantContext->tenant()->branches()
-                ->where('is_active', true)
-                ->whereHas('users', fn ($query) => $query->whereKey($request->user()->id))
-                ->first();
+            $branch = $branches->first();
             $request->session()->put('branch_id', $branch?->id);
         }
 

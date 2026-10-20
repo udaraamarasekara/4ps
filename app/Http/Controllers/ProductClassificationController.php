@@ -86,17 +86,14 @@ class ProductClassificationController extends Controller
       }
       unset($rawInput['unit_name']);
     }
-   if(isset($rawInput['properties'])) {
-    $properties = $rawInput['properties'];
+    $properties = $rawInput['properties'] ?? [];
+    unset($rawInput['properties']);
 
-     unset($rawInput['properties']);
-    // Values
     $price = $rawInput['price'];
     $cost = $rawInput['cost'];
     $initialStock = $rawInput['initial_stock_quantity'] ?? null;
     unset($rawInput['price'], $rawInput['cost'], $rawInput['initial_stock_quantity']);
 
-    // Handle image properly
     $image_path = null;
     if ($request->hasFile('image')) {
       $image = $request->file('image');
@@ -105,40 +102,37 @@ class ProductClassificationController extends Controller
       $image_path = 'product_classifications/' . $imageName;
     }
 
-    // Create product classification
     $productClassification = ProductClassification::create($rawInput);
 
-    // Attach properties
     foreach ($properties as $propertyData) {
-        $property = Property::firstOrCreate(['name' => $propertyData['name'], 'value' => $propertyData['type']]);
-        $productClassification->properties()->attach($property->id);
+      $property = Property::firstOrCreate([
+        'name' => $propertyData['name'],
+        'value' => $propertyData['type'],
+      ]);
+      $productClassification->properties()->attach($property->id);
     }
 
-    // Create value variation
     ProductValueVariation::create([
       'product_classification_id' => $productClassification->id,
       'price' => $price,
-      'cost' => $cost
+      'cost' => $cost,
     ]);
 
-    // Initial stock
     if ($initialStock) {
       Stock::create([
         'product_classification_id' => $productClassification->id,
-        'quantity' => $initialStock
+        'quantity' => $initialStock,
       ]);
     }
 
-    // Store image path
     if ($image_path) {
       ProductClassificationImage::create([
         'product_classification_id' => $productClassification->id,
-        'image_path' => $image_path
+        'image_path' => $image_path,
       ]);
     }
 
     return redirect()->back();
-  }
 
   }
   public function fetch(string $input)

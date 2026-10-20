@@ -23,12 +23,17 @@ class StockService
 
     public static function checkProductAvailability(int $productClassificationId, float $quantity): bool
     {
-        return (float) Stock::where('product_classification_id', $productClassificationId)->value('quantity') >= $quantity;
+        return (float) self::stockForCurrentBranch($productClassificationId)->value('quantity') >= $quantity;
+    }
+
+    public static function hasStockForCurrentBranch(int $productClassificationId): bool
+    {
+        return self::stockForCurrentBranch($productClassificationId)->exists();
     }
 
     public static function increaseStock(int $productClassificationId, float $quantity, string $movementType = 'receive'): Stock
     {
-        $stock = Stock::where('product_classification_id', $productClassificationId)
+        $stock = self::stockForCurrentBranch($productClassificationId)
             ->lockForUpdate()
             ->firstOrFail();
 
@@ -41,7 +46,7 @@ class StockService
 
     public static function decreaseStock(int $productClassificationId, float $quantity, string $movementType = 'sale'): Stock
     {
-        $stock = Stock::where('product_classification_id', $productClassificationId)
+        $stock = self::stockForCurrentBranch($productClassificationId)
             ->lockForUpdate()
             ->first();
 
@@ -60,7 +65,7 @@ class StockService
     {
         StockMovement::create([
             'tenant_id' => $stock->tenant_id,
-            'branch_id' => app(BranchContext::class)->id(),
+            'branch_id' => $stock->branch_id,
             'stock_id' => $stock->id,
             'product_classification_id' => $stock->product_classification_id,
             'user_id' => auth()->id(),
@@ -69,5 +74,11 @@ class StockService
             'balance_after' => $stock->quantity,
             'created_at' => now(),
         ]);
+    }
+
+    private static function stockForCurrentBranch(int $productClassificationId)
+    {
+        return Stock::where('product_classification_id', $productClassificationId)
+            ->where('branch_id', app(BranchContext::class)->id());
     }
 }

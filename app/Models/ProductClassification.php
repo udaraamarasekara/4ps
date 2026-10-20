@@ -46,6 +46,11 @@ class ProductClassification extends Model
       return $this->hasOne(Stock::class);
     }
 
+    public function stocks()
+    {
+      return $this->hasMany(Stock::class);
+    }
+
     public function image()
     {
       return $this->hasOne(ProductClassificationImage::class);

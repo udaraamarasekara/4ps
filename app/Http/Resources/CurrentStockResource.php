@@ -20,7 +20,7 @@ class CurrentStockResource extends JsonResource
             'category'=>$this?->category?->name,
             'brand'=>$this?->brand?->name ,
             'unit'=>$this?->unit?->name ,
-            'stock'=>$this->stock?->quantity ?? 0,
+            'stock'=>$this->stocks->sum('quantity'),
         ];
     }
 }

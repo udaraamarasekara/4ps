@@ -6,6 +6,8 @@ use App\Models\Branch;
 use App\Models\ProductClassification;
 use App\Models\Stock;
 use App\Models\Tenant;
+use App\Models\User;
+use App\Support\Tenancy\BranchAccess;
 use App\Support\Tenancy\BranchContext;
 use App\Support\Tenancy\TenantContext;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -167,6 +169,95 @@ class BranchHierarchyTest extends TestCase
         $stocksFromGrandchild = Stock::all();
         $this->assertCount(1, $stocksFromGrandchild);
         $this->assertEquals([$stockGrandchild->id], $stocksFromGrandchild->pluck('id')->all());
+    }
+
+    public function test_user_assigned_to_parent_branch_can_select_active_descendants(): void
+    {
+        $tenant = $this->createTenant();
+        $user = User::factory()->create();
+        $root = Branch::create([
+            'tenant_id' => $tenant->id,
+            'parent_id' => 0,
+            'name' => 'Headquarters',
+            'code' => 'HQ',
+            'is_active' => true,
+        ]);
+        $parent = Branch::create([
+            'tenant_id' => $tenant->id,
+            'parent_id' => $root->id,
+            'name' => 'Main Branch',
+            'code' => 'MAIN',
+            'is_active' => true,
+        ]);
+        $child = Branch::create([
+            'tenant_id' => $tenant->id,
+            'parent_id' => $parent->id,
+            'name' => 'Matara',
+            'code' => 'MAT',
+            'is_active' => true,
+        ]);
+        $sibling = Branch::create([
+            'tenant_id' => $tenant->id,
+            'parent_id' => $root->id,
+            'name' => 'Another Branch',
+            'code' => 'OTHER',
+            'is_active' => true,
+        ]);
+        $parent->users()->attach($user);
+
+        $accessibleBranches = app(BranchAccess::class)->branchesFor($user, $tenant);
+
+        $this->assertEqualsCanonicalizing(
+            [$parent->id, $child->id],
+            $accessibleBranches->pluck('id')->all()
+        );
+        $this->assertNotContains($root->id, $accessibleBranches->pluck('id')->all());
+        $this->assertNotContains($sibling->id, $accessibleBranches->pluck('id')->all());
+    }
+
+    public function test_product_stock_is_tracked_separately_per_branch(): void
+    {
+        $tenant = $this->createTenant();
+        $parent = Branch::create([
+            'tenant_id' => $tenant->id,
+            'parent_id' => 0,
+            'name' => 'Headquarters',
+            'code' => 'HQ',
+            'is_active' => true,
+        ]);
+        $child = Branch::create([
+            'tenant_id' => $tenant->id,
+            'parent_id' => $parent->id,
+            'name' => 'Regional Office',
+            'code' => 'REG',
+            'is_active' => true,
+        ]);
+        $productClassification = ProductClassification::create([
+            'tenant_id' => $tenant->id,
+            'name' => 'Shared Product',
+        ]);
+
+        app(BranchContext::class)->set($parent);
+        Stock::create([
+            'tenant_id' => $tenant->id,
+            'product_classification_id' => $productClassification->id,
+            'quantity' => 10,
+        ]);
+
+        app(BranchContext::class)->set($child);
+        Stock::create([
+            'tenant_id' => $tenant->id,
+            'product_classification_id' => $productClassification->id,
+            'quantity' => 5,
+        ]);
+
+        $this->assertDatabaseCount('stocks', 2);
+
+        app(BranchContext::class)->set($parent);
+        $this->assertSame(15.0, (float) Stock::where('product_classification_id', $productClassification->id)->sum('quantity'));
+
+        app(BranchContext::class)->set($child);
+        $this->assertSame(5.0, (float) Stock::where('product_classification_id', $productClassification->id)->sum('quantity'));
     }
 
     public function test_tenant_cannot_have_more_than_one_top_level_branch(): void

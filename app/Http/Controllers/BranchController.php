@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
+use App\Support\Tenancy\BranchAccess;
 use App\Support\Tenancy\TenantContext;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -57,15 +58,11 @@ class BranchController extends Controller
         return back()->with('success', 'Branch created.');
     }
 
-    public function switch(Request $request, int $branch, TenantContext $tenantContext): RedirectResponse
+    public function switch(Request $request, int $branch, TenantContext $tenantContext, BranchAccess $branchAccess): RedirectResponse
     {
-        $branch = $tenantContext->tenant()->branches()->findOrFail($branch);
-
-        abort_unless($branch->is_active, 403);
-        abort_unless(
-            $branch->users()->whereKey($request->user()->id)->exists(),
-            403
-        );
+        $branch = $branchAccess->branchesFor($request->user(), $tenantContext->tenant())
+            ->firstWhere('id', $branch);
+        abort_unless($branch, 403);
 
         $request->session()->put('branch_id', $branch->id);
 

@@ -24,6 +24,15 @@ return Application::configure(basePath: dirname(__DIR__))
             'tenant.role' => \App\Http\Middleware\EnsureTenantRole::class,
         ]);
 
+        $middleware->prependToPriorityList(
+            \App\Http\Middleware\SetCurrentTenant::class,
+            \App\Http\Middleware\RedirectPlatformAdmin::class,
+        );
+        $middleware->prependToPriorityList(
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\SetCurrentTenant::class,
+        );
+
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
